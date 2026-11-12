@@ -258,7 +258,8 @@
   #spause i { display: block; width: 3.5px; height: 17px; border-radius: 1.5px; background: currentColor; }
   #spause:active { color: var(--fg); }
   /* ASTRO'nun kendi menüsü (açılış + duraklatma) */
-  #spmenu { position: absolute; inset: 0; z-index: 3; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 13% 0 6%; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+  #space { overflow: hidden; }
+  #spmenu { position: absolute; inset: 0; z-index: 3; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 13% 0 6%; opacity: 0; pointer-events: none; transition: opacity .35s ease, background .9s ease; }
   #spmenu.on { opacity: 1; pointer-events: auto; }
   #spmenu.ps { background: #000; justify-content: center; gap: 9vh; padding: 0 0 4%; }
   #spmenu.ps #spico { display: none; }
@@ -267,6 +268,17 @@
   #space:not(.play) #sphud { opacity: 0; }
   #sptitle { font-size: clamp(54px, 14vmin, 96px); font-weight: 100; letter-spacing: .22em; text-indent: .22em; line-height: 1; text-align: center; }
   #spsub { margin-top: 14px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  /* ASTRO ilk açılış animasyonu: mekik alttan süzülür, yıldızlar çizgiden noktaya yavaşlar, başlık belirir */
+  #spmenu.intro { background: transparent; }
+  #spmenu.intro #spico { position: relative; animation: spship 3.9s cubic-bezier(.16,.72,.2,1) both; }
+  #spmenu.intro #spico::after { content: ''; position: absolute; left: 50%; top: 86%; width: 1.5px; height: 46vh; margin-left: -.75px; transform-origin: top; background: linear-gradient(to bottom, rgba(244,242,238,.5), rgba(244,242,238,0)); animation: sptail 3.9s ease-out both; }
+  #spmenu.intro #sptitle { animation: spti 1.9s ease both 2.3s; }
+  #spmenu.intro #spsub { animation: spfade 1s ease both 3.5s; }
+  #spmenu.intro #splist { animation: spfade 1.2s ease both 4s; pointer-events: none; }
+  @keyframes spship { from { transform: translateY(78vh); } to { transform: none; } }
+  @keyframes sptail { from { opacity: .9; transform: scaleY(1); } to { opacity: 0; transform: scaleY(.2); } }
+  @keyframes spti { from { opacity: 0; filter: blur(8px); letter-spacing: .45em; text-indent: .45em; } to { opacity: 1; filter: blur(0); letter-spacing: .22em; text-indent: .22em; } }
+  @keyframes spfade { from { opacity: 0; } to { opacity: 1; } }
   #spico svg { display: block; width: min(24vw, 13vh, 96px); height: auto; }
   #splist { display: flex; flex-direction: column; align-items: center; }
   /* ---------- açılış animasyonu (yalnızca ilk açılış) ---------- */
@@ -1263,7 +1275,7 @@
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
-    var elSm = $('spmenu'), elList = $('splist'), mode = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
+    var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     $('spico').innerHTML = ASTRO_ICO;
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="sound">Ses · ' + (muted ? 'kapalı' : 'açık') + '</div>';
@@ -1280,6 +1292,28 @@
       mode = 1; last = 0; elSm.classList.remove('on'); el.classList.add('play'); Music.mode(1);
     }
     function pause() { if (mode === 1) showMenu(2); }
+    function endIntro() {
+      if (!introOn) return; introOn = false; clearTimeout(introTm);
+      elSm.classList.remove('intro'); STORE.set('astro_intro', '1');
+    }
+    function startIntro() {
+      var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      introOn = !reduced && STORE.get('astro_intro') !== '1';
+      if (!introOn) return;
+      ioff = 0; introT0 = performance.now(); elSm.classList.add('intro'); introTm = setTimeout(endIntro, 5400);
+    }
+    function drawIntro(ts, dt) {                                 // yıldız çizgileri: hızdan sakinliğe
+      var t = (ts - introT0) / 1000, k = Math.min(1, t / 3.8), v = .03 + .97 * (1 - k) * (1 - k), fa = Math.min(1, t / .9), i;
+      cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H);
+      ioff += v * H * 2.2 * dt; cx.fillStyle = F; cx.strokeStyle = F;
+      for (i = 0; i < stars.length; i++) {
+        var st = stars[i], y = ((st.y + ioff * st.f) % H + H) % H, sl = v * st.f * H * .16;
+        cx.globalAlpha = st.a * fa;
+        if (sl > 1.5) { cx.lineWidth = st.s * .8; cx.beginPath(); cx.moveTo(st.x, y); cx.lineTo(st.x, y - sl); cx.stroke(); }
+        else cx.fillRect(st.x, y, st.s, st.s);
+      }
+      cx.globalAlpha = 1;
+    }
     function spAct(a) {
       if (a === 'start' || a === 'restart') play(true);
       else if (a === 'resume') play(false);
@@ -1307,8 +1341,8 @@
       stars = [];
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
-    function open() { reset(); size(); on = true; el.classList.add('on'); last = 0; audioInit(); Music.start(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { on = false; mode = 0; el.classList.remove('on', 'play'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); }
+    function open() { reset(); size(); on = true; el.classList.add('on'); last = 0; audioInit(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
+    function close() { on = false; mode = 0; el.classList.remove('on', 'play'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -1319,6 +1353,7 @@
     }
     el.addEventListener('pointerdown', function (e) {
       e.preventDefault(); e.stopPropagation(); audioInit(); thrustInit();
+      if (introOn) { if (performance.now() - introT0 > 900) endIntro(); return; }   // giriş animasyonu: kısa süre sonra dokununca geçilir
       var tg = e.target && e.target.closest ? e.target : null;
       if (tg) {
         var sa = tg.closest('[data-sa]');
@@ -1342,7 +1377,7 @@
       if (!on) return;
       e.stopPropagation(); e.preventDefault();
       if (e.key === 'Escape') { if (mode === 1) pause(); else if (mode === 2) play(false); else close(); return; }
-      if (mode !== 1) { if (e.key === 'Enter') { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
+      if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
       keys[e.key.toLowerCase()] = 1; audioInit(); thrustInit();
     }, true);
@@ -1574,7 +1609,7 @@
       if (!on) return;
       raf = requestAnimationFrame(frame);
       var dt = Math.min(0.05, (ts - last) / 1000 || 0.016); last = ts;
-      if (mode === 1) { step(dt); draw(ts); Music.thrust(th); } else Music.thrust(0);
+      if (mode === 1) { step(dt); draw(ts); Music.thrust(th); } else { Music.thrust(0); if (introOn) drawIntro(ts, dt); }
     }
     return { open: open };
   })();
