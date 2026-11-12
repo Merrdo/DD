@@ -168,6 +168,80 @@
     background: linear-gradient(#000 62%, rgba(0,0,0,0)); }
   .dot.ghost { border-color: rgba(244,242,238,.14); }
   #shclose { margin: 46px auto 0; display: table; }
+
+  /* ---------- menü düğmesi ---------- */
+  .gone { opacity: 0 !important; pointer-events: none !important; }
+  #mbtn {
+    position: absolute; z-index: 20;
+    top: 6.5%; left: 5%;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(244,242,238,.22); border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3.5px;
+    color: var(--soft); cursor: pointer;
+    transition: opacity .3s ease, background .2s ease;
+  }
+  #mbtn i { display: block; width: 13px; height: 1.2px; background: currentColor; }
+  #mbtn:active { background: rgba(244,242,238,.12); }
+
+  /* ---------- ana menü ---------- */
+  #menu {
+    position: absolute; inset: 0; z-index: 8;
+    background: #000;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 13% 0 6%;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s ease;
+  }
+  #menu.on { opacity: 1; pointer-events: auto; }
+  #mtitle { font-size: clamp(64px, 17vmin, 112px); font-weight: 100; letter-spacing: .06em; text-indent: .06em; line-height: 1; text-align: center; }
+  #msub { margin-top: 14px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  #mdeco { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9%; width: min(46vw, 26vh, 210px); aspect-ratio: 1; }
+  .mc { border-radius: 50%; border: 1.5px solid var(--line); cursor: pointer; transition: background .7s ease, border-color .7s ease, transform .35s ease; }
+  .mc.on { background: var(--fg); border-color: var(--fg); }
+  .mc:active { transform: scale(.9); }
+  #mlist { display: flex; flex-direction: column; align-items: center; }
+  .mi { padding: 13px 28px; font-size: 13px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; color: var(--dim); text-align: center; cursor: pointer; transition: color .2s ease; }
+  .mi.primary { color: var(--fg); font-size: 15px; }
+  .mi small { display: block; margin-top: 7px; font-size: 10px; letter-spacing: .28em; color: var(--dim); }
+  .mi:active { color: var(--fg); }
+  #mback {
+    position: absolute; top: 6.5%; left: 5%;
+    width: 36px; height: 36px; border: 1px solid rgba(244,242,238,.22); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--soft);
+    transition: background .2s ease;
+  }
+  #mback i { display: block; width: 8px; height: 8px; margin-left: 3px; border-left: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); }
+  #mback:active { background: rgba(244,242,238,.12); }
+
+  /* ---------- oyun seçim ekranı ---------- */
+  #hub {
+    position: absolute; inset: 0; z-index: 9;
+    background: #000;
+    overflow-y: auto; overflow-x: hidden; touch-action: pan-y;
+    padding: 13% 22px 8%;
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s ease;
+  }
+  #hub.on { opacity: 1; pointer-events: auto; }
+  #htitle { font-size: clamp(38px, 10vmin, 60px); font-weight: 100; letter-spacing: -.01em; line-height: 1.05; text-align: center; }
+  #hsub { margin-top: 12px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  #hgrid { width: min(100%, 440px); margin: 7vh auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .gc {
+    aspect-ratio: 1 / 1.08; border: 1px solid rgba(244,242,238,.34); border-radius: 22px;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 22px 12px 18px; cursor: pointer;
+    transition: background .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  .gc:active { background: rgba(244,242,238,.08); transform: scale(.97); }
+  .gc.soon { border-color: rgba(244,242,238,.12); cursor: default; }
+  .gc.soon:active { background: none; transform: none; }
+  .gprev { flex: 1; width: 52%; max-height: 64%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 11%; align-content: center; }
+  .gd { aspect-ratio: 1; border-radius: 50%; border: 1.3px solid rgba(244,242,238,.4); }
+  .gd.on { background: var(--fg); border-color: var(--fg); }
+  .gplus { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 100; color: rgba(244,242,238,.2); }
+  .gn { text-align: center; font-size: 15px; font-weight: 300; letter-spacing: .12em; text-indent: .12em; }
+  .gc.soon .gn { color: var(--dim); font-size: 12px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; }
+  .gn small { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .26em; text-indent: .26em; text-transform: uppercase; color: var(--dim); }
 </style>
 </head>
 <body>
@@ -208,7 +282,20 @@
     <div class="btn strong" id="shclose">Kapat</div>
   </div></div>
 
-  <div id="help">?</div>
+  <div id="menu" class="on">
+    <div id="mback" data-act="hub"><i></i></div>
+    <div><div id="mtitle">DD</div><div id="msub">daireleri doldur</div></div>
+    <div id="mdeco"></div>
+    <div id="mlist"></div>
+  </div>
+
+  <div id="hub" class="on">
+    <div id="htitle">Mini Oyunlar</div><div id="hsub">bir oyun seç</div>
+    <div id="hgrid"></div>
+  </div>
+
+  <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
+  <div id="help" class="gone">?</div>
 </div>
 
 <script>
@@ -224,7 +311,7 @@
   }
   // taktik sayfası dışında kaydırma kapalı
   document.addEventListener('touchmove', function (e) {
-    if (e.target && e.target.closest && e.target.closest('#sheet')) return;
+    if (e.target && e.target.closest && e.target.closest('#sheet, #hub')) return;
     e.preventDefault();
   }, { passive: false });
   window.addEventListener('scroll', function () { window.scrollTo(0, 0); });
@@ -246,7 +333,8 @@
       elCtl = $('ctl'), elSkipWrap = $('skipwrap'), elMsg = $('msg'),
       elMt = $('mt'), elMs = $('ms'), elMh = $('mh'),
       elUndo = $('undo'), elReset = $('reset'), elHint = $('hint'), elSkip = $('skip'),
-      elGuide = $('guide'), elHelp = $('help'), elSheet = $('sheet');
+      elGuide = $('guide'), elHelp = $('help'), elSheet = $('sheet'),
+      elMenu = $('menu'), elMbtn = $('mbtn'), elMlist = $('mlist'), elDeco = $('mdeco'), elHub = $('hub'), elHgrid = $('hgrid');
 
   var W, H, S, dpr, gx, gy, gsize, pitch, rad;
 
@@ -260,7 +348,8 @@
     t0: 0, tEnd: 0,
     a: null, pop: null,
     canNext: 0, lastCell: 0,
-    sheet: false, pauseAt: 0
+    sheet: false, pauseAt: 0,
+    menu: true, menuAt: 0, fresh: false, hub: true
   };
   var STORE = {
     get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -332,7 +421,7 @@
     G.n = n; G.cells = cells; G.init = cells.slice(); G.par = par;
     G.stack = []; G.hints = 0; G.mark = -1; G.started = false; G.solved = false;
     G.a = new Float32Array(n * n); G.pop = new Float32Array(n * n);
-    G.hold = new Float32Array(n * n); G.mk = -1; G.mkA = 0; G.tIn = performance.now(); G.leaving = false;
+    G.hold = new Float32Array(n * n); G.mk = -1; G.mkA = 0; G.tIn = performance.now(); G.leaving = false; G.fresh = !!G.menu;
     for (var i = 0; i < G.a.length; i++) G.a[i] = cells[i];
     layout();
     elHud.classList.remove('live');
@@ -393,7 +482,8 @@
   /* ===== Ses (sentezlenir) =====
      Yumuşak çan / kalimba tınıları, Re majör pentatonik, hafif oda yankısı.
      Her dokunuş: tahtanın doluluğuna göre perde, sütuna göre sağ-sol konum, hafif rastgele ince ayar. */
-  var AC = null, bus = null;
+  var AC = null, bus = null, master = null;
+  var muted = false;
   function makeImpulse(sec) {
     var rate = AC.sampleRate, len = Math.floor(rate * sec), b = AC.createBuffer(2, len, rate);
     for (var ch = 0; ch < 2; ch++) {
@@ -408,7 +498,7 @@
       AC = new (window.AudioContext || window.webkitAudioContext)();
       var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4600; lp.Q.value = 0.3;
       var comp = AC.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.3;
-      var master = AC.createGain(); master.gain.value = 0.9;
+      master = AC.createGain(); master.gain.value = muted ? 0 : 0.9;
       bus = AC.createGain();
       var hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 240;
       var conv = AC.createConvolver(); conv.buffer = makeImpulse(2.6);
@@ -618,7 +708,7 @@
 
   /* ===== Taktik sayfası ===== */
   function openSheet(on) {
-    if (on && !G.sheet) G.pauseAt = performance.now();
+    if (on && !G.sheet && !G.menu) G.pauseAt = performance.now();
     if (!on && G.sheet && G.pauseAt) {
       if (G.started && !G.solved && G.tut < 0) G.t0 += performance.now() - G.pauseAt;
       G.pauseAt = 0;
@@ -628,6 +718,123 @@
     elHelp.classList.toggle('on', on);
     elHelp.textContent = on ? '×' : '?';
     if (on) elSheet.scrollTop = 0;
+    syncChrome();
+  }
+
+  /* ===== Ana menü ===== */
+  var confirmNew = false, confirmTimer = 0, dec = [1, 0, 1, 0, 0, 1, 1, 1, 0];
+  muted = STORE.get('dd_mute') === '1';
+
+  function syncChrome() {
+    elHelp.classList.toggle('gone', G.menu && !G.sheet);
+    elMbtn.classList.toggle('gone', G.menu || G.sheet);
+  }
+  function refreshMenu() {
+    var first = STORE.get('dd_tut') !== '1' && G.tut < 0, h = '';
+    if (first) {
+      h += '<div class="mi primary" data-act="play">Oyna</div>';
+    } else {
+      h += '<div class="mi primary" data-act="continue">Devam et<small>' + (G.tut >= 0 ? 'Öğretici' : 'Bölüm ' + (G.level + 1)) + '</small></div>';
+      h += '<div class="mi" data-act="new">' + (confirmNew ? 'Baştan başla? Dokun' : 'Yeni oyun') + '</div>';
+      h += '<div class="mi" data-act="how">Nasıl oynanır</div>';
+    }
+    h += '<div class="mi" data-act="sheet">Taktik</div>';
+    h += '<div class="mi" data-act="sound">Ses · ' + (muted ? 'kapalı' : 'açık') + '</div>';
+    elMlist.innerHTML = h;
+  }
+  function setMenu(on) {
+    if (on === G.menu) return;
+    var now = performance.now();
+    if (on) {
+      G.menuAt = now; confirmNew = false; refreshMenu();
+    } else {
+      if (G.menuAt && G.started && !G.solved && G.tut < 0) G.t0 += now - G.menuAt;
+      G.menuAt = 0;
+      if (G.fresh) { G.tIn = now + 250; G.fresh = false; }
+    }
+    G.menu = on;
+    elMenu.classList.toggle('on', on);
+    syncChrome();
+  }
+  function menuAct(act) {
+    if (act === 'play' || act === 'continue') {
+      if (act === 'play' && G.tut < 0) startTutorial();
+      setMenu(false);
+    } else if (act === 'new') {
+      if (G.level > 0 && !confirmNew) {
+        confirmNew = true; refreshMenu();
+        clearTimeout(confirmTimer);
+        confirmTimer = setTimeout(function () { confirmNew = false; if (G.menu) refreshMenu(); }, 2600);
+        return;
+      }
+      confirmNew = false; clearTimeout(confirmTimer);
+      loadPuzzle(0); setMenu(false);
+    } else if (act === 'how') {
+      startTutorial(); setMenu(false);
+    } else if (act === 'hub') {
+      setHub(true);
+    } else if (act === 'sheet') {
+      openSheet(true);
+    } else if (act === 'sound') {
+      muted = !muted; STORE.set('dd_mute', muted ? '1' : '0');
+      if (master) master.gain.value = muted ? 0 : 0.9;
+      refreshMenu();
+      if (!muted) bell(semi(7), 0.14, 0, 0, 1.4);
+    }
+  }
+  /* ===== Oyun seçim ekranı ===== */
+  // Yeni oyun eklemek için bu listeye bir satır eklemek yeterli.
+  var GAMES = [
+    { id: 'dd', name: 'DD', ready: true },
+    { id: 'x1', ready: false },
+    { id: 'x2', ready: false },
+    { id: 'x3', ready: false }
+  ];
+  function buildHub() {
+    var h = '';
+    for (var i = 0; i < GAMES.length; i++) {
+      var g = GAMES[i];
+      if (g.ready) {
+        var pat = [1, 0, 1, 0, 0, 1, 1, 1, 0], d = '';
+        for (var k = 0; k < 9; k++) d += '<i class="gd' + (pat[k] ? ' on' : '') + '"></i>';
+        var sub = g.id === 'dd' ? (STORE.get('dd_tut') === '1' ? 'Bölüm ' + (G.level + 1) : 'Yeni') : '';
+        h += '<div class="gc" data-game="' + g.id + '"><div class="gprev">' + d + '</div><div class="gn">' + g.name + (sub ? '<small>' + sub + '</small>' : '') + '</div></div>';
+      } else {
+        h += '<div class="gc soon"><div class="gplus">+</div><div class="gn">Yakında</div></div>';
+      }
+    }
+    elHgrid.innerHTML = h;
+  }
+  function setHub(on) {
+    G.hub = on;
+    if (on) { buildHub(); elHub.scrollTop = 0; confirmNew = false; refreshMenu(); }
+    elHub.classList.toggle('on', on);
+  }
+  function openGame(id) {
+    if (id !== 'dd') return;
+    bell(semi(7), 0.13, 0, 0, 1.5);
+    setHub(false);
+  }
+
+  // menüdeki süs: 3×3 daire, kendi kendine yanıp söner, dokunulabilir
+  function buildDeco() {
+    var h = '';
+    for (var i = 0; i < 9; i++) h += '<div class="mc" data-i="' + i + '"></div>';
+    elDeco.innerHTML = h; paintDeco();
+    setInterval(function () {
+      if (!G.menu || G.sheet) return;
+      pressOn(dec, 3, (Math.random() * 9) | 0); paintDeco();
+    }, 1500);
+  }
+  function paintDeco() {
+    var cs = elDeco.children;
+    for (var i = 0; i < 9; i++) cs[i].classList.toggle('on', !!dec[i]);
+  }
+  function decoPress(i) {
+    pressOn(dec, 3, i); paintDeco(); vib(5);
+    var on = 0; for (var k = 0; k < 9; k++) on += dec[k];
+    bell(pf(Math.min(9, Math.floor(on / 9 * 9.999))), 0.16, ((i % 3) - 1) * 0.5, 0, 1.9);
+    if (allOn(dec)) bell(semi(19), 0.09, 0, 0.18, 2.2);
   }
 
   function miniGrid(str, mark, size) {
@@ -693,9 +900,24 @@
     var tgt = e.target;
     audioInit();
     if (tgt === elHelp) { e.preventDefault(); openSheet(!G.sheet); return; }
+    if (tgt && tgt.closest && tgt.closest('#mbtn')) { e.preventDefault(); if (!G.sheet) setMenu(true); return; }
     if (G.sheet) {
       if (tgt && tgt.id === 'shclose') { e.preventDefault(); openSheet(false); }
       return; // sayfa açıkken oyun girdisi yok, kaydırma serbest
+    }
+    if (G.hub) {
+      e.preventDefault();
+      var gc = tgt && tgt.closest ? tgt.closest('[data-game]') : null;
+      if (gc) openGame(gc.getAttribute('data-game'));
+      return;
+    }
+    if (G.menu) {
+      e.preventDefault();
+      var mi = tgt && tgt.closest ? tgt.closest('[data-act]') : null;
+      var mc = tgt && tgt.closest ? tgt.closest('.mc') : null;
+      if (mi) menuAct(mi.getAttribute('data-act'));
+      else if (mc) decoPress(+mc.getAttribute('data-i'));
+      return;
     }
     e.preventDefault();
     if (tgt === elSkip) { if (G.tut >= 0) endTutorial(); return; }
@@ -722,6 +944,13 @@
   window.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && G.sheet) { openSheet(false); return; }
     if (G.sheet) return;
+    if (G.hub) { if (e.key === 'Enter' || e.key === ' ') openGame('dd'); return; }
+    if (G.menu) {
+      if (e.key === 'Escape') { setHub(true); return; }
+      if (e.key === 'Enter' || e.key === ' ') { var pm = elMenu.querySelector('.primary'); if (pm) menuAct(pm.getAttribute('data-act')); }
+      return;
+    }
+    if (e.key === 'Escape') { setMenu(true); return; }
     if (G.solved && (e.key === ' ' || e.key === 'Enter') && performance.now() > G.canNext) next();
     if ((e.key === 'z' || e.key === 'Backspace') && G.stack.length && !G.solved && G.tut < 0) press(G.stack[G.stack.length - 1], true);
     if (e.key === 'h' || e.key === 'H') doHint();
@@ -788,14 +1017,15 @@
       if (G.hold[i] <= ts) G.a[i] += (G.cells[i] - G.a[i]) * k1;
       G.pop[i] += (0 - G.pop[i]) * k2;
     }
-    if (G.started && !G.solved && G.tut < 0 && !G.sheet) elTime.textContent = ((performance.now() - G.t0) / 1000).toFixed(1);
+    if (G.started && !G.solved && G.tut < 0 && !G.sheet && !G.menu) elTime.textContent = ((performance.now() - G.t0) / 1000).toFixed(1);
     render(ts);
     requestAnimationFrame(frame);
   }
   window.addEventListener('resize', layout);
 
   buildSheet();
-  if (STORE.get('dd_tut') === '1') loadPuzzle(G.level); else startTutorial();
+  loadPuzzle(G.level);   // tahta menünün arkasında hazır bekler
+  buildDeco(); refreshMenu(); buildHub(); syncChrome();
   requestAnimationFrame(frame);
 
   // test için
