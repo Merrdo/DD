@@ -281,7 +281,7 @@
   @keyframes spfade { from { opacity: 0; } to { opacity: 1; } }
   #spico svg { display: block; width: min(24vw, 13vh, 96px); height: auto; }
   #splist { display: flex; flex-direction: column; align-items: center; }
-  /* ---------- açılış animasyonu (yalnızca ilk açılış) ---------- */
+  /* ---------- açılış animasyonu (oturum başına bir kez) ---------- */
   #intro {
     position: absolute; inset: 0; z-index: 60;
     background: #000;
@@ -1106,16 +1106,17 @@
   }
   window.addEventListener('resize', layout);
 
-  /* ===== Açılış animasyonu: yalnızca ilk açılışta ===== */
+  /* ===== Açılış animasyonu: uygulama oturumu başına bir kez ===== */
   (function () {
     var el = $('intro');
-    if (!el || STORE.get('dd_intro') === '1') { if (el) el.parentNode.removeChild(el); return; }
+    if (!el) return;
+    // oturum başına bir kez: uygulama arka plandan silinip yeniden açılınca oynar, arka plandan dönünce oynamaz
+    try { if (sessionStorage.getItem('dd_intro_seen') === '1') { el.parentNode.removeChild(el); return; } sessionStorage.setItem('dd_intro_seen', '1'); } catch (e) {}
     el.style.display = 'flex';
     var done = false, timer = 0;
     function finish() {
       if (done) return; done = true;
       clearTimeout(timer);
-      STORE.set('dd_intro', '1');
       el.classList.add('out');
       setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 1000);
     }
@@ -1294,11 +1295,11 @@
     function pause() { if (mode === 1) showMenu(2); }
     function endIntro() {
       if (!introOn) return; introOn = false; clearTimeout(introTm);
-      elSm.classList.remove('intro'); STORE.set('astro_intro', '1');
+      elSm.classList.remove('intro');
     }
     function startIntro() {
       var reduced = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-      introOn = !reduced && STORE.get('astro_intro') !== '1';
+      introOn = !reduced;                                          // her girişte oynar
       if (!introOn) return;
       ioff = 0; introT0 = performance.now(); elSm.classList.add('intro'); introTm = setTimeout(endIntro, 5400);
     }
@@ -1353,7 +1354,7 @@
     }
     el.addEventListener('pointerdown', function (e) {
       e.preventDefault(); e.stopPropagation(); audioInit(); thrustInit();
-      if (introOn) { if (performance.now() - introT0 > 900) endIntro(); return; }   // giriş animasyonu: kısa süre sonra dokununca geçilir
+      if (introOn) return;                                                          // giriş animasyonu sırasında dokunuş yutulur
       var tg = e.target && e.target.closest ? e.target : null;
       if (tg) {
         var sa = tg.closest('[data-sa]');
