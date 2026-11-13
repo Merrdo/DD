@@ -1319,7 +1319,7 @@
     var F = '#f4f2ee', D = '#0a0b0f';
     /* kaçış parkuru durumu */
     var obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
-        best = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0;
+        best = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
@@ -1409,7 +1409,7 @@
       dead = 0; deadT = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
       obs = []; pick = []; pops = []; gt = 0; dead = 0; deadT = 0; shake = 0; combo = 0; comboT = 0; bonus = 0; sector = 0; near0 = 0; newRec = false;
-      hintT = 0; banner = ''; bannerT = 0; flash = 0; lastWarn = 0; thrustSeen = false; seedN = 0; righting = 0;
+      hintT = 0; banner = ''; bannerT = 0; flash = 0; lastWarn = 0; thrustSeen = false; seedN = 0; righting = 0; boostRem = 0; boostCap = 0;
       genY = -S * 0.7; genFirst(); waveY = Math.max(H * .55, S * .85); waveT = 0; emb = []; fireT = 0; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0;
       elV.textContent = '0.0'; lastL = ''; hintA = 0; lastV = '';
       elL.textContent = 'm/sn'; startMsgT = 0; lastMsg = ''; pre = 1; cdT = 3; lastCd = 0; dkMsg('', '', '', '');
@@ -1728,6 +1728,17 @@
       if (want && !wasOn && th < 0.12) ign = 1; wasOn = want; ign = Math.max(0, ign - dt / 0.24);
       heat += (th - heat) * (1 - Math.exp(-dt / (th > heat ? 0.15 : 0.9)));
       var A = S * 0.11 * th, dm = Math.exp(-dt * 0.05);
+      // HIZLANMA güçlendirmesi: ani fırlatma yok. Kalan itiş (boostRem) ~0.6 sn'de yumuşakça eklenir, gemi bu sırada yönlendirilebilir.
+      // İtiş yönü: burun ileri bakıyorsa burun, değilse gidiş yönü. Hız boostCap'i aşmaz (yüksek hızda güçlendirme neredeyse etkisizdir).
+      if (boostRem > 0.5) {
+        var bsp = Math.hypot(P.vx, P.vy), bhx = Math.cos(P.h), bhy = Math.sin(P.h),
+            bux = bsp > S * .08 ? P.vx / bsp : bhx, buy = bsp > S * .08 ? P.vy / bsp : bhy,
+            bal = Math.max(0, Math.min(1, (bhx * bux + bhy * buy + .2) / .9)),
+            bgx = bux * (1 - bal) + bhx * bal, bgy = buy * (1 - bal) + bhy * bal, bgl = Math.hypot(bgx, bgy) || 1,
+            room = Math.max(0, boostCap - bsp),
+            chunk = Math.min(boostRem * (1 - Math.exp(-dt / 0.28)), room);
+        P.vx += bgx / bgl * chunk; P.vy += bgy / bgl * chunk; boostRem -= boostRem * (1 - Math.exp(-dt / 0.28));
+      } else boostRem = 0;
       // itiş yalnızca JET'ten gelir
       var tx = P.vx + Math.cos(P.h) * A * dt, ty = P.vy + Math.sin(P.h) * A * dt, s0 = Math.hypot(tx, ty), tL = 0, tR = 0;
       // joystick = flap / hava freni: hızı yalnızca düşürür ya da yönünü çevirir; hız büyüklüğü asla artmaz
@@ -1783,7 +1794,6 @@
       }
       bA += (((jetId !== null || keys[' ']) ? 1 : 0) - bA) * (1 - Math.exp(-dt / 0.12)); pulse = Math.max(0, pulse - dt / 0.5);
       if (jetId === null && bA < 0.02) { bbx = bx; bby = by; }
-      qStep(dt);
       thrustSet(th);
       var t, tl2;
       if (race) runStep(dt, px0, py0);
@@ -1944,15 +1954,15 @@
             pop('+ENERJİ', p.x, p.y - S * .05); sfxPick(combo); vib(6);
           }
         } else if (dd < p.r * .8) {
-          p.got = true; var bs = S * .34;
-          // itiş yönü: gemi ileri bakıyorsa burnu yönünde (eski his); ters/yan ise gidiş yönünde ileri iter ve gemiyi toparlar
-          var bv = Math.hypot(P.vx, P.vy), rx = bv > S * .08 ? P.vx / bv : 0, ry = bv > S * .08 ? P.vy / bv : -1,
-              hx = Math.cos(P.h), hy = Math.sin(P.h), dh = hx * rx + hy * ry,
-              bt = Math.max(0, Math.min(1, (dh + .2) / .9)),
-              bdx = rx * (1 - bt) + hx * bt, bdy = ry * (1 - bt) + hy * bt, bl = Math.hypot(bdx, bdy) || 1;
-          P.vx += bdx / bl * bs; P.vy += bdy / bl * bs;
-          if (bt < 1) righting = .9;
-          var ns = Math.hypot(P.vx, P.vy), mx2 = S * .9; if (ns > mx2) { P.vx *= mx2 / ns; P.vy *= mx2 / ns; }
+          p.got = true;
+          // ihtiyaca göre ayarlı güçlendirme: alev yakın + gemi yavaşsa güçlü, alev uzak + gemi zaten hızlıysa hafif
+          var bv = Math.hypot(P.vx, P.vy), gp = waveY - P.y,
+              close = Math.max(0, Math.min(1, 1 - (gp - H * .15) / (H * .75))),          // 1: alev dibimizde, 0: rahat uzak
+              slow = Math.max(0, Math.min(1, 1 - bv / (S * .45))),                       // 1: neredeyse duruyoruz
+              need = Math.max(0, Math.min(1, close * (.45 + .55 * slow) + .12 * slow));
+          boostRem = S * (.10 + .34 * need);                                              // toplam ek hız: 0.10S (rahat) … 0.44S (kritik)
+          boostCap = S * (.36 + .30 * need);                                              // güçlendirme sonrası tavan: 0.36S … 0.66S (asla 0.9S'ye fırlatmaz)
+          if (bv > S * .08 && Math.cos(P.h) * P.vx / bv + Math.sin(P.h) * P.vy / bv < .7) righting = .5;   // burun gidiş yönünden sapmışsa yumuşakça toparla
           en = Math.min(1, en + .3); lock = false; bonus += 10; shake = Math.max(shake, .35); flash = Math.max(flash, .6);
           pop('HIZLANDIN', P.x, P.y - S * .1, true); sfxBoost(); vib([10, 20, 10]);
         }
@@ -2409,11 +2419,6 @@
       if (pre && cdT > 0 && !el.classList.contains('tut')) {
         var cn = Math.ceil(cdT), cf = cn - cdT, ce = 1 - Math.pow(1 - qK(cf / .3), 3), co = qK((cf - .62) / .38);
         var ca = qK(cf / .12) * (1 - co * co * (3 - 2 * co)), cs = S * .52 * (1 + .22 * (1 - ce));
-        cx.save(); cx.globalCompositeOperation = 'lighter';
-        var cg = cx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, S * .55);
-        cg.addColorStop(0, rgba('255,120,50', .16 * ca)); cg.addColorStop(1, rgba('255,120,50', 0));
-        cx.fillStyle = cg; cx.fillRect(W / 2 - S * .55, H / 2 - S * .55, S * 1.1, S * 1.1);
-        cx.restore();
         txt(String(cn), W / 2, H / 2, cs, ca, F, 0, 200);
       }
       // alev yaklaşınca ekran ısınır: alttan kızıl ışık, sıcak vinyet, geminin yüzü aydınlanır
@@ -2424,10 +2429,6 @@
         g = cx.createLinearGradient(0, H, 0, H * .3);
         g.addColorStop(0, rgba('255,120,50', .28 * k * (.93 + .07 * Math.sin(t * .8)))); g.addColorStop(.5, rgba('255,80,30', .12 * k)); g.addColorStop(1, rgba('255,80,30', 0));
         cx.fillStyle = g; cx.fillRect(0, H * .3, W, H * .7);
-        var sx0 = W / 2 + P.x - cam.x, sy0 = CY + P.y - cam.y;
-        g = cx.createRadialGradient(sx0, sy0, 0, sx0, sy0, S * .3);
-        g.addColorStop(0, rgba('255,140,70', .22 * k)); g.addColorStop(1, rgba('255,140,70', 0));
-        cx.fillStyle = g; cx.fillRect(sx0 - S * .3, sy0 - S * .3, S * .6, S * .6);
         cx.restore();
         g = cx.createRadialGradient(W / 2, H * .55, S * .25, W / 2, H * .55, Math.max(W, H) * .75);
         g.addColorStop(0, 'rgba(255,70,20,0)'); g.addColorStop(1, rgba('255,70,20', .18 * k * (.95 + .05 * Math.sin(t * .7))));
@@ -2462,6 +2463,21 @@
       cx.bezierCurveTo(ox - .2 * sx, oy - .4 * sy, ox - .08 * sx + sw * .5 * sx, oy - .5 * sy, ox + sw * sx, oy - sy);
       cx.closePath();
     }
+    /* Dither: 8-bit gradyanlarda (alev ışıması, ısınma vinyeti) komşu renk basamakları arasında sert çizgiler oluşur.
+       Cihaz pikselinde 0–2 seviyelik rastgele gürültü eklemek bu çizgileri görünmez şekilde dağıtır. */
+    var ditherCv = null;
+    function dither() {
+      var c = cx.canvas, N = 128, i, d, id, cx2;
+      if (!ditherCv) {
+        ditherCv = document.createElement('canvas'); ditherCv.width = ditherCv.height = N;
+        cx2 = ditherCv.getContext('2d'); id = cx2.createImageData(N, N); d = id.data;
+        for (i = 0; i < d.length; i += 4) { d[i] = Math.random() * 4 | 0; d[i + 1] = Math.random() * 4 | 0; d[i + 2] = Math.random() * 4 | 0; d[i + 3] = 255; }
+        cx2.putImageData(id, 0, 0); ditherCv.pat = cx.createPattern(ditherCv, 'repeat');
+      }
+      cx.save(); cx.setTransform(1, 0, 0, 1, -(Math.random() * N | 0), -(Math.random() * N | 0));
+      cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = 1; cx.fillStyle = ditherCv.pat;
+      cx.fillRect(0, 0, c.width + N, c.height + N); cx.restore();
+    }
     function draw(ts) {
       cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H); cx.globalAlpha = 1;
       if (race && shake > .01) cx.translate((Math.random() - .5) * shake * S * .035, (Math.random() - .5) * shake * S * .035);
@@ -2474,7 +2490,6 @@
         if (sl > 1.5) { cx.lineWidth = st.s * .8; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - P.vx / sp * sl, y - P.vy / sp * sl); cx.stroke(); }
         else cx.fillRect(x, y, st.s, st.s);
       }
-      qDraw(CY, ts / 1000);                                                      // uzak quark patlaması (yıldızların üstünde, geminin altında)
       if (race) drawWorld(CY, ts / 1000);                                        // kenarlar, ödüller, engeller
       // egzoz kıvılcımları + RCS gazı
       for (i = 0; i < parts.length; i++) {
@@ -2495,6 +2510,7 @@
       cx.globalAlpha = 1; if (!dead || (dead === 2 && boomT < 0)) ship(ax, ay, ts);
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
       if (race) drawOverlay(CY, ts / 1000);
+      if (race) dither();                                                        // gradyan bantlaşmasını (piksel piksel renk basamakları) dağıtır
       // joystick (dokunulan yerde belirir)
       var ga = (dead || race) ? 0 : Math.max(jA, jUsed ? 0 : .22);
       if (ga > .01) {
