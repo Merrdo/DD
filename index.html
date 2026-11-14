@@ -313,18 +313,28 @@
   #sptut span { font-size: 13px; line-height: 1.55; color: var(--soft); max-width: 22ch; }
   @keyframes sptin { from { opacity: 0; } to { opacity: 1; } }
   #spbn { position: absolute; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 100px); display: flex; justify-content: center; pointer-events: none; z-index: 2; transition: opacity .3s ease; }
-  #spmsg { display: flex; flex-direction: column; align-items: center; gap: 5px; max-width: 92vw; text-align: center; color: #f4f2ee; text-shadow: 0 0 18px rgba(0,0,0,.9), 0 0 3px rgba(0,0,0,.8); transition: opacity .45s ease; }
+  #spmsg { display: flex; flex-direction: column; align-items: center; gap: 5px; max-width: 92vw; text-align: center; color: #f4f2ee; text-shadow: 0 0 18px rgba(0,0,0,.9), 0 0 3px rgba(0,0,0,.8); transition: opacity 1s ease; }
   #spmsg .k { font-size: 11px; font-weight: 600; letter-spacing: .1em; text-indent: .1em; color: rgba(244,242,238,.78); }
   #spmsg .k:empty { display: none; }
   #spmsg .t { font-size: clamp(26px, 7.4vmin, 36px); font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
   #spmsg .s { font-size: 14px; font-weight: 500; letter-spacing: .02em; color: rgba(244,242,238,.9); font-variant-numeric: tabular-nums; }
   #spmsg.warn .t { font-weight: 600; color: #ffb08a; }
   #spmsg.ok .t { font-weight: 600; text-shadow: 0 0 26px rgba(244,242,238,.65), 0 0 3px rgba(0,0,0,.8); }
-  #spmsg.hide { opacity: 0; }
+  #spmsg.hide { opacity: 0; animation: spout 1s ease both; }
+  @keyframes spout { from { opacity: 1; } to { opacity: 0; } }
   #spmsg.pop { animation: sppop .5s ease both; }
   @keyframes sppop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @keyframes spwarn { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
   #space:not(.play) #spbn { opacity: 0; }
+  /* geliştirici kamerası */
+  #devchip { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 18px); left: 14px; display: none; padding: 7px 12px; border: 1px solid rgba(244,242,238,.3); border-radius: 14px; font-size: 10px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; color: var(--soft); cursor: pointer; }
+  #space.play.devok #devchip { display: block; }
+  #space.devcam #devchip { background: #f4f2ee; color: #000; border-color: #f4f2ee; }
+  #devbar { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); display: none; justify-content: center; align-items: center; gap: 12px; }
+  #space.devcam #devbar { display: flex; }
+  #devbar div { min-width: 46px; height: 46px; padding: 0 10px; border: 1px solid rgba(244,242,238,.3); border-radius: 23px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 200; color: var(--fg); background: rgba(0,0,0,.45); cursor: pointer; }
+  #devbar div:active { background: rgba(244,242,238,.18); }
+  #devbar #devz { font-size: 11px; letter-spacing: .12em; min-width: 64px; color: var(--soft); cursor: default; }
   #spause { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 6px); right: calc(env(safe-area-inset-right, 0px) + 8px); width: 52px; height: 52px; display: none; align-items: center; justify-content: center; gap: 5px; color: var(--soft); cursor: pointer; z-index: 2; }
   #space.play #spause { display: flex; }
   #spause i { display: block; width: 3.5px; height: 17px; border-radius: 1.5px; background: currentColor; }
@@ -470,7 +480,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div></div>
 </div>
 
 <script>
@@ -961,6 +971,7 @@
   var elSet = $('set'), elSlist = $('slist'), elConf = $('conf'), resetting = false;
   function buildSet() {
     elSlist.innerHTML = '<div class="si" data-set="sound">Ses<small>' + (muted ? 'kapalı' : 'açık') + '</small></div>' +
+      '<div class="si" data-set="dev">Geliştirici modu<small>' + (STORE.get('dd_dev') === '1' ? 'açık' : 'kapalı') + '</small></div>' +
       '<div class="si warn" data-set="reset">İlerlemeleri sıfırla<small>⟶</small></div>';
   }
   function setSettings(on) {
@@ -970,10 +981,10 @@
   }
   function resetAll() {
     if (resetting) return; resetting = true;
-    // Tüm oyun ilerlemesi, rekorlar ve öğreticiler (dd_ ön ekli her kayıt). Yalnızca ses tercihi korunur.
+    // Tüm oyun ilerlemesi, rekorlar ve öğreticiler (dd_ ön ekli her kayıt). Ses ve geliştirici modu tercihleri korunur.
     try {
       var ks = [];
-      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute') ks.push(k); }
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute' && k !== 'dd_dev') ks.push(k); }
       for (var j = 0; j < ks.length; j++) localStorage.removeItem(ks[j]);
     } catch (e) {}
     elConf.classList.remove('on');
@@ -993,6 +1004,8 @@
       muted = !muted; STORE.set('dd_mute', muted ? '1' : '0');
       if (master) master.gain.value = muted ? 0 : 0.9;
       buildSet(); if (!muted) bell(semi(7), 0.14, 0, 0, 1.4);
+    } else if (a === 'dev') {
+      STORE.set('dd_dev', STORE.get('dd_dev') === '1' ? '0' : '1'); buildSet();
     } else if (a === 'reset') elConf.classList.add('on');
   }
 
@@ -1414,10 +1427,11 @@
   var Space = (function () {
     var el = $('space'), cv2 = $('spcv'), cx = cv2.getContext('2d'), elV = $('spv'), elEn = $('spen');
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
+    var devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     /* kaçış parkuru durumu */
-    var obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
+    var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
         best = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
@@ -1454,8 +1468,17 @@
       clearTimeout(tutTm); tutTm = setTimeout(function () { elTl.classList.add('hide'); elTr.classList.add('hide'); setTimeout(tutEnd, 1200); }, 60000);
     }
     var elBn = $('spmsg'), elMk = elBn.children[0], elMt = elBn.children[1], elMs = elBn.children[2], lastMsg = '', lastSub = '', startMsgT = 0;
+    var msgTm = 0;
     function dkMsg(kind, k, t, sub) {   // üst talimat şeridi (index_1 ile aynı)
       var key = kind + '|' + k + '|' + t;
+      if (!t) {                                                    // yazı kalkarken metni hemen silme: önce yumuşakça sön, sonra temizle
+        if (key !== lastMsg) {
+          lastMsg = key; elBn.classList.remove('pop'); elBn.classList.add('hide'); clearTimeout(msgTm);
+          msgTm = setTimeout(function () { if (lastMsg === key) { elMk.textContent = ''; elMt.textContent = ''; elMs.textContent = ''; elMs.style.display = 'none'; lastSub = ''; } }, 1300);
+        }
+        return;
+      }
+      clearTimeout(msgTm);
       if (key !== lastMsg) { lastMsg = key; elMk.textContent = k; elMt.textContent = t; elBn.className = t ? '' : 'hide'; void elBn.offsetWidth; elBn.className = t ? kind + ' pop' : 'hide'; }
       if (sub !== lastSub) { lastSub = sub; elMs.textContent = sub; elMs.style.display = sub ? '' : 'none'; }
     }
@@ -1463,6 +1486,7 @@
       if (fresh) reset();
       mode = 1; last = 0; elSm.classList.remove('on'); el.classList.add('play'); Music.mode(1);
       el.classList.toggle('race', !!race); if (fresh) tutShow();
+      if (fresh && race && el.classList.contains('tut')) { obs = []; pick = []; wait = true; }   // öğretici boş gökyüzünde; parkur bitince geminin olduğu yerde kurulur
     }
     function pause() { if (mode === 1) showMenu(2); }
     function endIntro() {
@@ -1507,7 +1531,7 @@
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
-      obs = []; pick = []; pops = []; gt = 0; dead = 0; deadT = 0; shake = 0; combo = 0; comboT = 0; bonus = 0; sector = 0; near0 = 0; newRec = false;
+      devOn = false; devJump = false; graceT = 0; devPts = {}; el.classList.remove('devcam'); comboA = 0; oy = 0; wait = false; obs = []; pick = []; pops = []; gt = 0; dead = 0; deadT = 0; shake = 0; combo = 0; comboT = 0; bonus = 0; sector = 0; near0 = 0; newRec = false;
       hintT = 0; banner = ''; bannerT = 0; flash = 0; lastWarn = 0; thrustSeen = false; seedN = 0; righting = 0; boostRem = 0; boostCap = 0;
       genY = -S * 0.7; genFirst(); waveY = Math.max(H * .55, S * .85); waveT = 0; emb = []; fireT = 0; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0;
       elV.textContent = '0.0'; lastL = ''; hintA = 0; lastV = '';
@@ -1515,7 +1539,7 @@
       } else { elV.textContent = '0.0'; elL.textContent = 'm/sn'; hintA = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); }
     }
     function score() { return Math.floor(distM() + bonus); }
-    function distM() { return Math.max(0, Math.floor(-P.y / (S * 0.1))); }
+    function distM() { return Math.max(0, Math.floor(-(P.y - oy) / (S * 0.1))); }
 
     /* --- parkur üretimi: engeller dünyaya sabit, ilerledikçe parça parça üretilir --- */
     function rnd(a, b) { return a + Math.random() * (b - a); }
@@ -1599,7 +1623,7 @@
     function rocksStep(dt) {
       var act = [], i, j, o, A, B;
       for (i = 0; i < obs.length; i++) {
-        o = obs[i]; if (o.t !== 'rock' || Math.abs(o.y - P.y) > S * 2.4) continue;
+        o = obs[i]; if (o.t !== 'rock' || Math.abs(o.y - (devOn ? dv.y : P.y)) > (devOn ? Math.max(S * 2.4, H / dv.z) : S * 2.4)) continue;
         if (o.amp) o.x = o.cx + o.amp * Math.sin(o.w * gt + o.ph);
         if (o.dv) { o.x += o.vx * dt; o.y += o.vy * dt; driftBounds(o); }
         act.push(o);
@@ -1635,7 +1659,7 @@
         var L = S * (1.0 + Math.min(.6, d * .05)), n = 3 + Math.min(7, d + ((Math.random() * 2) | 0));
         var drs = [];
         for (var i = 0; i < n; i++) {
-          var r = S * rnd(.045, .085), isA = d > 2 && Math.random() < .35, isD = !isA && Math.random() < (d >= 1 ? .32 : .2), am = isA ? S * rnd(.1, .25) : 0;
+          var r = S * rnd(.045, .085), isA = d >= 3 && Math.random() < Math.min(.5, .22 + d * .03), isD = !isA && d >= 2 && Math.random() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
           for (var tr = 0; tr < 12; tr++) {
             var rx = rnd(-cw * .9, cw * .9), ry = y0 - rnd(.08, .92) * L;
             if (!rockFree(rx, ry, r, am)) continue;
@@ -1657,12 +1681,12 @@
       },
       gate: function (y0, d) {
         var gw = S * Math.max(.24, .46 - d * .02), gx = rnd(-cw * .6, cw * .6), h = S * .07, y = y0 - S * .35;
-        obs.push({ t: 'wall', x0: -cw - 40, x1: gx - gw / 2, y: y, h: h, near: false });
-        obs.push({ t: 'wall', x0: gx + gw / 2, x1: cw + 40, y: y, h: h, near: false });
+        obs.push({ t: 'wall', x0: -cw - W, x1: gx - gw / 2, y: y, h: h, near: false });
+        obs.push({ t: 'wall', x0: gx + gw / 2, x1: cw + W, y: y, h: h, near: false });
         if (d > 3 && Math.random() < .6) {                         // ikinci kapı, ters tarafta
           var gx2 = -gx * rnd(.5, 1.1), y2 = y - S * rnd(.55, .75);
-          obs.push({ t: 'wall', x0: -cw - 40, x1: gx2 - gw / 2, y: y2, h: h, near: false });
-          obs.push({ t: 'wall', x0: gx2 + gw / 2, x1: cw + 40, y: y2, h: h, near: false });
+          obs.push({ t: 'wall', x0: -cw - W, x1: gx2 - gw / 2, y: y2, h: h, near: false });
+          obs.push({ t: 'wall', x0: gx2 + gw / 2, x1: cw + W, y: y2, h: h, near: false });
           return S * 1.15;
         }
         return S * .7;
@@ -1671,7 +1695,7 @@
         var gw = S * Math.max(.3, .52 - d * .02), n = d > 4 ? 2 : 1, y;
         for (var i = 0; i < n; i++) {
           y = y0 - S * (.3 + i * .55);
-          obs.push({ t: 'beam', y: y, x0: -cw - 40, x1: cw + 40, gx: rnd(-cw * .6, cw * .6), gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
+          obs.push({ t: 'beam', y: y, x0: -cw - W, x1: cw + W, gx: rnd(-cw * .6, cw * .6), gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
         }
         return S * (.55 + n * .45);
       },
@@ -1691,19 +1715,41 @@
         return sp * (rows + .4);
       }
     };
-    function genFirst() {                                          // başlangıç: sakin bir koridor, bir halka ve birkaç hücre
-      mkRing(S * .3, -S * .55);
-      mkCell(-S * .3, -S * 1.0); mkCell(S * .3, -S * 1.25);
-      mkRock(-cw * .5, -S * 1.7, S * .09); mkRock(cw * .45, -S * 2.0, S * .1);
-      genY = -S * 2.5;
+    function genFirst() {                                          // başlangıç: sakin ama her seferinde farklı koridor (yalnızca durağan kayalar, ödüller)
+      var nr = 2 + ((Math.random() * 2) | 0), y = oy - S * rnd(1.3, 1.6), i, x, t;
+      for (i = 0; i < nr; i++) {
+        for (t = 0; t < 10; t++) { x = rnd(-cw * .7, cw * .7); if (rockFree(x, y, S * .1, 0)) { mkRock(x, y, S * rnd(.075, .1)); break; } }
+        y -= S * rnd(.5, .75);
+      }
+      function visSpot(a, b, m) {                                  // ilk ekranda net görünen, engelden uzak nokta
+        for (var t2 = 0; t2 < 20; t2++) { var vx = Math.max(-cw * .85, Math.min(cw * .85, P.x + rnd(-.36, .36) * W)), vy = oy - S * rnd(a, b); if (clearAt(vx, vy, m)) return { x: vx, y: vy }; }
+        return null;
+      }
+      if (Math.random() < .22) { var sr = visSpot(.4, .75, S * .22); if (sr) mkRing(sr.x, sr.y); }   // başlangıçta hızlandırma nadir
+      var cn = 2 + ((Math.random() * 3) | 0);
+      for (i = 0; i < cn; i++) { var sc = visSpot(.55, 1.4, S * .12); if (sc) mkCell(sc.x, sc.y); }
+      genY = y - S * rnd(.2, .5); lastPat = '';
+    }
+    var lastPat = '';
+    function pickPat(d) {                                          // zorluğa göre açılan desenler; ağırlıklı rastgele, art arda aynısı yok
+      var w = { field: 3, slalom: 2 };
+      if (d >= 1) w.gate = 2;
+      if (d >= 2) w.laser = 2;
+      if (d >= 3) { w.spinner = 2; w.pendulum = 2; }
+      if (d >= 5) { w.laser = 3; w.spinner = 3; w.gate = 3; w.pendulum = 3; }
+      var ks = [], tot = 0, k;
+      for (k in w) if (k !== lastPat) { ks.push(k); tot += w[k]; }
+      var r = Math.random() * tot;
+      for (var i = 0; i < ks.length; i++) { r -= w[ks[i]]; if (r <= 0) return ks[i]; }
+      return ks[ks.length - 1];
     }
     function genMore() {
       var guard = 0;
-      while (genY > P.y - H * 1.6 && guard++ < 8) {
-        var d = Math.floor(-genY / (S * .1) / 50), y0 = genY, ok = ['field', 'slalom'];
-        if (d >= 1) ok.push('gate', 'field'); if (d >= 2) ok.push('laser'); if (d >= 3) ok.push('spinner', 'pendulum'); if (d >= 5) ok.push('laser', 'spinner', 'gate', 'pendulum');
-        var nm = pickIn(ok), n0 = obs.length, L = PAT[nm](y0, d);
-        var gap = S * Math.max(.3, .62 - d * .035);
+      var ry = devOn ? Math.min(P.y, dv.y) : P.y, ahead = H * 1.6 / (devOn ? Math.min(1, dv.z) : 1);
+      while (genY > ry - ahead && guard++ < 8) {
+        var d = Math.floor(-(genY - oy) / (S * .1) / 50), y0 = genY;
+        var nm = pickPat(d), n0 = obs.length, L = PAT[nm](y0, d); lastPat = nm;
+        var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25);
         // ödüller: bir hücre şeridi, bazen halka
         var cnt = 2 + ((Math.random() * 3) | 0), sp0 = spotFor(y0 - L * .5, S * .16);
         if (sp0) for (var i = 0; i < cnt; i++) { var cxx = sp0.x + Math.sin(i * .9) * S * .05, cyy = sp0.y - i * S * .07; if (clearAt(cxx, cyy, S * .1)) mkCell(cxx, cyy); }
@@ -1712,6 +1758,7 @@
       }
       // geride kalanları at
       var lim = P.y + H * 1.4, i2;
+      if (devOn) return;                                           // dev kamerası: geride kalanlar silinmez
       for (i2 = obs.length - 1; i2 >= 0; i2--) if (obs[i2].y > lim) obs.splice(i2, 1);
       for (i2 = pick.length - 1; i2 >= 0; i2--) if (pick[i2].y > lim) pick.splice(i2, 1);
     }
@@ -1726,8 +1773,8 @@
       stars = [];
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
-    function open() { size(); reset(); on = true; el.classList.add('on'); last = 0; audioInit(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { on = false; mode = 0; el.classList.remove('on', 'play'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); }
+    function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
+    function close() { on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -1744,8 +1791,12 @@
         var sa = tg.closest('[data-sa]');
         if (sa) { spAct(sa.getAttribute('data-sa')); return; }
         if (tg.closest('#spause')) { pause(); return; }
+        if (tg.closest('#devchip')) { devToggle(!devOn); return; }
+        var db = tg.closest('[data-dv]');
+        if (db && devOn) { var da = db.getAttribute('data-dv'); if (da === 'in') devZoom(1.35); else if (da === 'out') devZoom(1 / 1.35); else if (da === 'home') { dv.x = P.x; dv.y = P.y; } return; }
       }
       if (mode !== 1) return;
+      if (devOn) { var dp = pos(e); devPts[e.pointerId] = { x: dp.x, y: dp.y }; try { el.setPointerCapture(e.pointerId); } catch (_) {} return; }
       var p = pos(e); try { el.setPointerCapture(e.pointerId); } catch (_) {}
       if (p.x < W / 2) {
         if (joyId === null) {
@@ -1755,8 +1806,21 @@
       }
       else if (jetId === null) { jetId = e.pointerId; bUsed = 1; pulse = 1; bbx = Math.max(W / 2 + br + 6, Math.min(W - br - 10, p.x)); bby = Math.max(br + 10, Math.min(H - br - 10, p.y)); }
     }, { passive: false });
-    el.addEventListener('pointermove', function (e) { if (e.pointerId === joyId) { e.preventDefault(); joy(pos(e)); } });
-    function up(e) { e.stopPropagation(); if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) jetId = null; }
+    el.addEventListener('pointermove', function (e) {
+      if (devOn) {
+        var q = devPts[e.pointerId]; if (!q) return; e.preventDefault();
+        var np = pos(e), ids = Object.keys(devPts);
+        if (ids.length >= 2) {                                                   // iki parmak: yakınlaş/uzaklaş (ve orta noktayla kaydır)
+          var o2 = devPts[ids[0] === String(e.pointerId) ? ids[1] : ids[0]], d0 = Math.hypot(q.x - o2.x, q.y - o2.y), d1 = Math.hypot(np.x - o2.x, np.y - o2.y);
+          if (d0 > 8 && d1 > 8) devZoom(d1 / d0);
+          dv.x -= (np.x - q.x) / 2 / dv.z; dv.y -= (np.y - q.y) / 2 / dv.z;
+        } else { dv.x -= (np.x - q.x) / dv.z; dv.y -= (np.y - q.y) / dv.z; }    // tek parmak: sürükleyerek gez
+        q.x = np.x; q.y = np.y; return;
+      }
+      if (e.pointerId === joyId) { e.preventDefault(); joy(pos(e)); }
+    });
+    el.addEventListener('wheel', function (e) { if (devOn) { e.preventDefault(); devZoom(Math.exp(-e.deltaY * .0015)); } }, { passive: false });
+    function up(e) { e.stopPropagation(); delete devPts[e.pointerId]; if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) jetId = null; }
     el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     window.addEventListener('keydown', function (e) {
       if (!on) return;
@@ -1802,6 +1866,7 @@
       if (race && dead) { stepDead(dt); return; }
       if (race && pre) {
         if (!el.classList.contains('tut')) { preStep(dt); return; }   // öğretici bitti: geri sayım (gemi başa süzülür)
+        if (wait) waveY = cam.y + H * 2.5;                             // öğretici sırasında alev yok
         fireStep(dt, S * .08); dkMsg('', '', '', '');                  // öğretici açıkken: serbest uçuş gibi kontrol edilir, parkur işlemez
       }
       var kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0),
@@ -1917,7 +1982,7 @@
       dead = kind; deadT = 0; shake = kind === 2 ? 0 : 1; flash = kind === 2 ? .3 : .9; th = 0; thrustSet(0); Music.thrust(0);
       if (kind !== 2) { sfxCrash(); vib([40, 30, 80]); } pops = []; bannerT = 0; combo = 0; dkMsg('', '', '', '');
       if (kind === 2) {                                           // yanma süresi doldu: gemi patlar (ses/titreşim/flaş explode'da)
-        var sc2 = fScore = score(); fDist = distM(); if (sc2 > best) { best = sc2; newRec = true; STORE.set('dd_astro_best', String(best)); }
+        var sc2 = fScore = score(); fDist = distM(); if (sc2 > best && !devJump) { best = sc2; newRec = true; STORE.set('dd_astro_best', String(best)); }
         explode(); return;
       }
       var i, n = 46;
@@ -1927,7 +1992,7 @@
       }
       parts.length > 220 && parts.splice(0, parts.length - 220);
       var sc = fScore = score(); fDist = distM();
-      if (sc > best) { best = sc; newRec = true; STORE.set('dd_astro_best', String(best)); }
+      if (sc > best && !devJump) { best = sc; newRec = true; STORE.set('dd_astro_best', String(best)); }
     }
     // başlangıç: öğretici yazılar açıkken oyun donuk; yazılar kalkınca 3-2-1, sonra oyun
     function preStep(dt) {
@@ -1940,12 +2005,18 @@
         if (tutL > 1.5) tutHide(0); if (tutR > 1.5) tutHide(1);
         dkMsg('', '', '', ''); return;
       }
-      var hk = 1 - Math.exp(-dt / 0.35);                          // öğreticide uçulduysa gemi başlangıç noktasına süzülür
-      P.x -= P.x * hk; P.y -= P.y * hk; P.vx -= P.vx * hk; P.vy -= P.vy * hk; P.w = 0; P.h += wrap(-Math.PI / 2 - P.h) * hk;
+      if (wait) {                                                 // öğretici bitti: parkuru geminin duracağı noktada kur, alev aşağıdan yükselir
+        wait = false; oy = P.y + P.vy * .35; genY = oy - S * .7; genFirst();
+        waveY = oy + H * 1.5; waveT = 0; emb = []; fireT = 0;
+      }
+      var hk = 1 - Math.exp(-dt / 0.35);                          // gemi olduğu yerde yavaşça durur, burnu yukarı döner
+      waveY += (oy + Math.max(H * .55, S * .85) - waveY) * (1 - Math.exp(-dt / .9));
+      P.x += P.vx * dt; P.y += P.vy * dt; P.vx -= P.vx * hk; P.vy -= P.vy * hk; P.w = 0; P.h += wrap(-Math.PI / 2 - P.h) * hk;
+      P.x += (Math.max(-cw * .5, Math.min(cw * .5, P.x)) - P.x) * hk;   // duvara çok yakınsa yatayda hafifçe içeri
       cam.x += (P.x - cam.x) * hk; cam.y += (P.y - cam.y) * hk; trail = [];
       th += (0 - th) * hk; thrustSet(th); en = 1; lock = false; burn = 0; idleT = 0; boostRem = 0;
       cdT -= dt;
-      if (cdT <= 0) { P.x = P.y = P.vx = P.vy = 0; P.h = -Math.PI / 2; cam.x = cam.y = 0; pre = 0; startMsgT = .8; sfxSector(); return; }
+      if (cdT <= 0) { P.vx = P.vy = 0; P.h = -Math.PI / 2; pre = 0; startMsgT = .8; sfxSector(); return; }
       var n = Math.ceil(cdT);
       if (n !== lastCd) { lastCd = n; sfxWarn(); }
       dkMsg('ok', '', 'Alev geliyor', '');
@@ -1979,9 +2050,61 @@
       var endT = dead === 2 ? (boomT < 0 ? 1e9 : boomT + 2.3) : 1.15;
       if (deadT > endT && mode === 1) showMenu(3);
     }
+    /* --- geliştirici kamerası: gemi donar, kamera serbest uçar; parkur üretilmeye ve hareket etmeye devam eder --- */
+    function devToggle(on) {
+      if (on === devOn) return;
+      if (on) {
+        if (mode !== 1) return;
+        devOn = true; dvSave = { x: cam.x, y: cam.y }; dv.x = cam.x; dv.y = cam.y; dv.z = 1;
+        joyId = null; jetId = null; jv.x = jv.y = 0; keys = {}; thrustSet(0); Music.thrust(0);
+      } else {
+        var tp = !dead && !pre && !wait;                                           // oyun sürüyorsa: gemi kameranın bulunduğu yere ışınlanır
+        devOn = false; if (dvSave && !tp) { cam.x = dvSave.x; cam.y = dvSave.y; }
+        joyId = null; jetId = null; jv.x = jv.y = 0; keys = {}; devPts = {}; graceT = 2.5;   // dönüşte kısa süre çarpışma yok: gemi dururken parkur hareket etmiş olabilir
+        if (tp) devWarp();
+      }
+      el.classList.toggle('devcam', devOn);
+    }
+    function devWarp() {                                           // dev kapanınca: mekik, kameranın olduğu sektöre doğrudan gider
+      var tx = Math.max(-cw * .6, Math.min(cw * .6, dv.x)), ty = dv.y, x = tx, y = ty, ms = [.16, .11, .06, 0], mi, k, a, rr, found = false;
+      if (race) {                                                  // engelin içine düşmemesi için en yakın boş noktayı ara
+        for (mi = 0; mi < ms.length && !found; mi++) {
+          for (k = 0; k < 90; k++) {
+            a = k * 2.4; rr = k ? S * .035 * Math.sqrt(k) : 0;
+            x = Math.max(-cw * .7, Math.min(cw * .7, tx + Math.cos(a) * rr)); y = ty + Math.abs(Math.sin(a)) * rr;   // aşağı (geri) yönde ara: önde yer kalsın
+            if (clearAt(x, y, S * ms[mi])) { found = true; break; }
+          }
+        }
+        if (!found) { x = tx; y = ty; }
+      }
+      if (Math.abs(y - P.y) > S * .3) devJump = true;              // ileri ışınlanma: puan/rekor sayılmaz
+      P.x = x; P.y = y; P.vx = 0; P.vy = 0; P.h = -Math.PI / 2; P.w = 0; th = 0; thrustSet(0); Music.thrust(0);
+      trail = []; parts = []; cam.x = P.x; cam.y = P.y; en = 1; burn = 0; flash = .6; combo = 0; pops = [];
+      if (race) {
+        waveY = P.y + Math.max(H * .95, S * 1.3); waveT = 0; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
+        var sc = Math.floor(distM() / 50); sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4;
+        genMore();
+      }
+    }
+    function devZoom(f) { dv.z = Math.max(.12, Math.min(3, dv.z * f)); }
+    function devStep(dt) {
+      var sp2 = S * 1.3 / dv.z * dt, kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0), ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0), i, o;
+      dv.x += kx * sp2; dv.y += ky * sp2;
+      if (keys['+'] || keys['=']) devZoom(Math.exp(dt * 1.2)); if (keys['-'] || keys['_']) devZoom(Math.exp(-dt * 1.2));
+      gt += dt; genMore(); rocksStep(dt);
+      var rg = Math.max(S * 2.4, H / dv.z);
+      for (i = 0; i < obs.length; i++) {
+        o = obs[i]; if (Math.abs(o.y - dv.y) > rg) continue;
+        if (o.t === 'rock') o.rot += o.vr * dt;
+        else if (o.t === 'spin') o.rot += o.w * dt;
+        else if (o.t === 'beam') { var ph = ((gt + o.ph) % o.per) / o.per; o.warn = ph > .5 && ph < .72; o.on = ph >= .72; }
+      }
+      cam.x = dv.x; cam.y = dv.y;
+      if (elDvz) elDvz.textContent = '×' + dv.z.toFixed(2);
+    }
     function runStep(dt, px0, py0) {
       var i, o, Rs = S * 0.026 * 0.78, sp = Math.hypot(P.vx, P.vy);
-      gt += dt; if (th > .3) thrustSeen = true; if (!thrustSeen) hintT += dt;
+      gt += dt; if (graceT > 0) graceT -= dt; if (th > .3) thrustSeen = true; if (!thrustSeen) hintT += dt;
       genMore();
       // sektör
       var d = distM(), sc = Math.floor(d / 50);
@@ -2035,17 +2158,18 @@
             var cross = (py0 - o.y) * (P.y - o.y) <= 0 || Math.abs(P.y - o.y) < Rs;
             if (cross) {
               var xc = P.x + (px0 - P.x) * (Math.abs(P.y - o.y) / (Math.abs(P.y - py0) || 1));
-              if (Math.abs(xc - o.gx) > o.gw / 2 - Rs * .3 || Math.abs(P.x - o.gx) > o.gw / 2 - Rs * .3) { kill(1); return; }
+              if ((Math.abs(xc - o.gx) > o.gw / 2 - Rs * .3 || Math.abs(P.x - o.gx) > o.gw / 2 - Rs * .3) && graceT <= 0) { kill(1); return; }
             }
             clr = Math.abs(P.y - o.y) - Rs;
             // yalnızca boşluğun kenarında siyırma sayılır
             if (Math.abs(P.x - o.gx) > o.gw / 2 + S * .03) clr = 1e9;
           }
         }
-        if (clr < 0 && o.t !== 'beam') { kill(1); return; }
+        if (clr < 0 && o.t !== 'beam' && graceT <= 0) { kill(1); return; }
         if (!o.near && clr > 0 && clr < S * .032 && sp > S * .14 && !(o.t === 'beam')) {
           o.near = true; combo++; comboT = 4.5;
           var gain = 5 * combo; bonus += gain; near0 = gain;
+          en = Math.min(1, en + .07 + Math.min(.08, .02 * (combo - 1))); if (lock && en > .25) lock = false;   // sıyırma enerji verir: .07, kombo arttıkça en çok .15
           pop('SIYIRDIN ×' + combo, P.x, P.y - S * .08, combo >= 4); sfxNear(combo); vib(9); flash = Math.max(flash, .25);
         }
       }
@@ -2396,7 +2520,7 @@
           cx.fillStyle = '#0b0c11'; rr(x0, y - o.h / 2, x1 - x0, o.h, o.h * .3); cx.fill();
           cx.save(); rr(x0, y - o.h / 2, x1 - x0, o.h, o.h * .3); cx.clip();
           cx.strokeStyle = 'rgba(244,242,238,.16)'; cx.lineWidth = 1;
-          for (var hx = x0 - o.h + ((-cam.x) % (o.h * .7)); hx < x1 + o.h; hx += o.h * .7) { cx.beginPath(); cx.moveTo(hx, y + o.h / 2); cx.lineTo(hx + o.h, y - o.h / 2); cx.stroke(); }
+          var hst = o.h * .7, hx = ox + Math.ceil((x0 - o.h - ox) / hst) * hst; for (; hx < x1 + o.h; hx += hst) { cx.beginPath(); cx.moveTo(hx, y + o.h / 2); cx.lineTo(hx + o.h, y - o.h / 2); cx.stroke(); }
           cx.restore();
           cx.strokeStyle = rgba('244,242,238', .88); cx.lineWidth = 1.7; rr(x0, y - o.h / 2, x1 - x0, o.h, o.h * .3); cx.stroke();
         } else if (o.t === 'spin') {
@@ -2545,11 +2669,13 @@
         p = pops[i]; var a = Math.min(1, p.a * 8) * Math.max(0, 1 - p.a / 1.5);
         txt(p.t, W / 2 + p.x - cam.x, CY + p.y - cam.y, p.big ? 17 : 13, a, p.t.indexOf('SIYIR') === 0 ? (p.big ? 'rgb(' + OR + ')' : F) : 'rgb(' + BL + ')', 3, p.big ? 400 : 300);
       }
-      // kombo
-      if (combo > 1 && !dead) {
+      // kombo: belirirken ve kalkarken yumuşakça solar
+      var cOn = combo > 1 && !dead; if (cOn) { comboShow = combo; comboBar = comboT / 4.5; }
+      comboA += ((cOn ? 1 : 0) - comboA) * .06; if (comboA < .01) comboA = 0;
+      if (comboA > 0) {
         var bx0 = W * .06, by0 = H * .085 + 20;
-        txt('×' + combo, bx0 + 16, by0, 26, 1, 'rgb(' + OR + ')', 0, 200);
-        cx.fillStyle = rgba(OR, .8); cx.fillRect(bx0, by0 + 20, 34 * Math.max(0, comboT / 4.5), 2);
+        txt('×' + comboShow, bx0 + 16, by0, 26, comboA, 'rgb(' + OR + ')', 0, 200);
+        cx.fillStyle = rgba(OR, .8 * comboA); cx.fillRect(bx0, by0 + 20, 34 * Math.max(0, comboBar), 2);
       }
       // sektör başlığı
       // öğretici ipucu
@@ -2596,6 +2722,8 @@
         if (sl > 1.5) { cx.lineWidth = st.s * .8; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - P.vx / sp * sl, y - P.vy / sp * sl); cx.stroke(); }
         else cx.fillRect(x, y, st.s, st.s);
       }
+      var W0 = W, H0 = H;
+      if (devOn) { W = W0 / dv.z; H = H0 / dv.z; CY = H * 0.46; cx.save(); cx.scale(dv.z, dv.z); }   // dev kamerası: dünya ölçeklenir (kırpma sınırları da genişler)
       if (race) drawWorld(CY, ts / 1000);                                        // kenarlar, ödüller, engeller
       // egzoz kıvılcımları + RCS gazı
       for (i = 0; i < parts.length; i++) {
@@ -2615,10 +2743,14 @@
       }
       cx.globalAlpha = 1; if (!dead || (dead === 2 && boomT < 0)) ship(ax, ay, ts);
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
+      if (devOn) {                                                                // geminin yerini işaretle
+        cx.globalAlpha = .8; cx.strokeStyle = 'rgb(' + OR + ')'; cx.lineWidth = 2 / dv.z; cx.beginPath(); cx.arc(ax, ay, S * .07, 0, 6.2832); cx.stroke();
+        cx.restore(); W = W0; H = H0; CY = H * 0.46;
+      }
       if (race) drawOverlay(CY, ts / 1000);
       if (race) dither();                                                        // gradyan bantlaşmasını (piksel piksel renk basamakları) dağıtır
       // joystick (dokunulan yerde belirir)
-      var ga = dead ? 0 : Math.max(jA, jUsed ? 0 : .22);
+      var ga = dead ? 0 : Math.max(jA, (jUsed || race) ? 0 : .22);   // kaçışta silik ipucu yok: yalnızca dokununca görünür
       if (ga > .01) {
         cx.lineWidth = 1.5; cx.strokeStyle = F; cx.fillStyle = F;
         cx.globalAlpha = .3 * ga; cx.beginPath(); cx.arc(jbx, jby, jr, 0, 6.2832); cx.stroke();
@@ -2629,7 +2761,7 @@
         cx.globalAlpha = .9 * ga; cx.fillStyle = kg; cx.beginPath(); cx.arc(jbx + jv.x * jr * .62, jby + jv.y * jr * .62, jr * .4, 0, 6.2832); cx.fill();
       }
       // JET düğmesi (dokunulan yerde belirir, basılınca dolar + dalga)
-      var pr = (jetId !== null || keys[' ']) && !lock && en > 0, ba = dead ? 0 : Math.max(bA, bUsed ? 0 : .22), low = lock || en < .2, bsx = bbx, bsy = bby;
+      var pr = (jetId !== null || keys[' ']) && !lock && en > 0, ba = dead ? 0 : Math.max(bA, (bUsed || race) ? 0 : .22), low = lock || en < .2, bsx = bbx, bsy = bby;
       if (ba > .01) {
         cx.lineWidth = 1.5; cx.strokeStyle = F; cx.fillStyle = F;
         if (pulse > .01) { cx.globalAlpha = .55 * pulse; cx.beginPath(); cx.arc(bsx, bsy, br * (1.05 + .6 * (1 - pulse)), 0, 6.2832); cx.stroke(); }
@@ -2652,7 +2784,7 @@
       if (!on) return;
       raf = requestAnimationFrame(frame);
       var dt = Math.min(0.05, (ts - last) / 1000 || 0.016); last = ts;
-      if (mode === 1 || mode === 3) { step(dt); draw(ts); Music.thrust(th); } else { Music.thrust(0); if (introOn) drawIntro(ts, dt); }
+      if (mode === 1 || mode === 3) { if (devOn) { devStep(dt); draw(ts); Music.thrust(0); } else { step(dt); draw(ts); Music.thrust(th); } } else { Music.thrust(0); if (introOn) drawIntro(ts, dt); }
     }
     return { open: open };
   })();
