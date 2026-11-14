@@ -298,7 +298,8 @@
   #sphud .r { display: flex; align-items: baseline; gap: 7px; }
   #spv { font-size: 30px; font-weight: 200; letter-spacing: -.01em; line-height: 1; font-variant-numeric: tabular-nums; }
   #spl { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
-  #spen { transition: opacity .5s ease; margin-top: 9px; width: 72px; height: 3px; background: rgba(244,242,238,.16); border-radius: 3px; overflow: hidden; }
+  #spen { position: relative; transition: opacity .5s ease; margin-top: 9px; width: 72px; height: 3px; background: rgba(244,242,238,.16); border-radius: 3px; overflow: hidden; }
+  #spen b { position: absolute; top: 0; height: 100%; left: 0; width: 0; background: #8cc2ff; opacity: 0; pointer-events: none; }
   #spen i { display: block; height: 100%; width: 100%; background: var(--fg); transform-origin: left; transition: background .25s ease; }
   #space.play::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 190px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
   /* ilk giriş rehberi: sol / sağ yarıda ne yapılacağı */
@@ -1290,6 +1291,16 @@
   function sfxCrash() { if (!AC) return; breath(1.4, 0.16, 2600, 90, 0); bell(semi(-24), 0.2, 0, 0, 2.2); bell(semi(-17), 0.12, 0, 0.04, 1.6); }
   function sfxLaser(pan) { if (!AC) return; bell(semi(24), 0.04, pan || 0, 0, 0.5); }
   function sfxWarn() { if (!AC) return; bell(semi(-12), 0.07, 0, 0, 0.35); }
+  // tam tur: alçak 'TOK' vuruşu + kısa tık + yükselen çan arpejı (ardışık turlarda perde yükselir)
+  function sfxSpin(k) {
+    if (!AC) return;
+    var t0 = AC.currentTime + 0.005, o = AC.createOscillator(), g = voiceOut(0), s = Math.min(4, k) * 2;
+    o.type = 'sine'; o.frequency.setValueAtTime(200, t0); o.frequency.exponentialRampToValueAtTime(48, t0 + 0.15);
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(0.2, t0 + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.24);
+    o.connect(g); o.start(t0); o.stop(t0 + 0.28);
+    breath(0.09, 0.05, 3600, 900, 0);
+    bell(semi(12 + s), 0.1, -0.15, 0.03, 1.0); bell(semi(19 + s), 0.08, 0.15, 0.09, 1.2); bell(semi(24 + s), 0.05, 0, 0.16, 1.5);
+  }
 
   var thr = null;   // sürekli jet sesi (filtrelenmiş gürültü)
   function thrustInit() {
@@ -1429,6 +1440,8 @@
     var el = $('space'), cv2 = $('spcv'), cx = cv2.getContext('2d'), elV = $('spv'), elEn = $('spen');
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
+    var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
+    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [];
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var hd = 0, lz = null, lzSp = [], lzLast = 0, nowT = 0;   // lazer ölümü durumu, lazer-kaya kıvılcım/kırıntı havuzu, son çizim zamanı
@@ -1530,7 +1543,7 @@
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = [];
       pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
-      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
+      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
       bOn = false; devOn = false; devJump = false; graceT = 0; devPts = {}; el.classList.remove('devcam'); comboA = 0; oy = 0; wait = false; obs = []; pick = []; pops = []; gt = 0; dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; combo = 0; comboT = 0; bonus = 0; sector = 0; near0 = 0; newRec = false;
@@ -1905,6 +1918,13 @@
 
     /* --- fizik --- */
     function wrap(a) { return Math.atan2(Math.sin(a), Math.cos(a)); }
+    // kazanılan (kendiliğinden dolmayan) enerji: çubukta o kısım kısa süre mavi parlar
+    function gainEn(v) {
+      var b = en; en = Math.min(1, en + v);
+      if (en <= b) return;
+      if (enGainT <= 0) enFrom = b;
+      enTo = en; enGainT = 1.1;
+    }
     // ana motor: dar, vakumda dağılmayan ince kıvılcım izi (k = itiş gücü)
     function spawn(k) {
       k = k || 1;
@@ -1959,6 +1979,27 @@
         alpha += (wrap(rt - P.h) * 20 - P.w * 8) * rw;
       }
       P.w += alpha * dt; P.h += P.w * dt; hv = alpha;
+      // TAM TUR: işaretli dönüş birikir; 360° dolunca tok bir efekt + az enerji. Duraksayınca birikim silinir.
+      if (race && !dead && !pre) {
+        if (righting <= 0) spinAcc += P.w * dt;
+        if (Math.abs(P.w) < 0.35) spinIdle += dt; else spinIdle = 0;
+        if (spinIdle > 1.2) spinAcc = 0;
+        spinChainT = Math.max(0, spinChainT - dt); if (spinChainT <= 0) spinChain = 0;
+        if (Math.abs(spinAcc) >= 6.2832) {
+          spinAcc -= (spinAcc > 0 ? 6.2832 : -6.2832);
+          spinChain++; spinChainT = 3.2;
+          gainEn(.05); if (lock && en > .25) lock = false;
+          flash = Math.max(flash, .35); shake = Math.max(shake, .22);
+          spinFx.push({ t0: performance.now() });
+          for (var sj = 0; sj < 18; sj++) {            // halka şeklinde kıvılcım patlaması
+            var sa = sj / 18 * 6.2832 + Math.random() * .2, ss = S * (.34 + Math.random() * .22);
+            parts.push({ x: P.x, y: P.y, vx: P.vx * .6 + Math.cos(sa) * ss, vy: P.vy * .6 + Math.sin(sa) * ss, l: 1, d: .32 + Math.random() * .22, r: S * .0022, c: 8 });
+          }
+          if (parts.length > 220) parts.splice(0, parts.length - 220);
+          pop(spinChain > 1 ? 'TAM TUR ×' + spinChain : 'TAM TUR', P.x, P.y - S * .1, spinChain > 2);
+          sfxSpin(spinChain - 1); vib([14, 22, 10]);
+        }
+      } else if (!race) spinAcc = 0;
       var want = ((jetId !== null || keys[' ']) && !lock && en > 0) ? 1 : 0;
       th += (want - th) * (1 - Math.exp(-dt / (want ? 0.08 : 0.18)));
       if (th > 0.3 && !jetT) jetT = performance.now();
@@ -2023,7 +2064,13 @@
         if (tl3) tutL += dt; if (tr3) tutR += dt;
         if (tutL > 3) tutHide(0); if (tutR > 3) tutHide(1);
       }
-      elEn.style.opacity = en > 0.995 ? .45 : 1;
+      if (!elGain) { elGain = document.createElement('b'); elEn.appendChild(elGain); }
+      if (enGainT > 0) {
+        enGainT = Math.max(0, enGainT - dt);
+        var gl = Math.min(enFrom, en), gw = Math.max(0, Math.min(enTo, en) - gl);
+        elGain.style.left = (gl * 100) + '%'; elGain.style.width = (gw * 100) + '%'; elGain.style.opacity = Math.min(1, enGainT / .6);
+      } else if (elGain.style.opacity !== '0') elGain.style.opacity = 0;
+      elEn.style.opacity = (en > 0.995 && enGainT <= 0) ? .45 : 1;
       var es = en.toFixed(2);
       if (es !== lastE) {
         lastE = es; var bar = elEn.firstElementChild;
@@ -2314,7 +2361,7 @@
         if (!o.near && !o.fix && clr > 0 && clr < S * .032 && sp > S * .14 && !(o.t === 'beam')) {
           o.near = true; combo++; comboT = 4.5;
           var gain = 5 * combo; bonus += gain; near0 = gain;
-          en = Math.min(1, en + .07 + Math.min(.08, .02 * (combo - 1))); if (lock && en > .25) lock = false;   // sıyırma enerji verir: .07, kombo arttıkça en çok .15
+          gainEn(.07 + Math.min(.08, .02 * (combo - 1))); if (lock && en > .25) lock = false;   // sıyırma enerji verir: .07, kombo arttıkça en çok .15
           pop('SIYIRDIN ×' + combo, P.x, P.y - S * .08, combo >= 4); sfxNear(combo); vib(9); flash = Math.max(flash, .25);
         }
       }
@@ -2325,7 +2372,7 @@
         if (p.t === 'cell') {
           if (dd < S * .2) { var k2 = Math.max(1, dd), pull = S * .9 * dt * (1 - dd / (S * .2)); p.x += (P.x - p.x) / k2 * pull; p.y += (P.y - p.y) / k2 * pull; dd = Math.hypot(p.x - P.x, p.y - P.y); }
           if (dd < S * .055) {
-            p.got = true; en = Math.min(1, en + .22); if (lock && en > .25) lock = false; comboT = Math.max(comboT, 3); bonus += 3 * Math.max(1, combo);
+            p.got = true; gainEn(.22); if (lock && en > .25) lock = false; comboT = Math.max(comboT, 3); bonus += 3 * Math.max(1, combo);
             pop('+ENERJİ', p.x, p.y - S * .05); sfxPick(combo); vib(6);
           }
         } else if (dd < p.r * .8) {
@@ -2338,7 +2385,7 @@
           boostRem = S * (.10 + .34 * need);                                              // toplam ek hız: 0.10S (rahat) … 0.44S (kritik)
           boostCap = S * (.36 + .30 * need);                                              // güçlendirme sonrası tavan: 0.36S … 0.66S (asla 0.9S'ye fırlatmaz)
           if (bv > S * .08 && Math.cos(P.h) * P.vx / bv + Math.sin(P.h) * P.vy / bv < .7) righting = .5;   // burun gidiş yönünden sapmışsa yumuşakça toparla
-          en = Math.min(1, en + .3); lock = false; bonus += 10; shake = Math.max(shake, .35); flash = Math.max(flash, .6);
+          gainEn(.3); lock = false; bonus += 10; shake = Math.max(shake, .35); flash = Math.max(flash, .6);
           pop('HIZLANDIN', P.x, P.y - S * .1, true); sfxBoost(); vib([10, 20, 10]);
         }
       }
@@ -3119,6 +3166,17 @@
       }
       cx.globalAlpha = 1; if (dead === 1 && lz && lz.cv) lzDraw(ax, ay); else if (!dead || (dead === 2 && boomT < 0)) ship(ax, ay, ts);
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
+      if (spinFx.length) {                                                        // tam tur halkaları
+        cx.save(); cx.globalCompositeOperation = 'lighter'; cx.lineCap = 'round';
+        for (i = spinFx.length - 1; i >= 0; i--) {
+          var sk = (performance.now() - spinFx[i].t0) / 550; if (sk >= 1) { spinFx.splice(i, 1); continue; }
+          var se = 1 - Math.pow(1 - sk, 3), sx2 = W / 2 + P.x - cam.x, sy2 = CY + P.y - cam.y, sr = S * .026;
+          cx.strokeStyle = 'rgb(150,215,255)'; cx.globalAlpha = .6 * (1 - sk); cx.lineWidth = 1.6 * (1 - sk) + .4;
+          cx.beginPath(); cx.arc(sx2, sy2, sr * (1.2 + 3.4 * se), 0, 6.2832); cx.stroke();
+          if (sk < .25) { cx.globalAlpha = .35 * (1 - sk / .25); cx.fillStyle = 'rgb(255,245,225)'; cx.beginPath(); cx.arc(sx2, sy2, sr * 2.4, 0, 6.2832); cx.fill(); }
+        }
+        cx.restore();
+      }
       if (devOn) {                                                                // geminin yerini işaretle
         cx.globalAlpha = .8; cx.strokeStyle = 'rgb(' + OR + ')'; cx.lineWidth = 2 / dv.z; cx.beginPath(); cx.arc(ax, ay, S * .07, 0, 6.2832); cx.stroke();
         cx.restore(); W = W0; H = H0; CY = H * 0.46;
