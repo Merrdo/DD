@@ -677,7 +677,7 @@
   ];
   var POW = [
     { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
-    { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:12, f:'+#% itiş gücü', d:'Daha güçlü motor: daha hızlı kalkar, ters yöne itişle çok daha çabuk durursun. Alev de gücüne göre büyür. Güçlü itiş yakıtı da aynı oranda hızlı yakar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' }
+    { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:9, f:'+#% yardım gücü', d:'Motora kısa süreli yardım: ilk kalkışta ve hızlıyken ters yöne itişle yapılan ani frenlerde devreye girer. Hız oturunca ya da normal uçuşta çalışmaz. O anlarda alev de büyür, yakıt biraz fazla yanar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' }
   ];
 
   /* ===== Kalıcı veri ===== */
@@ -694,7 +694,7 @@
 
   /* Oyundaki jet alevinin aynısı: th = itiş (0-1). Alevi değiştiren güçlendirmeler ileride buradan ayarlanır. */
   function flame(th) {
-    var tfs = 1 + .5 * .12 * ((D && D.lv && D.lv.itis) | 0), y0 = 2.08, L = .3 + 2.6 * th * tfs, w0 = (.17 + .1 * th) * (1 + .4 * (tfs - 1)), w1 = w0 * .45, Lc = L * .55, k, d = '';
+    var tfs = 1 + .5 * .09 * ((D && D.lv && D.lv.itis) | 0), y0 = 2.08, L = .3 + 2.6 * th * tfs, w0 = (.17 + .1 * th) * (1 + .4 * (tfs - 1)), w1 = w0 * .45, Lc = L * .55, k, d = '';
     for (k = 1; k <= 3; k++) if (th > .4) d += '<ellipse cx="0" cy="' + (y0 + L * .2 * k) + '" rx="' + (w0 * .38 * (1 - .2 * k)) + '" ry=".1" fill="#fff" fill-opacity="' + (.8 * (th - .3) * (1 - .22 * k)) + '"/>';
     return '<defs><radialGradient id="s-gg" cx="0" cy="' + (y0 + .2) + '" r=".9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,190,130)" stop-opacity="' + .3 * th + '"/><stop offset="1" stop-color="rgb(255,140,70)" stop-opacity="0"/></radialGradient>' +
       '<linearGradient id="s-go" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + L) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,246,232)" stop-opacity=".95"/><stop offset=".3" stop-color="rgb(255,200,140)" stop-opacity=".7"/><stop offset="1" stop-color="rgb(255,120,60)" stop-opacity="0"/></linearGradient>' +
@@ -1857,7 +1857,7 @@
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
-    var tfk = 1, pvOn = false;
+    var tfk = 1, asK = 0, pvOn = false;
     function pvStart(id) {                                      // kostüm önizleme: serbest uçuş, süre sınırı yok
       if (!window.DDShop) return; pvOn = true; DDShop.pv = id; race = false;
       $('sppv').firstElementChild.innerHTML = 'Önizleme · <b>' + DDShop.name(id) + '</b>';
@@ -2589,7 +2589,16 @@
       if (th > 0.3 && !jetT) jetT = performance.now();
       if (want && !wasOn && th < 0.12) ign = 1; wasOn = want; ign = Math.max(0, ign - dt / 0.24);
       heat += (th - heat) * (1 - Math.exp(-dt / (th > heat ? 0.15 : 0.9)));
-      tfk = 1 + .12 * (window.DDShop ? DDShop.lv('itis') : 0);       // İniş-kalkış desteği: itiş gücü çarpanı
+      // İniş-kalkış desteği: yalnızca (1) ilk kalkışta, (2) hızlıyken ters yöne itişle frenlerken kısa süreli yardım; yumuşak girip çıkar
+      var lvI = window.DDShop ? DDShop.lv('itis') : 0, asT = 0;
+      if (lvI > 0 && th > .05) {
+        var sp0 = Math.hypot(P.vx, P.vy), hx0 = Math.cos(P.h), hy0 = Math.sin(P.h),
+            tkK = Math.max(0, 1 - sp0 / (S * .12)), bkK = 0;
+        if (sp0 > S * .12) bkK = Math.max(0, Math.min(1, (-(hx0 * P.vx + hy0 * P.vy) / sp0 - .25) / .5)) * Math.min(1, (sp0 - S * .12) / (S * .18));
+        asT = Math.max(tkK, bkK);
+      }
+      asK += (asT - asK) * (1 - Math.exp(-dt / (asT > asK ? .12 : .35)));
+      tfk = 1 + .09 * lvI * asK;
       var A = S * 0.11 * th * tfk, dm = Math.exp(-dt * 0.05);
       // HIZLANMA güçlendirmesi: ani fırlatma yok. Kalan itiş (boostRem) ~0.6 sn'de yumuşakça eklenir, gemi bu sırada yönlendirilebilir.
       // İtiş yönü: burun ileri bakıyorsa burun, değilse gidiş yönü. Hız boostCap'i aşmaz (yüksek hızda güçlendirme neredeyse etkisizdir).
