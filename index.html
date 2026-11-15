@@ -729,14 +729,15 @@
   #shop .k-x { flex:none; width:36px; height:36px; border-radius:50%; background:#232321; display:flex; align-items:center; justify-content:center; transition:background .2s ease; }
   #shop .k-x:active { background:#333330; }
   #shop .k-x svg { width:14px; height:14px; fill:none; stroke:#f4f2ee; stroke-width:1.7; stroke-linecap:round; }
-  #shop .k-ls { margin-top:16px; display:flex; flex-direction:column; gap:8px; }
-  #shop .k-en { width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:20px; background:#1a1a19; border:1.5px solid #1a1a19; transition:border-color .2s ease, background .2s ease; }
+  #shop .k-ls { margin:16px -20px 0; padding:2px 20px; display:flex; flex-direction:row; gap:10px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; touch-action:pan-x; scrollbar-width:none; }
+  #shop .k-ls::-webkit-scrollbar { display:none; }
+  #shop .k-ls::after { content:''; flex:none; width:10px; }
+  #shop .k-en { flex:none; width:128px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:12px; padding:14px; border-radius:20px; background:#1a1a19; border:1.5px solid #1a1a19; text-align:left; scroll-snap-align:start; transition:border-color .2s ease, background .2s ease; }
   #shop .k-en:active { background:#222220; }
   #shop .k-en.sel { border-color:#8cc2ff; }
-  #shop .k-ck { flex:none; width:20px; height:20px; border-radius:50%; border:1.5px solid #55554f; }
-  #shop .k-en.sel .k-ck { border-color:#8cc2ff; background:#8cc2ff; box-shadow:inset 0 0 0 4.5px #1a1a19; }
-  #shop .k-ni { flex:1; min-width:0; }
-  #shop .k-n { display:block; font-size:16px; font-weight:300; letter-spacing:.03em; }
+  #shop .k-ck { display:none; }
+  #shop .k-ni { flex:1; min-width:0; width:100%; }
+  #shop .k-n { display:block; font-size:14.5px; line-height:1.25; font-weight:300; letter-spacing:.03em; }
   #shop .k-g { display:block; margin-top:3px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#8a8884; }
   #shop .k-s { flex:none; display:flex; align-items:center; gap:5px; padding:6px 11px; border-radius:999px; background:#262624; font-size:11.5px; letter-spacing:.05em; color:#b9b7b2; font-variant-numeric:tabular-nums; }
   #shop .k-s.eq { background:#16222f; color:#8cc2ff; }
@@ -938,7 +939,7 @@
     D.owned.klasik = 1; if (!cfind(D.eq) || !D.owned[D.eq]) D.eq = 'klasik';
     D.fxo.kor = 1; fxFix();
     D.eo.jet = 1; if (!efind(D.en) || !eown(efind(D.en))) D.en = ENG[0].id;
-    D.wo = D.wo || {}; D.wo.std = 1; if (!D.wn || D.wn !== 'std') D.wn = 'std';
+    D.wo = D.wo || {}; D.wo.std = 1; (function () { var w = kfind(kpart('kanat'), D.wn); if (!w || !kown(kpart('kanat'), w)) D.wn = 'std'; })();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
 
@@ -1036,12 +1037,21 @@
     h += '</g><ellipse cx="0" cy="' + (y0 + .04) + '" rx=".34" ry=".2" fill="url(#' + ID + 't)" opacity=".8"/></g>';          // lülede sıcak ışıma
     return h;
   }
-  var WA0 = 'M-.4 -1.3L-.7 -.45L-1.25 1.72Q-1.3 1.95 -1.18 1.95L-.4 1.95Z', WB0 = 'M.4 -1.3L.7 -.45L1.25 1.72Q1.3 1.95 1.18 1.95L.4 1.95Z';   // standart kanat yolları (sol / sağ)
+  /* Kanat şekli: sağ kanadın komut listesi ['M'|'L'|'Q', koordinatlar...]; sol kanat x'in işareti çevrilerek çıkar.
+     Hem dükkanda (SVG) hem oyunda (canvas) aynı veri kullanılır. İç kenar x=.4'te gövdeye oturur, art kenar y=1.95'te kalır (flap panelleri oraya açılır).
+     Şekiller yalnızca görünümdür: çarpışma ölçüsü değişmez. */
+  var WSTD = [['M', .4, -1.3], ['L', .7, -.45], ['L', 1.25, 1.72], ['Q', 1.3, 1.95, 1.18, 1.95], ['L', .4, 1.95]];
+  function wsvg(cm, sd) {
+    var d = '', i, j, c;
+    for (i = 0; i < cm.length; i++) { c = cm[i]; d += c[0]; for (j = 1; j < c.length; j += 2) d += (j > 1 ? ' ' : '') + +(sd * c[j]).toFixed(3) + ' ' + c[j + 1]; }
+    return d + 'Z';
+  }
+  function curW() { var it = (typeof D !== 'undefined' && D && D.wn) ? kfind(kpart('kanat'), D.wn) : null; return (it && it.sh) || WSTD; }
   function ship(p, big, fx, vb, nf) {
     var st = p.s ? ' stroke="' + p.s + '" stroke-width=".07" stroke-linejoin="round"' : '';
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flame(.85, fx) : '') +
-      '<path class="sh-a" d="' + WA0 + '" fill="' + p.a + '"' + st + '/>' +
-      '<path class="sh-b" d="' + WB0 + '" fill="' + p.b + '"' + st + '/>' +
+      '<path class="sh-a" d="' + wsvg(curW(), -1) + '" fill="' + p.a + '"' + st + '/>' +
+      '<path class="sh-b" d="' + wsvg(curW(), 1) + '" fill="' + p.b + '"' + st + '/>' +
       '<path class="sh-c" d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
       '<path class="sh-w" d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
       '<rect class="sh-n" x="-.22" y="1.98" width=".44" height=".2" rx=".08" fill="' + p.n + '"/>' +
@@ -1121,10 +1131,20 @@
        dots = parçanın dokunma noktaları [x, y] (mekik "açılmış" görünümdeyken parçanın üzerine gelir; kanat gibi çift parçalar için iki nokta)
      Çizim alanı 360×520; mekik ortada (x 180). Yalnızca mekanik olarak değişen parçalar burada yer alır. */
   var KW = 360, KH = 520, KZ = 1.8, KSY = 44;
-  var WNG = [ { id:'std', n:'Standart Kanat', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' } ];
+  var WNG = [
+    { id:'std',    n:'Standart Kanat', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' },
+    { id:'delta',  n:'Delta Kanat',    price:200, d:'Geniş, düz üçgen kanat. Gövdeden dışa doğru açılan sert bir siluet verir.',
+      sh:[['M', .4, -1], ['L', .8, .2], ['L', 1.42, 1.95], ['L', .4, 1.95]] },
+    { id:'supurme', n:'Süpürme Kanat', price:300, d:'Geriye süpürülmüş ince kanat; uçları arka kenarın ötesine uzanır.',
+      sh:[['M', .4, -.9], ['L', .62, -.2], ['L', 1.35, 1.7], ['L', 1.5, 2.2], ['L', 1.2, 1.95], ['L', .4, 1.95]] },
+    { id:'kademe', n:'Kademeli Kanat', price:300, d:'İki basamaklı, köşeli kanat. Teknik ve sert görünümlüdür.',
+      sh:[['M', .4, -1.2], ['L', .7, -.5], ['L', .7, .55], ['L', 1.4, .95], ['L', 1.4, 1.95], ['L', .4, 1.95]] },
+    { id:'hilal',  n:'Hilal Kanat',    price:400, d:'İçe bükülen zarif bir kenara sahip, hilal gibi kıvrımlı kanat.',
+      sh:[['M', .4, -1.4], ['Q', .7, .5, 1.52, 1.95], ['L', .4, 1.95]] }
+  ];
   var KPART = [
     { id:'motor', t:'Motor', list:ENG, cur:'en', own:'eo', fr:[150, 340, 60, 70], z:2.1, dots:[[180, 378]] },
-    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[130, 230, 100, 100], z:1.3, dots:[[251, 284], [109, 284]] }
+    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[130, 230, 100, 100], z:1.15, dots:[[251, 284], [109, 284]] }
   ];
   function kpart(id) { for (var i = 0; i < KPART.length; i++) if (KPART[i].id === id) return KPART[i]; return null; }
   function kfind(p, id) { for (var i = 0; i < p.list.length; i++) if (p.list[i].id === id) return p.list[i]; return null; }
@@ -1165,19 +1185,20 @@
     kPanel(); kPreview(); kZoom();
   }
   /* Canlı önizleme: panelde seçili (henüz kuşanılmamış) seçenek gemide anında görünür; panel kapanınca kuşanılan seçeneğe dönülür.
-     Kanat seçeneği şekil değiştiriyorsa wa / wb alanlarına (sol / sağ kanat yolu, ship() ile aynı koordinat sistemi) yazılır; yoksa standart kanat çizilir. */
+     Kanat seçeneği şekil değiştiriyorsa sh alanındaki (sağ kanat komutları, WSTD ile aynı biçim) şekil çizilir; yoksa standart kanat. */
   function kPreview() {
     var km = q('.s-km'), a = km && km.querySelector('.sh-a'), b = km && km.querySelector('.sh-b'), p = kpart('kanat'), it, key;
     if (!a || !b || !p) return;
     it = S.kp === 'kanat' ? (kfind(p, S.ke) || kcur(p)) : kcur(p);
     key = it.id; if (km.getAttribute('data-wv') === key) return;
     km.setAttribute('data-wv', key);
-    a.setAttribute('d', it.wa || WA0); b.setAttribute('d', it.wb || WB0);
+    a.setAttribute('d', wsvg(it.sh || WSTD, -1)); b.setAttribute('d', wsvg(it.sh || WSTD, 1));
     [a, b].forEach(function (e) { e.style.animation = 'none'; void e.getBBox(); e.style.animation = 'k-sw .45s cubic-bezier(.2,.7,.2,1)'; });
   }
   function kPanel() {                                           // yakınlaşınca açılan panel: seçili parçanın seçenekleri
     var pn = q('.k-pn'), p = kpart(S.kp), e, own, eq, a, h;
     if (!p) return;                                             // kapanırken içerik yerinde kalır, panel aşağı kayar
+    var old = pn.querySelector('.k-ls'), sx = old ? old.scrollLeft : 0, sl;
     e = kfind(p, S.ke) || kcur(p); S.ke = e.id; own = kown(p, e); eq = D[p.cur] === e.id;
     h = '<div class="k-ph"><div><small>' + p.t + '</small><b>' + e.n + '</b></div><button class="k-x" data-k="kx" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="k-ls">';
     p.list.forEach(function (g) {
@@ -1186,6 +1207,7 @@
            '<span class="k-s' + (on ? ' eq' : '') + '">' + (on ? 'Kuşanıldı' : o ? 'Sahipsin' : STAR + fmt(g.price)) + '</span></button>';
     });
     pn.innerHTML = h + '</div><p class="k-ds">' + e.d + '</p><button class="s-ab" data-k="kact"></button>';
+    sl = pn.querySelector('.k-ls'); if (sl) { sl.scrollLeft = sx; if (!old) { var se = sl.querySelector('.sel'); if (se) sl.scrollLeft = Math.max(0, se.offsetLeft - 20); } }
     a = pn.querySelector('[data-k=kact]');
     if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', e.price, 'Satın al');
   }
@@ -1396,6 +1418,7 @@
     costume: function () { return D.eq; },
     motor: function () { return D.en; },
     kanat: function () { return D.wn; },
+    wing: function () { return curW(); },
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
     name: function (id) { if (id && id.indexOf('fx:') === 0) { var f = ffind(id.slice(3)); return f ? f.n : ''; } var c = cfind(id); return c ? c.n : ''; },
     equip: function (id) { if (cfind(id) && D.owned[id]) { D.eq = id; save(); } },
@@ -3759,8 +3782,13 @@
       cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
     }
     function wingP(s) {
-      cx.beginPath(); cx.moveTo(s * .4, -1.3); cx.lineTo(s * .7, -.45); cx.lineTo(s * 1.25, 1.72);
-      cx.quadraticCurveTo(s * 1.3, 1.95, s * 1.18, 1.95); cx.lineTo(s * .4, 1.95); cx.closePath();
+      var cm = (window.DDShop && DDShop.wing && DDShop.wing()) || [['M', .4, -1.3], ['L', .7, -.45], ['L', 1.25, 1.72], ['Q', 1.3, 1.95, 1.18, 1.95], ['L', .4, 1.95]], i, c;
+      cx.beginPath();
+      for (i = 0; i < cm.length; i++) {
+        c = cm[i];
+        if (c[0] === 'M') cx.moveTo(s * c[1], c[2]); else if (c[0] === 'L') cx.lineTo(s * c[1], c[2]); else cx.quadraticCurveTo(s * c[1], c[2], s * c[3], c[4]);
+      }
+      cx.closePath();
     }
     /* Efekt alevi (Efektler sekmesindeki tasarımlar): renkler ve özel katmanlar DDShop.fx() verisinden gelir.
        Orijinal ('Kor') efekti bu yolu kullanmaz; aşağıdaki özgün çizim aynen korunur. */
