@@ -677,7 +677,7 @@
   #shop .k-w { transform-box:view-box; transform-origin:0 0; transition:transform .95s cubic-bezier(.22,.61,.36,1); }
   #shop .k-p { cursor:pointer; outline:none; }
   #shop .k-hit { fill:#000; opacity:0; pointer-events:all; }
-  #shop .k-fr { fill:none; stroke:#8cc2ff; stroke-width:2; vector-effect:non-scaling-stroke; pointer-events:none; }
+  #shop .k-fr { fill:none; stroke:#8cc2ff; stroke-width:2; vector-effect:non-scaling-stroke; pointer-events:none; opacity:0; }
   #shop .k-bar { fill:none; stroke:#8cc2ff; stroke-width:3; stroke-linecap:butt; stroke-linejoin:miter; stroke-miterlimit:10; pointer-events:none; }
   #shop .k-hd { fill:#8cc2ff; pointer-events:none; }
   #shop .k-cd { fill:#161615; stroke:#2b2b29; stroke-width:1; transition:fill .2s ease, stroke .2s ease; }
@@ -695,12 +695,26 @@
   #shop .k-lb { opacity:0; transition:opacity .5s ease; }
   #shop .s-km.zm .k-ui { opacity:0; pointer-events:none; }
   #shop .k-fr { transition:opacity .4s ease; }
-  #shop .s-km.zm .k-p:not(.on) .k-fr { opacity:0; }
+  #shop .s-km.zm .k-p.on .k-fr { opacity:1; transition-delay:.5s; }
   #shop .s-km.zm .k-p:not(.on), #shop .s-km.zm .k-p:not(.on) .k-hit { pointer-events:none; }
   #shop .s-km.zm .k-p.on .k-lb { opacity:1; transition-delay:.5s; }
-  #shop .s-km.ka .k-cg { animation:k-up .55s cubic-bezier(.2,.7,.2,1) .15s both; }
-  #shop .s-km.ka .k-bar { stroke-dasharray:1; stroke-dashoffset:1; animation:k-dr .6s cubic-bezier(.3,.6,.3,1) .45s forwards; }
-  #shop .s-km.ka .k-hd, #shop .s-km.ka .k-fr { animation:k-fi .3s ease 1s both; }
+  /* açılmış görünüm: kanatlar yanlara, motor aşağı kayar; seçilen parça dışındakiler solar */
+  #shop .k-ship .sh-a, #shop .k-ship .sh-b, #shop .k-ship .sh-n { transition:transform .85s cubic-bezier(.22,.61,.36,1), opacity .5s ease; }
+  #shop .k-ship .sh-c, #shop .k-ship .sh-w { transition:opacity .5s ease; }
+  #shop .s-km.kx .k-ship .sh-a { transform:translate(-.22px,.04px); }
+  #shop .s-km.kx .k-ship .sh-b { transform:translate(.22px,.04px); }
+  #shop .s-km.kx .k-ship .sh-n { transform:translate(0,.32px); }
+  #shop .s-km.kz-kanat .k-ship .sh-c, #shop .s-km.kz-kanat .k-ship .sh-w, #shop .s-km.kz-kanat .k-ship .sh-n { opacity:.14; }
+  #shop .s-km.kz-motor .k-ship .sh-a, #shop .s-km.kz-motor .k-ship .sh-b, #shop .s-km.kz-motor .k-ship .sh-w { opacity:.14; }
+  #shop .s-km.kz-motor .k-ship .sh-c { opacity:.3; }
+  #shop .k-fr, #shop .k-lb { display:none; }
+  #shop .k-dt { fill:#8cc2ff; stroke:#000; stroke-width:2; pointer-events:none; }
+  #shop .k-pl { fill:none; stroke:#8cc2ff; stroke-width:1.5; pointer-events:none; transform-box:fill-box; transform-origin:center; animation:k-pl 2.2s ease-out infinite; }
+  @keyframes k-pl { 0% { transform:scale(1); opacity:.75; } 100% { transform:scale(3.4); opacity:0; } }
+  #shop .s-km:not(.kx) .k-ui, #shop .s-km:not(.kx) .k-hn { opacity:0; }
+  #shop .s-km.kx .k-ui, #shop .s-km.kx .k-hn { transition-delay:.7s; }
+  #shop .s-km.zm .k-hn { opacity:0; transition-delay:0s; }
+  #shop .k-hn { transition:opacity .4s ease; }
   @keyframes k-up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @keyframes k-dr { to { stroke-dashoffset:0; } }
   @keyframes k-fi { from { opacity:0; } to { opacity:1; } }
@@ -1024,11 +1038,11 @@
   function ship(p, big, fx, vb, nf) {
     var st = p.s ? ' stroke="' + p.s + '" stroke-width=".07" stroke-linejoin="round"' : '';
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flame(.85, fx) : '') +
-      '<path d="M-.4 -1.3L-.7 -.45L-1.25 1.72Q-1.3 1.95 -1.18 1.95L-.4 1.95Z" fill="' + p.a + '"' + st + '/>' +
-      '<path d="M.4 -1.3L.7 -.45L1.25 1.72Q1.3 1.95 1.18 1.95L.4 1.95Z" fill="' + p.b + '"' + st + '/>' +
-      '<path d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
-      '<path d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
-      '<rect x="-.22" y="1.98" width=".44" height=".2" rx=".08" fill="' + p.n + '"/>' +
+      '<path class="sh-a" d="M-.4 -1.3L-.7 -.45L-1.25 1.72Q-1.3 1.95 -1.18 1.95L-.4 1.95Z" fill="' + p.a + '"' + st + '/>' +
+      '<path class="sh-b" d="M.4 -1.3L.7 -.45L1.25 1.72Q1.3 1.95 1.18 1.95L.4 1.95Z" fill="' + p.b + '"' + st + '/>' +
+      '<path class="sh-c" d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
+      '<path class="sh-w" d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
+      '<rect class="sh-n" x="-.22" y="1.98" width=".44" height=".2" rx=".08" fill="' + p.n + '"/>' +
       (big || nf ? '' : '<path d="M-.17 2.2C-.18 2.5 -.08 2.75 0 2.95C.08 2.75 .18 2.5 .17 2.2Z" fill="' + p.f + '" fill-opacity=".85"/>') +
       '</g></svg>';
   }
@@ -1101,15 +1115,14 @@
   /* ===== Parçalar: şematik sayfa =====
      Yeni parça eklemek: önce seçenek listesini yaz (ENG, WNG gibi: id, n, tag, price, d), sonra KPART'a bir satır ekle.
        list/cur/own = seçenek listesi, kuşanılan seçeneğin ve sahip olunanların kayıtlı veri anahtarları
-       fr  = mekik üzerindeki bölgenin çerçevesi [x, y, genişlik, yükseklik]
-       cd  = kartın yeri [x, y, genişlik, yükseklik]
-       bar = çubuğun köşe noktaları (hep dik açıyla bükülür, son nokta ok başının tabanıdır)
+       fr  = yakınlaşırken ortalanan bölge [x, y, genişlik, yükseklik]; z = yakınlaşma oranı
+       dots = parçanın dokunma noktaları [x, y] (mekik "açılmış" görünümdeyken parçanın üzerine gelir; kanat gibi çift parçalar için iki nokta)
      Çizim alanı 360×520; mekik ortada (x 180). Yalnızca mekanik olarak değişen parçalar burada yer alır. */
   var KW = 360, KH = 520, KZ = 1.8, KSY = 44;
   var WNG = [ { id:'std', n:'Standart Kanat', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' } ];
   var KPART = [
-    { id:'motor', t:'Motor', list:ENG, cur:'en', own:'eo', fr:[144, 300, 72, 70], cd:[14, 427, 130, 80], bar:[[144, 467], [180, 467], [180, 384]] },
-    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[206, 240, 42, 58], cd:[216, 80, 130, 80], bar:[[300, 160], [300, 269], [262, 269]] }
+    { id:'motor', t:'Motor', list:ENG, cur:'en', own:'eo', fr:[150, 340, 60, 70], z:2.1, dots:[[180, 378]] },
+    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[130, 230, 100, 100], z:1.3, dots:[[251, 284], [109, 284]] }
   ];
   function kpart(id) { for (var i = 0; i < KPART.length; i++) if (KPART[i].id === id) return KPART[i]; return null; }
   function kfind(p, id) { for (var i = 0; i < p.list.length; i++) if (p.list[i].id === id) return p.list[i]; return null; }
@@ -1121,35 +1134,31 @@
     if (S.kshown !== cp.id) {
       S.kshown = cp.id;
       h = '<svg viewBox="0 0 ' + KW + ' ' + KH + '" role="group" aria-label="Mekik parçaları"><g class="k-w">' +
-        ship(cp.p, 0, null, null, 1).replace('<svg class="s-sv"', '<svg class="k-ship" x="40" y="' + KSY + '" width="280" height="392" overflow="visible"');
-      KPART.forEach(function (p, i) {
-        var b = p.bar, n = b.length, a = b[n - 2], z = b[n - 1], ux = Math.sign(z[0] - a[0]), uy = Math.sign(z[1] - a[1]),
-            d = 'M' + b[0].join(' '), j, c = p.cd, f = p.fr, lw = 18 + p.t.length * 7.6;
-        for (j = 1; j < n; j++) d += 'L' + b[j].join(' ');
-        h += '<g class="k-p" data-part="' + p.id + '" role="button" tabindex="0" aria-label="' + p.t + '">' +
-          '<rect class="k-hit" x="' + (f[0] - 6) + '" y="' + (f[1] - 6) + '" width="' + (f[2] + 12) + '" height="' + (f[3] + 12) + '"/>' +
+        ship(cp.p, 0, null, null, 1).replace('<svg class="s-sv"', '<svg class="k-ship" x="40" y="' + KSY + '" width="280" height="392" overflow="visible"') +
+        '<text class="k-hint k-hn" x="180" y="492" text-anchor="middle">Bir noktaya dokun</text>';
+      KPART.forEach(function (p) {
+        var f = p.fr, lw = 18 + p.t.length * 7.6, hit = '', dt = '';
+        p.dots.forEach(function (d) {
+          hit += '<circle class="k-hit" cx="' + d[0] + '" cy="' + d[1] + '" r="26"/>';
+          dt += '<circle class="k-pl" cx="' + d[0] + '" cy="' + d[1] + '" r="6"/><circle class="k-dt" cx="' + d[0] + '" cy="' + d[1] + '" r="5.5"/>';
+        });
+        h += '<g class="k-p" data-part="' + p.id + '" role="button" tabindex="0" aria-label="' + p.t + '">' + hit +
           '<rect class="k-fr" x="' + f[0] + '" y="' + f[1] + '" width="' + f[2] + '" height="' + f[3] + '" rx="12"/>' +
           '<g class="k-lb"><rect x="' + f[0] + '" y="' + (f[1] - 26) + '" width="' + lw + '" height="18" rx="9"/><text x="' + (f[0] + lw / 2 + 1) + '" y="' + (f[1] - 16.6) + '" text-anchor="middle" dominant-baseline="central">' + p.t.toUpperCase() + '</text></g>' +
-          '<g class="k-ui"><path class="k-bar" pathLength="1" d="' + d + '"/>' +
-          '<polygon class="k-hd" points="' + (z[0] + ux * 14) + ',' + (z[1] + uy * 14) + ' ' + (z[0] - uy * 7) + ',' + (z[1] + ux * 7) + ' ' + (z[0] + uy * 7) + ',' + (z[1] - ux * 7) + '"/>' +
-          '<g class="k-cg"><rect class="k-cd" x="' + c[0] + '" y="' + c[1] + '" width="' + c[2] + '" height="' + c[3] + '" rx="24"/>' +
-          '<text class="k-t0" x="' + (c[0] + 18) + '" y="' + (c[1] + 23) + '">' + p.t + '</text>' +
-          '<text class="k-t1 k-cn" x="' + (c[0] + 18) + '" y="' + (c[1] + 43) + '"></text>' +
-          '<rect class="k-tg" x="' + (c[0] + 18) + '" y="' + (c[1] + 51) + '" width="70" height="15" rx="7.5"/>' +
-          '<text class="k-t2 k-ct" x="' + (c[0] + 53) + '" y="' + (c[1] + 61.2) + '" text-anchor="middle"></text></g></g></g>';
+          '<g class="k-ui">' + dt + '</g></g>';
       });
       h += '</g></svg>';
       km.innerHTML = h;
-      km.className = 's-km' + (anim ? ' ka' : '');
-      if (anim) setTimeout(function () { km.classList.remove('ka'); }, 1900);
+      km.className = 's-km';
+      // önce toplu görünüm, sonra parçalar yumuşakça açılır; noktalar açılma bitince belirir
+      if (anim && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { void km.offsetWidth; setTimeout(function () { km.classList.add('kx'); }, 280); }
+      else km.classList.add('kx');
     }
-    KPART.forEach(function (p) {                                // kartlardaki kuşanılan seçenek adı ve etiketi
-      var g = km.querySelector('.k-p[data-part="' + p.id + '"]'), it = kcur(p), tx = it.tag || 'Kuşanıldı', w = Math.round(tx.length * 8.2 + 18);
-      g.querySelector('.k-cn').textContent = it.n; g.querySelector('.k-ct').textContent = tx;
-      g.querySelector('.k-tg').setAttribute('width', w); g.querySelector('.k-ct').setAttribute('x', p.cd[0] + 18 + w / 2);
-      g.classList.toggle('on', S.kp === p.id);
+    KPART.forEach(function (p) {
+      var g = km.querySelector('.k-p[data-part="' + p.id + '"]');
+      if (g) g.classList.toggle('on', S.kp === p.id);
     });
-    if (S.kp) km.classList.remove('ka');
+    KPART.forEach(function (p) { km.classList.toggle('kz-' + p.id, S.kp === p.id); });
     km.classList.toggle('zm', !!S.kp);
     kPanel(); kZoom();
   }
@@ -1168,13 +1177,13 @@
     if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', e.price, 'Satın al');
   }
   function kZoom() {                                            // seçilen bölgeye yumuşakça yakınlaş; bölge panelin üstündeki boşluğun ortasına gelir
-    var km = q('.s-km'), w = km.querySelector('.k-w'), sv = km.querySelector('svg'), p = kpart(S.kp), r, kv, k, oy, cy;
+    var km = q('.s-km'), w = km.querySelector('.k-w'), sv = km.querySelector('svg'), p = kpart(S.kp), r, kv, k, oy, cy, Z;
     if (!w) return;
     if (!p) { w.style.transform = ''; return; }
     r = sv.getBoundingClientRect(); kv = q('.s-kv').getBoundingClientRect(); if (!r.width) return;
-    k = Math.min(r.width / KW, r.height / KH); oy = (r.height - KH * k) / 2;
+    Z = p.z || KZ; k = Math.min(r.width / KW, r.height / KH); oy = (r.height - KH * k) / 2;
     cy = Math.max(80, ((kv.bottom - q('.k-pn').offsetHeight) - r.top) / 2);
-    w.style.transform = 'translate(' + (KW / 2 - KZ * (p.fr[0] + p.fr[2] / 2)) + 'px,' + ((cy - oy) / k - KZ * (p.fr[1] + p.fr[3] / 2)).toFixed(1) + 'px) scale(' + KZ + ')';
+    w.style.transform = 'translate(' + (KW / 2 - Z * (p.fr[0] + p.fr[2] / 2)) + 'px,' + ((cy - oy) / k - Z * (p.fr[1] + p.fr[3] / 2)).toFixed(1) + 'px) scale(' + Z + ')';
   }
   function doKAct() {
     var p = kpart(S.kp), e = p && kfind(p, S.ke), nw = false; if (!e || D[p.cur] === e.id) return;
