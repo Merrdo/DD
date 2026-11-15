@@ -1954,8 +1954,8 @@
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
       if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div><div class="dock"><div class="dk" data-sa="exit" aria-label="Oyunlar"><b><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></b><small>Oyunlar</small></div><div class="dk" data-sa="shop" aria-label="Dükkan"><b><svg viewBox="0 0 24 24"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/></svg></b><small>Dükkan</small></div><div class="dk" data-sa="settings" aria-label="Ayarlar"><b><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg></b><small>Ayarlar</small></div></div>';
-      else if (mode === 3) h = '<div class="mi primary" data-sa="restart">Tekrar dene</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
-      else h = '<div class="mi primary" data-sa="resume">Devam et</div><div class="mi" data-sa="restart">Yeniden başla</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
+      else if (mode === 3) h = '<div class="mi primary" data-sa="restart">Tekrar dene</div>' + snd + '<div class="mi" data-sa="menu">Ana menü</div>';
+      else h = '<div class="mi primary" data-sa="resume">Devam et</div><div class="mi" data-sa="restart">Yeniden başla</div>' + snd + '<div class="mi" data-sa="menu">Ana menü</div>';
       elList.innerHTML = h;
     }
     function showMenu(m) {
@@ -2007,6 +2007,11 @@
       el.classList.toggle('race', !!race); if (fresh) tutShow();
       if (fresh && race && el.classList.contains('tut')) { obs = []; pick = []; wait = true; }   // öğretici boş gökyüzünde; parkur bitince geminin olduğu yerde kurulur
     }
+    function toMenu() {                                          // duraklatma / ölüm ekranından Astro ana menüsüne: giriş animasyonu oynamaz
+      endIntro(); tutEnd(); pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv', 'race', 'devcam');
+      race = false; devOn = false; reset(); cx.setTransform(1, 0, 0, 1, 0, 0); cx.clearRect(0, 0, cv2.width, cv2.height);
+      showMenu(0);
+    }
     function pause() { if (mode === 1) { if (pvOn) pvEnd(); else showMenu(2); } }
     function endIntro() {
       if (!introOn) return; introOn = false; clearTimeout(introTm);
@@ -2038,6 +2043,7 @@
       else if (a === 'shop') DDShop.open();
       else if (a === 'pvend') pvEnd();
       else if (a === 'exit') close();
+      else if (a === 'menu') toMenu();
       else if (a === 'settings') showSettings(true);
       else if (a === 'sback') showSettings(false);
       else if (a === 'ssound') {
@@ -2536,7 +2542,7 @@
     window.addEventListener('keydown', function (e) {
       if (!on) return;
       e.stopPropagation(); e.preventDefault();
-      if (e.key === 'Escape') { if (stOn) { if ($('sprs').classList.contains('on')) $('sprs').classList.remove('on'); else showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else close(); return; }
+      if (e.key === 'Escape') { if (stOn) { if ($('sprs').classList.contains('on')) $('sprs').classList.remove('on'); else showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else if (mode === 3) toMenu(); else close(); return; }
       if (mode === 0 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { crGo(e.key === 'ArrowRight' ? 1 : -1); return; }
       if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
