@@ -3252,26 +3252,45 @@
       cx.save(); cx.translate(sx, sy); cx.rotate(P.h + Math.PI / 2); cx.scale(u, u);
       cx.translate(Math.sin(t * 83) * .025 * th * tfk, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th * tfk);   // süzülme + yüksek itişte hafif titreşim
       var y0 = 2.08;
-      if (th > 0.03) {                                          // ana motor: ince, beyaz çekirdekli, ucu turuncuya sönen alev
-        var fl = 1 + .05 * Math.sin(t * 61) + .04 * Math.sin(t * 97 + 1.3),
-            L = (.3 + 2.6 * th * tfk) * fl * (1 + .55 * ign), wk = 1 + .6 * (tfk - 1), w0 = (.17 + .1 * th) * wk;
-        cx.globalCompositeOperation = 'lighter';
-        g = cx.createRadialGradient(0, y0 + .2, .05, 0, y0 + .2, .9 * wk); g.addColorStop(0, 'rgba(255,190,130,' + Math.min(.6, .3 * th * wk) + ')'); g.addColorStop(1, 'rgba(255,140,70,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.arc(0, y0 + .2, .9 * wk, 0, 6.2832); cx.fill();
-        cx.globalCompositeOperation = 'source-over';
-        g = cx.createLinearGradient(0, y0, 0, y0 + L); g.addColorStop(0, 'rgba(255,246,232,.95)'); g.addColorStop(.3, 'rgba(255,200,140,.7)'); g.addColorStop(1, 'rgba(255,120,60,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.moveTo(-w0, y0);
-        cx.bezierCurveTo(-w0 * 1.05, y0 + L * .35, -w0 * .5, y0 + L * .75, 0, y0 + L);
-        cx.bezierCurveTo(w0 * .5, y0 + L * .75, w0 * 1.05, y0 + L * .35, w0, y0); cx.fill();
-        var w1 = w0 * .45, Lc = L * .55;
-        g = cx.createLinearGradient(0, y0, 0, y0 + Lc); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(190,215,255,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.moveTo(-w1, y0);
-        cx.bezierCurveTo(-w1, y0 + Lc * .4, -w1 * .4, y0 + Lc * .8, 0, y0 + Lc);
-        cx.bezierCurveTo(w1 * .4, y0 + Lc * .8, w1, y0 + Lc * .4, w1, y0); cx.fill();
-        var ths = Math.min(1, th * tfk); if (ths > .4) for (k = 1; k <= 3; k++) {                 // şok elmasları
-          cx.fillStyle = 'rgba(255,255,255,' + .8 * (ths - .3) * (1 - .22 * k) + ')';
-          cx.beginPath(); cx.ellipse(0, y0 + L * (.2 * k + .015 * Math.sin(t * 37 + k * 2)), w0 * .38 * (1 - .2 * k), .1, 0, 0, 6.2832); cx.fill();
+      if (th > 0.03) {                                          // ana motor: dükkandaki alevle aynı üç katman; itiş arttıkça uzar, genişler, ısınır (turuncu → sarı-beyaz) ve titreşimi artar
+        var p = Math.min(1.3, th * tfk), pe = Math.min(1, th / .1),                        // p: etkin itiş; pe: çok küçük itişte alevin yumuşak belirmesi
+            wk = 1 + .6 * (tfk - 1), ig = 1 + .55 * ign,
+            bs = Math.min(1, (tfk - 1) * 6),                                              // bs: destek (iniş-kalkış) devredeyken 0..1
+
+            fa = (.035 + .05 * p),                                                       // titreşim genliği itişle artar
+            fl = 1 + fa * Math.sin(t * 57) + fa * .7 * Math.sin(t * 91 + 1.3) + fa * .5 * Math.sin(t * 33 + .4),
+            Lo = (.4 + 2.75 * p) * fl * ig, wo = (.1 + .2 * p) * wk,
+            Lm = Lo * .68, wm = wo * .66, Lc = Lo * (.42 + .16 * bs), wc = wo * (.34 + .12 * bs),
+            sw = Math.sin(t * 19 + 2) * .05 * p + Math.sin(t * 43) * .025 * p,           // ucun yanal savrulması
+            hot = Math.min(1, p + .3 * bs), a0 = pe;                                               // hot: 0 = soğuk/zayıf, 1 = sıcak/güçlü
+        function tear(w, L, tx, kk) {
+          cx.beginPath(); cx.moveTo(-w, y0);
+          cx.bezierCurveTo(-w * 1.18, y0 + L * .26, tx - w * .6 + kk, y0 + L * .68, tx, y0 + L);
+          cx.bezierCurveTo(tx + w * .6 + kk, y0 + L * .68, w * 1.18, y0 + L * .26, w, y0); cx.closePath();
         }
+        cx.globalCompositeOperation = 'lighter';
+        cx.save(); cx.translate(0, y0 + .15 + .55 * p); cx.scale(.8, 1.35);              // arkadaki yumuşak ışıma: itişle büyür
+        g = cx.createRadialGradient(0, 0, 0, 0, 0, .5 + 1.05 * p);
+        g.addColorStop(0, 'rgba(' + (255 - 70 * bs | 0) + ',' + (175 + 20 * bs | 0) + ',' + (100 + 140 * bs | 0) + ',' + (.1 + .3 * hot + .15 * bs) * a0 + ')'); g.addColorStop(.55, 'rgba(255,110,50,' + (.04 + .12 * hot) * a0 + ')'); g.addColorStop(1, 'rgba(255,90,40,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, .5 + 1.05 * p, 0, 6.2832); cx.fill(); cx.restore();
+        cx.globalCompositeOperation = 'source-over';
+        if (bs > .01) {                                                                    // destek devrede: alevi saran mavi-beyaz sıcak hale (art yakıcı) + parlak lüle
+          g = cx.createLinearGradient(0, y0, 0, y0 + Lo * .85);
+          g.addColorStop(0, 'rgba(190,220,255,' + .5 * bs * a0 + ')'); g.addColorStop(.5, 'rgba(120,170,255,' + .22 * bs * a0 + ')'); g.addColorStop(1, 'rgba(100,150,255,0)');
+          cx.globalCompositeOperation = 'lighter'; cx.fillStyle = g; tear(wo * 1.35, Lo * .85, sw * .8, 0); cx.fill(); cx.globalCompositeOperation = 'source-over';
+        }
+        g = cx.createLinearGradient(0, y0, 0, y0 + Lo);                                    // dış katman: turuncu-kırmızı
+        g.addColorStop(0, 'rgba(255,' + (140 + 30 * hot | 0) + ',80,' + (.3 + .32 * hot) * a0 + ')'); g.addColorStop(.35, 'rgba(255,98,42,' + (.14 + .22 * hot) * a0 + ')'); g.addColorStop(.75, 'rgba(190,50,30,' + .1 * hot * a0 + ')'); g.addColorStop(1, 'rgba(150,40,30,0)');
+        cx.fillStyle = g; tear(wo, Lo, sw, Math.sin(t * 27) * .035 * p); cx.fill();
+        g = cx.createLinearGradient(0, y0, 0, y0 + Lm);                                    // orta katman: sarı-turuncu (zayıfken soluk şeftali)
+        g.addColorStop(0, 'rgba(255,238,' + (200 - 20 * hot | 0) + ',' + (.7 + .28 * hot) * a0 + ')'); g.addColorStop(.45, 'rgba(255,' + (196 - 22 * hot | 0) + ',' + (130 - 46 * hot | 0) + ',' + (.45 + .27 * hot) * a0 + ')'); g.addColorStop(1, 'rgba(255,112,44,0)');
+        cx.fillStyle = g; tear(wm, Lm, sw * .7 + Math.sin(t * 41 + 1) * .03 * p, Math.sin(t * 36 + 2) * .03 * p); cx.fill();
+        g = cx.createLinearGradient(0, y0, 0, y0 + Lc);                                    // çekirdek: beyaz → soluk mavi; zayıfken daha mavi
+        g.addColorStop(0, 'rgba(255,255,255,' + a0 + ')'); g.addColorStop(.5, 'rgba(' + (196 + 28 * hot | 0) + ',' + (222 + 10 * hot | 0) + ',255,' + (.6 + .25 * hot) * a0 + ')'); g.addColorStop(1, 'rgba(170,205,255,0)');
+        cx.fillStyle = g; tear(wc, Lc, sw * .4 + Math.sin(t * 53 + 3) * .02 * p, Math.sin(t * 47) * .02 * p); cx.fill();
+        g = cx.createRadialGradient(0, y0 + .04, 0, 0, y0 + .04, .26 + .18 * hot + .16 * bs);          // lüle ağzında sıcak ışıma
+        g.addColorStop(0, 'rgba(255,255,255,' + (.35 + .55 * hot) * a0 + ')'); g.addColorStop(1, 'rgba(200,225,255,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, y0 + .04, .26 + .18 * hot + .16 * bs, 0, 6.2832); cx.fill();
         if (ign > 0) { cx.fillStyle = 'rgba(255,245,225,' + .55 * ign + ')'; cx.beginPath(); cx.arc(0, y0 + .15, .25 + .55 * (1 - ign), 0, 6.2832); cx.fill(); }   // ateşleme parlaması
       }
       wingP(-1); pf(CR);                  // kanatlar: ASTRO ikonuyla aynı (sol açık, sağ gölge tonu)
