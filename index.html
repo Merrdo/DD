@@ -2755,6 +2755,19 @@
       if (o.t === 'hole') return Math.hypot(o.x - x, o.y - y) - o.R * .85;
       return 1e9;
     }
+    /* --- Mekik çarpışma gövdesi: tek nokta yerine mekiğin şeklini izleyen daireler (birim = çizimdeki u; x = sağ/sol, y = - burun / + kuyruk) --- */
+    var HULLK = .75;                                            // genel ayar: 1 = görünen şekle tam oturur, küçüldükçe daha toleranslı (çok hassas gelirse düşür, içine giriyorsa artır)
+    var HULL = [[0,-1.9,.3],[0,-1.2,.4],[0,-.3,.42],[0,.7,.42],[0,1.55,.36],
+                [-.6,.4,.18],[.6,.4,.18],[-.78,1.1,.2],[.78,1.1,.2],[-1,1.55,.12],[1,1.55,.12]];
+    function hullClr(o) {                                       // gövdenin engele en yakın boşluğu (negatifse içine girmiş)
+      var u = S * 0.026, ch = Math.cos(P.h), sh = Math.sin(P.h), m = 1e9, i, h, d;
+      for (i = 0; i < HULL.length; i++) {
+        h = HULL[i];
+        d = cpDist(o, P.x - sh * h[0] * u - ch * h[1] * u, P.y + ch * h[0] * u - sh * h[1] * u) - h[2] * u * HULLK;
+        if (d < m) m = d;
+      }
+      return m;
+    }
     var cpNx = 0, cpNy = -1;
     function cpNorm(o, x, y) {                                    // (x,y)'den engelin en yakın noktasına birim yön = çarpışma normali
       var qx = o.x, qy = o.y, dx, dy, l;
@@ -3008,7 +3021,7 @@
       if (elDvz) elDvz.textContent = '×' + dv.z.toFixed(2);
     }
     function runStep(dt, px0, py0) {
-      var i, o, Rs = S * 0.026 * 0.78, sp = Math.hypot(P.vx, P.vy);
+      var i, o, Rs = S * 0.026 * 0.78, Rp = Rs * 1.35, sp = Math.hypot(P.vx, P.vy);   // Rp: önleyicinin hesabında kullanılan gövde yarıçapı
       gt += dt; if (graceT > 0) graceT -= dt; if (th > .3) thrustSeen = true; if (!thrustSeen) hintT += dt;
       genMore();
       // sektör
@@ -3083,8 +3096,9 @@
           if (hgd < o.G) { var hgu = 1 - hgd / o.G, hga = S * (.9 * hgu * hgu + .12 * hgu) * dt; P.vx += hgx / hgd * hga; P.vy += hgy / hgd * hga; if (hgu > .35) shake = Math.max(shake, (hgu - .35) * .35); }
           clr = hgd - o.R * .85 - Rs; anx = hgx; any_ = hgy;
         }
+        if (o.t === 'rock' || o.t === 'wall' || o.t === 'spin' || o.t === 'hole') clr = hullClr(o);   // mekiğin tüm gövdesi sayılır
         if (cpOn && clr > 0 && (o.t === 'wall' || (o.t === 'rock' && !o.dv && !o.amp))) {   // yalnızca durağan engeller: kara delik, süzülen/salınan kaya, dönen çubuk, lazer önleyiciye tabi değil                      // Çarpışma önleyici: yolun üstündeki engeller için, önünde durmak için gereken freni hesapla
-          var sH = cpScan(o, cpUx, cpUy, cpSpd, cpMaxS, Rs);
+          var sH = cpScan(o, cpUx, cpUy, cpSpd, cpMaxS, Rp);
           if (sH >= 0) {
             // yalnızca ENGELE DOĞRU olan hız bileşeni kesilir: tam dik geliyorsan durursun, eğik geliyorsan yan hızın korunur ve engelin yanından süzülürsün
             var cs = Math.max(0, cpUx * cpNx + cpUy * cpNy), rq = cpSpd * cpSpd * cs / (2 * Math.max(sH, S * .004)) * 1.35;   // 1.35: pay
@@ -3093,7 +3107,7 @@
           }
         }
         if (cpOnE && clr > 0 && o.t === 'rock' && (o.dv || o.amp)) {   // süzülen/salınan kaya: fren değil, yan motorlarla yoldan kaçma girişimi
-          var ea = cpEvade(o, Rs, cpEc);
+          var ea = cpEvade(o, Rp, cpEc);
           if (ea > eNeed) { eNeed = ea; edx = cpEx; edy = cpEy; }
         }
         if (clr < 0 && o.t !== 'beam' && graceT <= 0) { if (o.t === 'spin') lzArmSpin(o); if (o.t === 'hole') hd = 1; kill(1); return; }
