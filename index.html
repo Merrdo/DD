@@ -504,9 +504,17 @@
   #shop .s-hero { position:relative; flex:1; min-height:0; margin-top:4vh; touch-action:pan-y; }
   #shop .s-ship { position:absolute; top:3%; bottom:2%; left:0; right:0; display:flex; justify-content:center; animation:s-fl 6s ease-in-out infinite; }
   @keyframes s-fl { 50% { transform:translateY(-8px); } }
-  #shop .s-ship svg { height:100%; width:auto; }
-  #shop .s-flm { transform-box:fill-box; transform-origin:50% 0; animation:s-fk .14s ease-in-out infinite alternate; }
-  @keyframes s-fk { from { transform:scale(.96,.9); } to { transform:scale(1.04,1.08); } }
+  #shop .s-cr { position:absolute; inset:0; }
+  #shop .s-cs { position:absolute; inset:0; display:flex; justify-content:center; will-change:transform, opacity; pointer-events:none; }
+  #shop .s-cr.snap .s-cs { transition:transform .27s cubic-bezier(.22,.61,.36,1), opacity .27s ease; }   /* ana menüdeki kaydırmayla aynı */
+  #shop .s-ship svg { height:100%; width:auto; overflow:visible; }
+  /* jet alevi: katmanlar kendi içinde dalgalanır (SMIL), bütünü ise itiş gücüyle nefes alır; kıvılcımlar geriye savrulur */
+  #shop .s-flm { transform-box:fill-box; transform-origin:50% 0; animation:s-fb 3.4s ease-in-out infinite; }
+  @keyframes s-fb { 0%,100% { transform:scale(.97,.93); } 50% { transform:scale(1.03,1.07); } }
+  #shop .s-fg { transform-box:fill-box; transform-origin:50% 0; animation:s-fgl 1.7s ease-in-out infinite; }
+  @keyframes s-fgl { 0%,100% { opacity:.75; transform:scale(.94,.9); } 50% { opacity:1; transform:scale(1.04,1.08); } }
+  #shop .s-em { opacity:0; animation:s-emk 1.2s cubic-bezier(.2,.6,.4,1) infinite; }
+  @keyframes s-emk { 0% { opacity:0; transform:translate(0,0); } 10% { opacity:.95; } 100% { opacity:0; transform:translate(var(--ex),var(--ey)); } }
   #shop .s-info { text-align:center; padding-top:6px; }
   #shop .s-nm { font-size:26px; font-weight:200; letter-spacing:.04em; }
   #shop .s-stt { margin-top:8px; min-height:18px; display:flex; align-items:center; justify-content:center; gap:5px; font-size:13px; letter-spacing:.08em; color:var(--dim); font-variant-numeric:tabular-nums; }
@@ -543,7 +551,7 @@
   @keyframes s-pt { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:.9; } 100% { opacity:0; transform:translate(var(--x),var(--y)) scale(1); } }
   #shop .s-tp .s-ic.bump { animation:s-bump .7s ease-out; }
   @keyframes s-bump { from { box-shadow:0 0 0 0 rgba(140,194,255,.45); } to { box-shadow:0 0 0 16px rgba(140,194,255,0); } }
-  @media (prefers-reduced-motion: reduce) { #shop .s-ring, #shop .s-pt { display:none; } }
+  @media (prefers-reduced-motion: reduce) { #shop .s-ring, #shop .s-pt { display:none; } #shop .s-flm, #shop .s-fg { animation:none; } #shop .s-em { display:none; } }
 
   /* güçlendirmeler: liste + alttan panel */
   #shop .s-list { flex:1; min-height:0; margin-top:6px; padding:0 22px 12px; overflow-y:auto; scrollbar-width:none; touch-action:pan-y; -webkit-overflow-scrolling:touch; }
@@ -716,16 +724,39 @@
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
 
-  /* Oyundaki jet alevinin aynısı: th = itiş (0-1). Alevi değiştiren güçlendirmeler ileride buradan ayarlanır. */
+  /* Jet alevi (dükkan): dört katman (dış duman-ateş, orta alev, beyaz çekirdek, sıcak lüle ışıması) + şok elmasları + savrulan kıvılcımlar.
+     Katmanlar SMIL ile biçim değiştirir; hepsi mekik birimleriyle çizilir, o yüzden oyun içine de aynı kodla taşınabilir. */
   function flame(th) {
-    var tfs = 1 + .5 * .09 * ((D && D.lv && D.lv.itis) | 0), y0 = 2.08, L = .3 + 2.6 * th * tfs, w0 = (.17 + .1 * th) * (1 + .4 * (tfs - 1)), w1 = w0 * .45, Lc = L * .55, k, d = '';
-    for (k = 1; k <= 3; k++) if (th > .4) d += '<ellipse cx="0" cy="' + (y0 + L * .2 * k) + '" rx="' + (w0 * .38 * (1 - .2 * k)) + '" ry=".1" fill="#fff" fill-opacity="' + (.8 * (th - .3) * (1 - .22 * k)) + '"/>';
-    return '<defs><radialGradient id="s-gg" cx="0" cy="' + (y0 + .2) + '" r=".9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,190,130)" stop-opacity="' + .3 * th + '"/><stop offset="1" stop-color="rgb(255,140,70)" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="s-go" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + L) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,246,232)" stop-opacity=".95"/><stop offset=".3" stop-color="rgb(255,200,140)" stop-opacity=".7"/><stop offset="1" stop-color="rgb(255,120,60)" stop-opacity="0"/></linearGradient>' +
-      '<linearGradient id="s-gc" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + Lc) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="rgb(190,215,255)" stop-opacity="0"/></linearGradient></defs>' +
-      '<circle cx="0" cy="' + (y0 + .2) + '" r=".9" fill="url(#s-gg)"/><g class="s-flm">' +
-      '<path d="M' + -w0 + ' ' + y0 + 'C' + -w0 * 1.05 + ' ' + (y0 + L * .35) + ' ' + -w0 * .5 + ' ' + (y0 + L * .75) + ' 0 ' + (y0 + L) + 'C' + w0 * .5 + ' ' + (y0 + L * .75) + ' ' + w0 * 1.05 + ' ' + (y0 + L * .35) + ' ' + w0 + ' ' + y0 + 'Z" fill="url(#s-go)"/>' +
-      '<path d="M' + -w1 + ' ' + y0 + 'C' + -w1 + ' ' + (y0 + Lc * .4) + ' ' + -w1 * .4 + ' ' + (y0 + Lc * .8) + ' 0 ' + (y0 + Lc) + 'C' + w1 * .4 + ' ' + (y0 + Lc * .8) + ' ' + w1 + ' ' + (y0 + Lc * .4) + ' ' + w1 + ' ' + y0 + 'Z" fill="url(#s-gc)"/>' + d + '</g>';
+    var lv = (D && D.lv && D.lv.itis) | 0, sc = 1 + .03 * lv, y0 = 2.1, ID = 's-f', k, h = '';
+    function n(v) { return (+v).toFixed(3); }
+    function pd(w, L, v) {                                    // v = [boy payı, uç kayması, genişlik payı, yan eğrilik]
+      var ww = w * (1 + v[2]), LL = L * (1 + v[0]), tx = v[1], kk = v[3];
+      return 'M' + n(-ww) + ' ' + y0 + 'C' + n(-ww * 1.18) + ' ' + n(y0 + LL * .26) + ' ' + n(tx - ww * .6 + kk) + ' ' + n(y0 + LL * .68) + ' ' + n(tx) + ' ' + n(y0 + LL) +
+             'C' + n(tx + ww * .6 + kk) + ' ' + n(y0 + LL * .68) + ' ' + n(ww * 1.18) + ' ' + n(y0 + LL * .26) + ' ' + n(ww) + ' ' + y0 + 'Z';
+    }
+    function layer(w, L, seq, dur, fill, op) {
+      var vals = [], i, ks = [], sp = [];
+      for (i = 0; i < seq.length; i++) { vals.push(pd(w, L, seq[i])); ks.push(n(i / (seq.length - 1))); if (i) sp.push('.45 0 .55 1'); }
+      return '<path d="' + vals[0] + '" fill="url(#' + fill + ')"' + (op ? ' opacity="' + op + '"' : '') + '><animate attributeName="d" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keyTimes="' + ks.join(';') + '" keySplines="' + sp.join(';') + '" values="' + vals.join(';') + '"/></path>';
+    }
+    var Lo = 3.05 * sc, Lm = 2.3 * sc, Lc = 1.4 * sc;
+    h += '<defs>' +
+      '<radialGradient id="' + ID + 'g" cx="0" cy="' + (y0 + .9) + '" r="1.5" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 ' + (y0 + .9) + ') scale(.8 1.35) translate(0 ' + -(y0 + .9) + ')"><stop offset="0" stop-color="rgb(255,170,95)" stop-opacity=".42"/><stop offset=".55" stop-color="rgb(255,110,50)" stop-opacity=".14"/><stop offset="1" stop-color="rgb(255,90,40)" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="' + ID + 'o" x1="0" y1="' + y0 + '" x2="0" y2="' + n(y0 + Lo) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,160,80)" stop-opacity=".6"/><stop offset=".35" stop-color="rgb(255,98,42)" stop-opacity=".34"/><stop offset=".75" stop-color="rgb(190,50,30)" stop-opacity=".1"/><stop offset="1" stop-color="rgb(150,40,30)" stop-opacity="0"/></linearGradient>' +
+      '<linearGradient id="' + ID + 'm" x1="0" y1="' + y0 + '" x2="0" y2="' + n(y0 + Lm) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,238,190)" stop-opacity=".98"/><stop offset=".45" stop-color="rgb(255,176,84)" stop-opacity=".72"/><stop offset="1" stop-color="rgb(255,112,44)" stop-opacity="0"/></linearGradient>' +
+      '<linearGradient id="' + ID + 'c" x1="0" y1="' + y0 + '" x2="0" y2="' + n(y0 + Lc) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="rgb(214,232,255)" stop-opacity=".85"/><stop offset="1" stop-color="rgb(170,205,255)" stop-opacity="0"/></linearGradient>' +
+      '<radialGradient id="' + ID + 't" cx="0" cy="' + (y0 + .05) + '" r=".42" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".5" stop-color="rgb(200,225,255)" stop-opacity=".45"/><stop offset="1" stop-color="rgb(200,225,255)" stop-opacity="0"/></radialGradient></defs>';
+    h += '<ellipse class="s-fg" cx="0" cy="' + n(y0 + .9) + '" rx="1.2" ry="1.9" fill="url(#' + ID + 'g)"/>';
+    h += '<g class="s-flm">' +
+      layer(.33, Lo, [[0, 0, 0, 0], [.07, .06, .05, .04], [-.05, -.05, -.03, -.03], [.04, -.07, .06, .05], [0, 0, 0, 0]], .74, ID + 'o') +
+      layer(.235, Lm, [[0, 0, 0, 0], [-.06, -.04, .04, -.03], [.08, .05, -.03, .03], [-.03, .03, .05, -.02], [0, 0, 0, 0]], .53, ID + 'm') +
+      layer(.115, Lc, [[0, 0, 0, 0], [.07, .02, -.05, .02], [-.07, -.02, .06, -.02], [.04, -.03, -.02, .02], [0, 0, 0, 0]], .37, ID + 'c');
+    var dm = [[.62, .085, .13], [1.12, .068, .115], [1.58, .05, .1]];                      // şok elmasları: çekirdeğin içinde art arda parlayıp sönen elmaslar
+    for (k = 0; k < dm.length; k++) h += '<ellipse cx="0" cy="' + n(y0 + dm[k][0] * sc) + '" rx="' + dm[k][1] + '" ry="' + dm[k][2] + '" fill="#fff" opacity=".8"><animate attributeName="opacity" dur="' + (.33 + k * .07) + 's" begin="-' + (k * .11) + 's" repeatCount="indefinite" values=".85;.3;.75;.45;.85"/></ellipse>';
+    h += '</g><ellipse cx="0" cy="' + (y0 + .04) + '" rx=".42" ry=".3" fill="url(#' + ID + 't)"/>';          // lülede sıcak, mavi-beyaz ışıma
+    var em = [[-.1, .9, .42, 2.3, 1.3, 0], [.08, 1.1, -.34, 2.5, 1.1, .35], [0, .8, .1, 2.1, 1.5, .7], [-.05, 1.3, -.55, 2.7, 1.4, 1.0], [.12, 1, .5, 2.4, 1.2, .55], [-.12, 1.2, -.2, 2.2, 1.6, .15], [.04, .95, .22, 2.6, 1.0, .9]];
+    for (k = 0; k < em.length; k++) h += '<circle class="s-em" cx="' + em[k][0] + '" cy="' + n(y0 + em[k][1] * .6) + '" r="' + (k % 3 === 0 ? .045 : .03) + '" fill="' + (k % 2 ? '#ffd9a0' : '#ffb870') + '" style="--ex:' + em[k][2] * .6 + 'px;--ey:' + em[k][3] + 'px;animation-duration:' + em[k][4] + 's;animation-delay:-' + em[k][5] + 's"/>';
+    return h;
   }
   function ship(p, big) {
     var st = p.s ? ' stroke="' + p.s + '" stroke-width=".07" stroke-linejoin="round"' : '';
@@ -758,7 +789,7 @@
 
   function paintC() {
     var it = cfind(S.sel), own = D.owned[it.id], eq = D.eq === it.id, h = '', st = q('.s-stt');
-    if (S.shown !== it.id) { q('.s-ship').innerHTML = ship(it.p, 1); S.shown = it.id; }
+    if (S.shown !== it.id) { crBuild(); S.shown = it.id; }
     q('.s-nm').textContent = it.n; q('.s-ds').textContent = it.d;
     st.className = 's-stt' + (eq ? ' eq' : ''); st.innerHTML = eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price);
     COST.forEach(function (c) {
@@ -806,7 +837,7 @@
   function changed() { if (API.onChange) API.onChange(); }
 
   function buyFx() {
-    var hero = q('.s-hero'), sv = q('.s-ship svg'), i, d, r, a, dist;
+    var hero = q('.s-hero'), sv = hsvg(), i, d, r, a, dist;
     if (API.onBuy) API.onBuy('c');
     if (!hero || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
     if (sv) { sv.style.animation = 'none'; void sv.getBoundingClientRect(); sv.style.animation = 's-buy .9s cubic-bezier(.2,.7,.2,1)'; }
@@ -833,22 +864,35 @@
     var ic = q('.s-tp .s-ic'); if (ic) { ic.classList.remove('bump'); void ic.offsetWidth; ic.classList.add('bump'); }
     if (API.onBuy) API.onBuy('p');
   }
-  var EASE = 'transform .28s cubic-bezier(.22,.61,.36,1), opacity .28s ease';
+  /* ===== Mekik karuseli: ana menüdeki kaydırmayla aynı mantık (komşu mekikler yan yana durur, parmakla/animasyonla birlikte kayar, solar ve küçülür) ===== */
+  var crX = 0, crW = 300, crBusy = false, crTm = 0;
   function cidx() { var i = 0; COST.forEach(function (c, k) { if (c.id === S.sel) i = k; }); return i; }
-  function pick(id, dir) {                                   // eski mekik çıkar, yenisi karşı yönden girer; yazılar anında güncellenir
-    if (id === S.sel) return;
-    var sh = q('.s-ship'), hero = q('.s-hero'), W = hero.clientWidth || 300, old = sh.querySelector('svg'), o, os, nw;
-    if (old) {
-      o = sh.cloneNode(false); o.className = 's-ship s-out'; o.style.animation = 'none'; os = old.cloneNode(true);
-      os.style.transition = 'none'; o.appendChild(os); hero.appendChild(o); void o.offsetWidth;
-      os.style.transition = EASE; os.style.transform = 'translateX(' + (-dir * W * .5) + 'px)'; os.style.opacity = '0';
-      setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 320);
+  function crPaint() {
+    var sl = root.querySelectorAll('.s-cs'), i;
+    for (i = 0; i < sl.length; i++) {
+      var k = +sl[i].getAttribute('data-k'), off = k * crW + crX, a = Math.min(1, Math.abs(off) / crW);
+      sl[i].style.transform = 'translate3d(' + off + 'px,0,0) scale(' + (1 - .15 * a) + ')';
+      sl[i].style.opacity = Math.max(0, 1 - a * 1.15);
     }
-    S.sel = id; paint(); nw = sh.querySelector('svg'); if (!nw) return;
-    nw.style.transition = 'none'; nw.style.transform = 'translateX(' + (dir * W * .5) + 'px)'; nw.style.opacity = '0'; void nw.offsetWidth;
-    nw.style.transition = EASE; nw.style.transform = 'none'; nw.style.opacity = '1';
   }
-  function swipe(d) { var n = COST.length; if (n > 1) pick(COST[(cidx() + d + n) % n].id, d); }
+  function crBuild() {
+    var n = COST.length, ci = cidx(), h = '<div class="s-cr">', k;
+    for (k = n > 1 ? -1 : 0; k <= (n > 1 ? 1 : 0); k++) h += '<div class="s-cs" data-k="' + k + '">' + ship(COST[(ci + k + n) % n].p, 1) + '</div>';
+    q('.s-ship').innerHTML = h + '</div>'; crX = 0; crBusy = false; clearTimeout(crTm); crW = q('.s-hero').clientWidth || crW; crPaint();
+  }
+  function hsvg() { return q('.s-cs[data-k="0"] svg'); }
+  function pick(id, dir) {                                   // dir: +1 sonraki, -1 önceki, 0 = yerine dön
+    if (crBusy) return;
+    var cr = q('.s-cr'); if (!cr) return;
+    crW = q('.s-hero').clientWidth || crW;
+    if (id === S.sel || !dir) { crBusy = true; cr.classList.add('snap'); crX = 0; crPaint(); crTm = setTimeout(function () { cr.classList.remove('snap'); crBusy = false; }, 270); return; }
+    var tgt = cfind(id), sl = cr.querySelector('.s-cs[data-k="' + dir + '"]');
+    if (sl && tgt) sl.innerHTML = ship(tgt.p, 1);            // atlayarak seçilirse (şeritten) karşı taraftaki mekik hedef olur
+    crBusy = true; cr.classList.add('snap'); crX = -dir * crW; crPaint();
+    S.sel = id; S.shown = id; paint();                       // yazılar ve şerit kaydırma başlar başlamaz güncellenir
+    clearTimeout(crTm); crTm = setTimeout(crBuild, 280);
+  }
+  function swipe(d) { var n = COST.length; if (n > 1) pick(COST[(cidx() + d + n) % n].id, d); else pick(S.sel, 0); }
 
   root.addEventListener('click', function (e) {
     var t = e.target, b;
@@ -870,18 +914,20 @@
     if (t.closest('[data-k=sact]')) return doUp();
   });
   var x0 = null, t0 = 0, hero = q('.s-hero');
-  function hsvg() { return q('.s-ship svg'); }
-  hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; t0 = Date.now(); var v = hsvg(); if (v) v.style.transition = 'none'; }, { passive: true });
+  hero.addEventListener('touchstart', function (e) {
+    if (crBusy) { x0 = null; return; }
+    x0 = e.touches[0].clientX; t0 = Date.now(); crW = hero.clientWidth || crW;
+    var cr = q('.s-cr'); if (cr) cr.classList.remove('snap');
+  }, { passive: true });
   hero.addEventListener('touchmove', function (e) {
-    if (x0 === null) return; var dx = e.touches[0].clientX - x0, W = hero.clientWidth || 300, v = hsvg(); if (!v) return;
-    if (COST.length < 2) dx = Math.max(-40, Math.min(40, dx * .25));
-    v.style.transform = 'translateX(' + dx * .9 + 'px)'; v.style.opacity = Math.max(.25, 1 - Math.abs(dx) / W * .8);
+    if (x0 === null) return; var dx = e.touches[0].clientX - x0;
+    if (COST.length < 2) dx = Math.max(-40, Math.min(40, dx * .25));      // tek mekik: hafif lastik hissi
+    crX = Math.max(-crW, Math.min(crW, dx)); crPaint();
   }, { passive: true });
   function hend(e) {
-    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0, dt = Math.max(1, Date.now() - t0), W = hero.clientWidth || 300, v = hsvg(); x0 = null;
-    var go = COST.length > 1 && (Math.abs(dx) > W * .2 || (Math.abs(dx) / dt > .4 && Math.abs(dx) > 24));
-    if (go) { if (v) { v.style.transition = 'none'; } swipe(dx < 0 ? 1 : -1); }
-    else if (v) { v.style.transition = EASE; v.style.transform = 'none'; v.style.opacity = '1'; }
+    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0, dt = Math.max(1, Date.now() - t0); x0 = null;
+    var go = COST.length > 1 && (Math.abs(dx) > crW * .2 || (Math.abs(dx) / dt > .4 && Math.abs(dx) > 24));
+    if (go) swipe(dx < 0 ? 1 : -1); else pick(S.sel, 0);
   }
   hero.addEventListener('touchend', hend, { passive: true }); hero.addEventListener('touchcancel', hend, { passive: true });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.open && root.classList.contains('on')) { S.open = ''; paint(); } });
