@@ -328,7 +328,7 @@
   @keyframes spwarn { 0%, 100% { opacity: .45; } 50% { opacity: 1; } }
   #space:not(.play) #spbn { opacity: 0; }
   /* geliştirici kamerası */
-  #devchip { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 18px); left: 14px; display: none; padding: 7px 12px; border: 1px solid rgba(244,242,238,.3); border-radius: 14px; font-size: 10px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; color: var(--soft); cursor: pointer; }
+  #devchip { position: absolute; z-index: 2; top: calc(env(safe-area-inset-top, 0px) + 19px); right: calc(env(safe-area-inset-right, 0px) + 66px); display: none; padding: 7px 12px; border: 1px solid rgba(244,242,238,.3); border-radius: 14px; font-size: 10px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; color: var(--soft); cursor: pointer; }
   #space.play.devok #devchip { display: block; }
   #space.devcam #devchip { background: #f4f2ee; color: #000; border-color: #f4f2ee; }
   #devbar { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); display: none; justify-content: center; align-items: center; gap: 12px; }
@@ -349,6 +349,8 @@
   #spmenu.ps { background: #000; justify-content: center; gap: 9vh; padding: 0 0 6%; }
   #spmenu.ps #spico { display: none; }
   #spmenu.ps.go { background: rgba(0,0,0,.62); }
+  #spmenu.pz #spsub { line-height: 2; }
+  #spmenu.pz #spsub b { display: block; font-size: clamp(34px, 9vmin, 54px); font-weight: 100; letter-spacing: -.02em; text-indent: 0; color: var(--fg); line-height: 1.1; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
   #spmenu.go #sptitle { font-size: clamp(40px, 11vmin, 76px); }
   #spmenu.go #spsub { line-height: 2; font-size: 12px; }
   #spmenu.go #spsub b { display: block; font-size: clamp(38px, 11vmin, 64px); font-weight: 100; letter-spacing: -.02em; text-indent: 0; color: var(--fg); line-height: 1.1; margin: 6px 0 2px; font-variant-numeric: tabular-nums; }
@@ -369,6 +371,23 @@
   @keyframes sptail { from { opacity: .9; transform: scaleY(1); } to { opacity: 0; transform: scaleY(.2); } }
   @keyframes spti { from { opacity: 0; filter: blur(8px); letter-spacing: .45em; text-indent: .45em; } to { opacity: 1; filter: blur(0); letter-spacing: .22em; text-indent: .22em; } }
   @keyframes spfade { from { opacity: 0; } to { opacity: 1; } }
+  /* ASTRO ayarları (yalnızca ASTRO'yu etkiler) */
+  #spset { position: absolute; inset: 0; z-index: 4; background: #000; display: flex; flex-direction: column; align-items: center; padding: 17% 0 10%; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+  #spset.on { opacity: 1; pointer-events: auto; }
+  #spsback { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 8.5%); left: 5%; width: 36px; height: 36px; border: 1px solid rgba(244,242,238,.22); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--soft); transition: background .2s ease; }
+  #spsback i { display: block; width: 8px; height: 8px; margin-left: 3px; border-left: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); pointer-events: none; }
+  #spsback:active { background: rgba(244,242,238,.12); }
+  #spstitle { font-size: clamp(38px, 10vmin, 60px); font-weight: 100; letter-spacing: .22em; text-indent: .22em; line-height: 1.05; text-align: center; }
+  #spssub { margin-top: 12px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  #spslist { margin-top: 9vh; width: min(100%, 440px); padding: 0 22px; display: flex; flex-direction: column; }
+  #spsnote { margin-top: 14px; padding: 0 26px; font-size: 11px; line-height: 1.6; letter-spacing: .06em; color: var(--dim); text-align: center; width: min(100%, 440px); }
+  #spslist .si.vol { flex-wrap: wrap; cursor: default; }
+  #spslist .si.vol:active { opacity: 1; }
+  #spslist .si.vol.off > * { opacity: .35; }
+  #spvt { flex-basis: 100%; height: 34px; margin-top: 10px; position: relative; touch-action: none; cursor: pointer; }
+  #spvt::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 2px; border-radius: 2px; background: rgba(244,242,238,.16); }
+  #spvt i { position: absolute; left: 0; top: 16px; height: 2px; border-radius: 2px; background: var(--fg); }
+  #spvt b { position: absolute; top: 8px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 12px rgba(244,242,238,.25); }
   #spico svg { display: block; width: min(24vw, 13vh, 96px); height: auto; }
   #splist { display: flex; flex-direction: column; align-items: center; }
   /* ---------- açılış animasyonu (oturum başına bir kez) ---------- */
@@ -481,7 +500,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div></div></div>
 </div>
 
 <script>
@@ -982,10 +1001,10 @@
   }
   function resetAll() {
     if (resetting) return; resetting = true;
-    // Tüm oyun ilerlemesi, rekorlar ve öğreticiler (dd_ ön ekli her kayıt). Ses ve geliştirici modu tercihleri korunur.
+    // Tüm oyun ilerlemesi, rekorlar ve öğreticiler (dd_ ön ekli her kayıt). Ses, ASTRO ses ve geliştirici modu tercihleri korunur.
     try {
       var ks = [];
-      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute' && k !== 'dd_dev') ks.push(k); }
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute' && k !== 'dd_dev' && k !== 'dd_astro_snd' && k !== 'dd_astro_vol') ks.push(k); }
       for (var j = 0; j < ks.length; j++) localStorage.removeItem(ks[j]);
     } catch (e) {}
     elConf.classList.remove('on');
@@ -1450,10 +1469,14 @@
         best = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
+    /* ASTRO'ya özel ses ayarı: genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ses düzeyi geri yüklenir */
+    var aSnd = STORE.get('dd_astro_snd') !== '0', aVol = parseInt(STORE.get('dd_astro_vol'), 10);
+    if (isNaN(aVol)) aVol = 100; aVol = Math.max(0, Math.min(100, aVol));
+    function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     $('spico').innerHTML = ASTRO_ICO;
     function menuHtml() {
-      var h = '', snd = '<div class="mi" data-sa="sound">Ses · ' + (muted ? 'kapalı' : 'açık') + '</div>';
+      var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
       if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div>' + snd + '<div class="mi" data-sa="exit">Oyunlar</div>';
       else if (mode === 3) h = '<div class="mi primary" data-sa="restart">Tekrar dene</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
       else h = '<div class="mi primary" data-sa="resume">Devam et</div><div class="mi" data-sa="restart">Yeniden başla</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
@@ -1465,8 +1488,12 @@
       if (m === 3) {
         st.textContent = dead === 2 || hd ? 'YUTULDUN' : lz ? 'KESİLDİN' : 'KAZA';
         ss.innerHTML = (newRec ? '<em>yeni rekor</em><br>' : 'puan<br>') + '<b>' + fScore + '</b>' + fDist + ' m  ·  sektör ' + (sector + 1) + '<br>rekor ' + best;
-      } else { st.textContent = 'ASTRO'; ss.textContent = m === 2 ? 'duraklatıldı' : 'bir mod seç'; }
-      el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); menuHtml(); elSm.classList.add('on');
+      } else {
+        st.textContent = 'ASTRO';
+        if (m === 2) ss.innerHTML = 'duraklatıldı' + (best > 0 || race ? '<br><b>' + best + '</b>rekor' + (race ? ' · şu an ' + score() : '') : '');
+        else ss.textContent = 'bir mod seç';
+      }
+      el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); elSm.classList.toggle('pz', m === 2); menuHtml(); elSm.classList.add('on');
     }
     var elTl = $('sptl'), elTr = $('sptr'), tutTm = 0, tutL = 0, tutR = 0;
     function tutEnd() { clearTimeout(tutTm); el.classList.remove('tut'); }
@@ -1532,12 +1559,63 @@
       else if (a === 'restart') play(true);
       else if (a === 'resume') play(false);
       else if (a === 'exit') close();
-      else if (a === 'sound') {
-        muted = !muted; STORE.set('dd_mute', muted ? '1' : '0');
-        if (master) master.gain.value = muted ? 0 : 0.9;
-        menuHtml();
+      else if (a === 'settings') showSettings(true);
+      else if (a === 'sback') showSettings(false);
+      else if (a === 'ssound') {
+        aSnd = !aSnd; STORE.set('dd_astro_snd', aSnd ? '1' : '0'); gainApply(); setBuild();
+        if (aSnd) bell(semi(7), 0.14, 0, 0, 1.4);
+      } else if (a === 'sdev') {
+        var dn = STORE.get('dd_dev') !== '1'; STORE.set('dd_dev', dn ? '1' : '0');
+        el.classList.toggle('devok', dn); setBuild();
+      } else if (a === 'sreset') {
+        if (!rstConf) {
+          rstConf = true; setBuild(); clearTimeout(rstTm);
+          rstTm = setTimeout(function () { rstConf = false; if (stOn) setBuild(); }, 3000);
+          return;
+        }
+        rstConf = false; clearTimeout(rstTm);
+        try { localStorage.removeItem('dd_astro_best'); localStorage.removeItem('dd_astro_tut'); localStorage.removeItem('dd_race_tut'); } catch (e) {}
+        best = 0; newRec = false; setBuild(); elSn.textContent = 'ASTRO ilerlemesi sıfırlandı.';
       }
     }
+    /* --- ASTRO ayar sayfası --- */
+    var elSs = $('spset'), elSl = $('spslist'), elSn = $('spsnote'), stOn = false, rstConf = false, rstTm = 0, volDrag = null;
+    function volPaint() {
+      var t = $('spvt'); if (!t) return;
+      t.children[0].style.width = aVol + '%'; t.children[1].style.left = aVol + '%'; $('spvp').textContent = aVol + '%';
+    }
+    function setBuild() {
+      var dev = STORE.get('dd_dev') === '1';
+      elSl.innerHTML =
+        '<div class="si" data-sa="ssound">Ses<small>' + (aSnd ? 'açık' : 'kapalı') + '</small></div>' +
+        '<div class="si vol' + (aSnd ? '' : ' off') + '"><span>Ses seviyesi</span><small id="spvp"></small><div id="spvt"><i></i><b></b></div></div>' +
+        '<div class="si" data-sa="sdev">Geliştirici modu<small>' + (dev ? 'açık' : 'kapalı') + '</small></div>' +
+        '<div class="si warn" data-sa="sreset">' + (rstConf ? 'Emin misin? Dokun' : 'ASTRO ilerlemesini sıfırla') + '<small>' + (rstConf ? '' : '⟶') + '</small></div>';
+      elSn.textContent = rstConf ? 'Rekorun ve ASTRO öğreticileri silinir. Diğer oyunlar etkilenmez.' : 'Bu ayarlar yalnızca ASTRO\'yu etkiler.';
+      volPaint();
+    }
+    function showSettings(on) {
+      stOn = on; rstConf = false; clearTimeout(rstTm); volDrag = null;
+      if (on) setBuild();
+      elSs.classList.toggle('on', on);
+    }
+    function volSet(e) {
+      var t = $('spvt'); if (!t) return; var r = t.getBoundingClientRect();
+      aVol = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 20) * 5;   // %5 adımlarla
+      volPaint(); gainApply();
+    }
+    elSl.addEventListener('pointerdown', function (e) {
+      var t = e.target && e.target.closest ? e.target.closest('#spvt') : null; if (!t) return;
+      e.preventDefault(); e.stopPropagation(); volDrag = e.pointerId; try { t.setPointerCapture(e.pointerId); } catch (_) {}
+      if (!aSnd) { aSnd = true; STORE.set('dd_astro_snd', '1'); elSl.firstChild.lastChild.textContent = 'açık'; elSl.children[1].classList.remove('off'); }
+      volSet(e);
+    });
+    elSl.addEventListener('pointermove', function (e) { if (e.pointerId === volDrag) { e.preventDefault(); volSet(e); } });
+    function volEnd(e) {
+      if (e.pointerId !== volDrag) return; volDrag = null; STORE.set('dd_astro_vol', String(aVol)); gainApply();
+      if (aSnd) bell(semi(7), 0.14, 0, 0, 1.4);
+    }
+    elSl.addEventListener('pointerup', volEnd); elSl.addEventListener('pointercancel', volEnd);
 
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
@@ -1551,7 +1629,7 @@
       genY = -S * 0.7; genFirst(); borderInit(); waveY = Math.max(H * .55, S * .85); waveT = 0; emb = []; fireT = 0; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0;
       elV.textContent = '0.0'; lastL = ''; hintA = 0; lastV = '';
       elL.textContent = 'm/sn'; startMsgT = 0; lastMsg = ''; pre = 1; cdT = 3; lastCd = 0; dkMsg('', '', '', '');
-      } else { elV.textContent = '0.0'; elL.textContent = 'm/sn'; hintA = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); }
+      } else { tk = []; elV.textContent = '0.0'; elL.textContent = 'm/sn'; hintA = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); }
     }
     function score() { return Math.floor(distM() + bonus); }
     function distM() { return Math.max(0, Math.floor(-(P.y - oy) / (S * 0.1))); }
@@ -1559,6 +1637,56 @@
     /* --- parkur üretimi: engeller dünyaya sabit, ilerledikçe parça parça üretilir --- */
     function rnd(a, b) { return a + Math.random() * (b - a); }
     function pickIn(arr) { return arr[(Math.random() * arr.length) | 0]; }
+    /* --- kıvrımlı koridor: merkez çizgisi parçalardan (düz, yumuşak viraj, keskin viraj, şimşek) üretilir ---
+       Genişlik sabit kalır: yatay yarı genişlik = cw * sqrt(1 + eğim²) (yani yola dik genişlik hep cw). */
+    var tk = [], tkY = 0, tkX = 0, tkDir = 1;
+    function trackInit(y0) { tk = []; tkY = y0 - S * 3.5; tkX = 0; tkDir = Math.random() < .5 ? -1 : 1; }
+    function tkSeg(L, dx, a) { tk.push({ y0: tkY, y1: tkY - L, x0: tkX, x1: tkX + dx, a: a }); tkY -= L; tkX += dx; }
+    function tkAdd() {
+      var sec = (oy - tkY) / (S * 5), r = Math.random(), amp = Math.min(1, .6 + .2 * sec), XM = S * 1.4, i, n, dx;
+      function turn(force) {                                       // çoğunlukla yön değiştirir (sağ → sol → sağ); sınıra yaklaşınca merkeze döner
+        tkDir = Math.random() < .8 ? -tkDir : tkDir;
+        if (tkX > XM * .55) tkDir = -1; else if (tkX < -XM * .55) tkDir = 1;
+        return tkDir;
+      }
+      if (sec < 1.2) r = r < .3 ? 0 : .35;                          // başlangıçta yalnızca yumuşak virajlar
+      else if (sec < 3) r = r < .22 ? 0 : r < .75 ? .35 : .8;
+      if (r < .2) { tkSeg(S * rnd(1.2, 2.4), 0, .5); return; }       // düz
+      if (r < .6) { tkSeg(S * rnd(3.4, 5.2), turn() * S * rnd(.7, 1.3) * amp, .5); return; }   // yumuşak viraj
+      if (r < .82) { tkSeg(S * rnd(2.1, 2.7), turn() * S * rnd(.9, 1.25) * amp, .3); tkSeg(S * rnd(.5, 1), 0, .5); return; }   // keskin viraj
+      n = 2 + (Math.random() < .5 ? 1 : 0) + (sec > 5 ? 1 : 0);      // şimşek: art arda çapraz kollar
+      tkDir = tkX > XM * .3 ? -1 : tkX < -XM * .3 ? 1 : (Math.random() < .5 ? -1 : 1);
+      for (i = 0; i < n; i++) {
+        dx = tkDir * S * rnd(1, 1.3) * amp; tkSeg(S * rnd(1.55, 2), dx, .12); tkDir = -tkDir;
+        if (Math.abs(tkX + tkDir * S) > XM * 1.2) tkDir = tkX > 0 ? -1 : 1;
+      }
+      tkSeg(S * rnd(.6, 1), 0, .5);
+    }
+    function tkExtend(upTo) { var g = 0; while (tkY > upTo && g++ < 40) tkAdd(); }
+    function tkFind(y) {                                           // y'yi içeren parça (azalan y sırasıyla ikili arama)
+      var lo = 0, hi = tk.length - 1, m;
+      if (hi < 0 || y >= tk[0].y0) return -1;
+      if (y <= tk[hi].y1) return hi;
+      while (lo < hi) { m = (lo + hi) >> 1; if (y < tk[m].y1) lo = m + 1; else hi = m; }
+      return lo;
+    }
+    function T(y) {                                                // merkez çizgisinin x'i
+      var i = tkFind(y); if (i < 0) return 0;
+      var g = tk[i], u = (g.y0 - y) / (g.y0 - g.y1), a = g.a, k = 1 / (1 - a), f;
+      if (u <= 0) return g.x0; if (u >= 1) return g.x1;
+      f = u < a ? k * u * u / (2 * a) : u <= 1 - a ? k * (a / 2 + u - a) : 1 - k * (1 - u) * (1 - u) / (2 * a);
+      return g.x0 + (g.x1 - g.x0) * f;
+    }
+    function Tp(y) {                                               // eğim dx/dy
+      var i = tkFind(y); if (i < 0) return 0;
+      var g = tk[i], L = g.y0 - g.y1, u = (g.y0 - y) / L, a = g.a, k = 1 / (1 - a);
+      if (u <= 0 || u >= 1) return 0;
+      return -(g.x1 - g.x0) / L * k * (u < a ? u / a : u <= 1 - a ? 1 : (1 - u) / a);
+    }
+    function Lw(y) { var q = Tp(y); return Math.sqrt(1 + q * q); } // yatay genişlik çarpanı (dik genişlik sabit kalsın)
+    function mkRockL(x, y, r, o) {                                 // koridora göre yerel x ile kaya
+      var t = T(y); if (o && o.cx !== undefined) o.cx += t; return mkRock(x + t, y, r, o);
+    }
     function mkRock(x, y, r, o) {
       var n = 9 + ((Math.random() * 3) | 0), pts = [], i;
       for (i = 0; i < n; i++) pts.push(.78 + Math.random() * .22);
@@ -1625,8 +1753,9 @@
       if (sB) breakRock(B, 1, nx, ny, cvx, cvy, rel); else if (B.dv) { B.vx += nx * (rel * .5 + S * .02); B.vy += ny * (rel * .5 + S * .02); }
     }
     function driftBounds(o) {
-      if (o.x < -cw + o.r) { o.x = -cw + o.r; if (o.vx < 0) o.vx = -o.vx * .8; }
-      if (o.x > cw - o.r) { o.x = cw - o.r; if (o.vx > 0) o.vx = -o.vx * .8; }
+      var tc = T(o.y), ce = cw * Lw(o.y);
+      if (o.x < tc - ce + o.r) { o.x = tc - ce + o.r; if (o.vx < 0) o.vx = -o.vx * .8; }
+      if (o.x > tc + ce - o.r) { o.x = tc + ce - o.r; if (o.vx > 0) o.vx = -o.vx * .8; }
       for (var w = 0; w < obs.length; w++) {
         var q = obs[w]; if (q.t !== 'wall' || Math.abs(q.y - o.y) > q.h + o.r) continue;
         var qx = Math.max(q.x0, Math.min(o.x, q.x1)), qy = Math.max(q.y - q.h / 2, Math.min(o.y, q.y + q.h / 2)),
@@ -1674,7 +1803,7 @@
       return true;
     }
     function spotFor(y, m) {                                      // serbest bir yer bul (y civarında)
-      for (var i = 0; i < 14; i++) { var x = rnd(-cw * .8, cw * .8), yy = y + rnd(-S * .25, S * .25); if (clearAt(x, yy, m)) return { x: x, y: yy }; }
+      for (var i = 0; i < 14; i++) { var yy = y + rnd(-S * .25, S * .25), x = rnd(-cw * .8, cw * .8) + T(yy); if (clearAt(x, yy, m)) return { x: x, y: yy }; }
       return null;
     }
     // desenler: her biri uzunluk (px) döndürür. d = zorluk (0..)
@@ -1685,7 +1814,7 @@
         for (var i = 0; i < n; i++) {
           var r = S * rnd(.045, .085), isA = d >= 3 && Math.random() < Math.min(.5, .22 + d * .03), isD = !isA && d >= 2 && Math.random() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
           for (var tr = 0; tr < 12; tr++) {
-            var rx = rnd(-cw * .9, cw * .9), ry = y0 - rnd(.08, .92) * L;
+            var ry = y0 - rnd(.08, .92) * L, rx = rnd(-cw * .9, cw * .9) + T(ry);
             if (!rockFree(rx, ry, r, am)) continue;
             if (isA) mkRock(rx, ry, r, { amp: am, w: rnd(.6, 1.3), ph: Math.random() * 6.28 });
             else if (isD) {
@@ -1700,17 +1829,18 @@
       },
       slalom: function (y0, d) {
         var n = 3 + Math.min(3, (d / 2) | 0), sp = S * (.52 - Math.min(.16, d * .012)), side = Math.random() < .5 ? -1 : 1;
-        for (var i = 0; i < n; i++) { side = -side; mkRock(side * cw * rnd(.08, .34), y0 - sp * (i + .6), S * rnd(.1, .15)); mkRock(-side * cw * rnd(.85, .98), y0 - sp * (i + .6) - S * rnd(-.1, .1), S * rnd(.07, .1)); }
+        for (var i = 0; i < n; i++) { side = -side; mkRockL(side * cw * rnd(.08, .34), y0 - sp * (i + .6), S * rnd(.1, .15)); mkRockL(-side * cw * rnd(.85, .98), y0 - sp * (i + .6) - S * rnd(-.1, .1), S * rnd(.07, .1)); }
         return sp * (n + .4);
       },
       gate: function (y0, d) {
-        var gw = S * Math.max(.24, .46 - d * .02), gx = rnd(-cw * .6, cw * .6), h = S * .07, y = y0 - S * .35;
-        obs.push({ t: 'wall', x0: (bAct ? -(bLim + S * .215) : -cw - W), x1: gx - gw / 2, y: y, h: h, near: false });
-        obs.push({ t: 'wall', x0: gx + gw / 2, x1: (bAct ? bLim + S * .215 : cw + W), y: y, h: h, near: false });
+        var gw = S * Math.max(.24, .46 - d * .02), h = S * .07, y = y0 - S * .35, t = T(y), gl = rnd(-cw * .6, cw * .6), gx = gl + t,
+            E = (bAct ? bLim + S * .215 : cw + W) * Lw(y);
+        obs.push({ t: 'wall', x0: t - E, x1: gx - gw / 2, y: y, h: h, near: false });
+        obs.push({ t: 'wall', x0: gx + gw / 2, x1: t + E, y: y, h: h, near: false });
         if (d > 3 && Math.random() < .6) {                         // ikinci kapı, ters tarafta
-          var gx2 = -gx * rnd(.5, 1.1), y2 = y - S * rnd(.55, .75);
-          obs.push({ t: 'wall', x0: (bAct ? -(bLim + S * .215) : -cw - W), x1: gx2 - gw / 2, y: y2, h: h, near: false });
-          obs.push({ t: 'wall', x0: gx2 + gw / 2, x1: (bAct ? bLim + S * .215 : cw + W), y: y2, h: h, near: false });
+          var y2 = y - S * rnd(.55, .75), t2 = T(y2), gx2 = t2 - gl * rnd(.5, 1.1), E2 = (bAct ? bLim + S * .215 : cw + W) * Lw(y2);
+          obs.push({ t: 'wall', x0: t2 - E2, x1: gx2 - gw / 2, y: y2, h: h, near: false });
+          obs.push({ t: 'wall', x0: gx2 + gw / 2, x1: t2 + E2, y: y2, h: h, near: false });
           return S * 1.15;
         }
         return S * .7;
@@ -1719,29 +1849,30 @@
         var gw = S * Math.max(.3, .52 - d * .02), n = d > 4 ? 2 : 1, y;
         for (var i = 0; i < n; i++) {
           y = y0 - S * (.3 + i * .55);
-          obs.push({ t: 'beam', y: y, x0: (bAct ? -(bLim + S * .215) : -cw), x1: (bAct ? bLim + S * .215 : cw), gx: rnd(-cw * .6, cw * .6), gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
+          var bt = T(y), be = (bAct ? bLim + S * .215 : cw) * Lw(y);
+          obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, gx: rnd(-cw * .6, cw * .6) + bt, gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
         }
         return S * (.55 + n * .45);
       },
       spinner: function (y0, d) {
         var L = S * rnd(.62, .85), w = rnd(.9, 1.5 + Math.min(.6, d * .06)) * (Math.random() < .5 ? -1 : 1), y = y0 - S * .6, x = rnd(-cw * .5, cw * .5), x2;
         if (bAct) { if (bLim < L / 2) L = bLim * 1.9; var mx = Math.max(0, bLim - L / 2); x = Math.max(-mx, Math.min(mx, x)); }
-        obs.push({ t: 'spin', x: x, y: y, L: L, w: w, rot: Math.random() * 6.28, near: false });
+        obs.push({ t: 'spin', x: x + T(y), y: y, L: L, w: w, rot: Math.random() * 6.28, near: false });
         x2 = x + (x > 0 ? -1 : 1) * S * rnd(.9, 1.2);
-        if (d > 5 && (!bAct || Math.abs(x2) + L * .85 / 2 <= bLim)) obs.push({ t: 'spin', x: x2, y: y - S * .55, L: L * .85, w: -w, rot: Math.random() * 6.28, near: false });
+        if (d > 5 && (!bAct || Math.abs(x2) + L * .85 / 2 <= bLim)) obs.push({ t: 'spin', x: x2 + T(y - S * .55), y: y - S * .55, L: L * .85, w: -w, rot: Math.random() * 6.28, near: false });
         return S * (d > 5 ? 1.5 : 1.2);
       },
       hole: function (y0, d) {                                      // kara delik: çekim alanı + yutan ufuk
         var R = S * (.055 + Math.min(.02, d * .003)), m = bAct ? Math.max(0, bLim - S * .3) : cw * .55;
-        obs.push({ t: 'hole', x: rnd(-m, m), y: y0 - S * .95, R: R, G: S * .9, near: false });
+        var hy = y0 - S * .95; obs.push({ t: 'hole', x: rnd(-m, m) + T(hy), y: hy, R: R, G: S * .9, near: false });
         return S * 1.9;
       },
       pendulum: function (y0, d) {
         var rows = 3 + Math.min(2, (d / 4) | 0), sp = S * .46;
         for (var i = 0; i < rows; i++) {
           var a = cw * rnd(.5, .85), ph = Math.random() * 6.28, w = rnd(.7, 1.2 + d * .04) * (i % 2 ? -1 : 1), y1 = y0 - sp * (i + .7);
-          mkRock(0, y1, S * rnd(.075, .11), { cx: 0, amp: a, w: w, ph: ph });
-          if (Math.random() < .7) mkRock(0, y1 - S * .23, S * rnd(.06, .09), { cx: 0, amp: a, w: w, ph: ph + 3.14 });   // ayrı bant: kayalar birbirine girmez
+          mkRockL(0, y1, S * rnd(.075, .11), { cx: 0, amp: a, w: w, ph: ph });
+          if (Math.random() < .7) mkRockL(0, y1 - S * .23, S * rnd(.06, .09), { cx: 0, amp: a, w: w, ph: ph + 3.14 });   // ayrı bant: kayalar birbirine girmez
         }
         return sp * (rows + .4);
       }
@@ -1762,18 +1893,21 @@
       genY = y - S * rnd(.2, .5); lastPat = '';
     }
     /* --- sınır kayaları: ileri sektörlerde (BSEC ve sonrası) koridor kenarları yan yana dizili sabit kayalarla çevrilir --- */
-    function borderInit() { bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; }
+    function borderInit() { trackInit(oy); bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; }
     function genBorder(upTo) {                                     // süzülüp bir hizaya oturmuş kayalar: farklı boyut, yumuşak sapma, hafif nefes; her biri öncekine teğet
-      var si, sd, c, guard, f, r, x, y, dx, need, q;
+      var si, sd, c, guard, f, r, x, y, dx, need, q, wd, it;
       for (si = 0; si < 2; si++) {
         sd = si ? 1 : -1; c = bC[si]; guard = 0;
         while (c.y > upTo && guard++ < 120) {
           f = Math.min(1, (bStartY - c.y) / (S * 1.5));            // ilk kayalar küçük başlar, giderek büyür
           q = Math.random(); r = S * (q < .25 ? rnd(.045, .07) : q < .85 ? rnd(.07, .1) : rnd(.1, .125)) * (.55 + .45 * f);
           c.dep = Math.max(0, Math.min(S * .06, c.dep + rnd(-.025, .025) * S));   // iç kenar yavaşça dalgalanır: dümdüz sütun değil
-          x = sd * (cw - r * .2 - c.dep); y = bStartY;
-          if (c.has) { dx = x - c.x; need = .93 * (r + c.r); y = c.y - Math.sqrt(Math.max(0, need * need - dx * dx)); }
-          mkRock(x, y, r, { gen: 2, fix: true, ox: 0, oy: 0, ovx: 0, ovy: 0, vr: rnd(-.1, .1), hx: x, hy: y, ax: S * rnd(.005, .011), ay: S * rnd(.005, .011), bw: rnd(.4, .6), ph: c.n * .45 + rnd(-.15, .15) });   // gen 2: parçalanmaz; komşular benzer fazda: birlikte nefes alır
+          wd = cw - r * .2 - c.dep; y = bStartY; x = T(y) + sd * wd * Lw(y);
+          if (c.has) {                                             // kıvrımlı kenarda teğet sıralama: konumu yeni y'de yeniden hesapla
+            need = .93 * (r + c.r); y = c.y; x = T(y) + sd * wd * Lw(y);
+            for (it = 0; it < 4; it++) { dx = x - c.x; y = c.y - Math.sqrt(Math.max(0, need * need - dx * dx)); x = T(y) + sd * wd * Lw(y); }
+          }
+          mkRock(x, y, r, { sd: sd, gen: 2, fix: true, ox: 0, oy: 0, ovx: 0, ovy: 0, vr: rnd(-.1, .1), hx: x, hy: y, ax: S * rnd(.005, .011), ay: S * rnd(.005, .011), bw: rnd(.4, .6), ph: c.n * .45 + rnd(-.15, .15) });   // gen 2: parçalanmaz; komşular benzer fazda: birlikte nefes alır
           c.has = true; c.x = x; c.y = y; c.r = r; c.n++;
         }
       }
@@ -1795,7 +1929,7 @@
           }
         }
         for (i = 0; i < rk.length; i++) for (j = i + 1; j < rk.length; j++) {
-          a = rk[i]; b = rk[j]; if ((a.hx < 0) !== (b.hx < 0)) continue;
+          a = rk[i]; b = rk[j]; if (a.sd !== b.sd) continue;
           var ex = b.hx - a.hx, ey = b.hy - a.hy, ed = Math.hypot(ex, ey), en = .93 * (a.r + b.r);
           if (ed < en && ed > 1e-3) { var pu = (en - ed) / 2; a.hx -= ex / ed * pu; a.hy -= ey / ed * pu; b.hx += ex / ed * pu; b.hy += ey / ed * pu; }
         }
@@ -1819,6 +1953,7 @@
     function genMore() {
       var guard = 0;
       var ry = devOn ? Math.min(P.y, dv.y) : P.y, ahead = H * 1.6 / (devOn ? Math.min(1, dv.z) : 1);
+      tkExtend(ry - ahead - S * 6);
       if (bOn) genBorder(ry - ahead - S * 2.5);
       while (genY > ry - ahead && guard++ < 8) {
         var d = Math.floor(-(genY - oy) / (S * .1) / 50), y0 = genY;
@@ -1827,13 +1962,13 @@
         var nm = pickPat(d), n0 = obs.length, pk0 = pick.length, L = PAT[nm](y0, d); lastPat = nm;
         if (bAct) for (var kk = n0; kk < obs.length; kk++) {          // kayalar sınır kuşağının içine taşmasın
           var ob = obs[kk]; if (ob.t !== 'rock') continue;
-          var cc = ob.amp ? ob.cx : ob.x, mm = ob.r + (ob.amp || 0);
-          if (Math.abs(cc) + mm > bLim) { var c2 = Math.max(0, bLim - mm) * (cc < 0 ? -1 : 1); ob.cx = c2; ob.x = c2; }
+          var tcc = T(ob.y), cc = (ob.amp ? ob.cx : ob.x) - tcc, mm = ob.r + (ob.amp || 0);
+          if (Math.abs(cc) + mm > bLim) { var c2 = tcc + Math.max(0, bLim - mm) * (cc < 0 ? -1 : 1); ob.cx = c2; ob.x = c2; }
         }
         var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25);
         // ödüller: bir hücre şeridi, bazen halka
         var cnt = 2 + ((Math.random() * 3) | 0), sp0 = spotFor(y0 - L * .5, S * .16);
-        if (sp0) for (var i = 0; i < cnt; i++) { var cxx = sp0.x + Math.sin(i * .9) * S * .05, cyy = sp0.y - i * S * .07; if (clearAt(cxx, cyy, S * .1)) mkCell(cxx, cyy); }
+        if (sp0) for (var i = 0; i < cnt; i++) { var cyy = sp0.y - i * S * .07, cxx = sp0.x + (T(cyy) - T(sp0.y)) + Math.sin(i * .9) * S * .05; if (clearAt(cxx, cyy, S * .1)) mkCell(cxx, cyy); }
         if (Math.random() < .42) { var sr = spotFor(y0 - L - gap * .5, S * .22); if (sr) mkRing(sr.x, sr.y); }
         if (bAct) settleBorder(n0);
         cw = cwS; bAct = false;
@@ -1856,8 +1991,8 @@
       stars = [];
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
-    function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); }
+    function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); gainApply(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
+    function close() { on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); if (master) master.gain.value = muted ? 0 : 0.9; }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -1908,7 +2043,7 @@
     window.addEventListener('keydown', function (e) {
       if (!on) return;
       e.stopPropagation(); e.preventDefault();
-      if (e.key === 'Escape') { if (mode === 1) pause(); else if (mode === 2) play(false); else close(); return; }
+      if (e.key === 'Escape') { if (stOn) { showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else close(); return; }
       if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
       keys[e.key.toLowerCase()] = 1; audioInit(); thrustInit();
@@ -1979,14 +2114,14 @@
         alpha += (wrap(rt - P.h) * 20 - P.w * 8) * rw;
       }
       P.w += alpha * dt; P.h += P.w * dt; hv = alpha;
-      // TAM TUR: işaretli dönüş birikir; 360° dolunca tok bir efekt + az enerji. Duraksayınca birikim silinir.
+      // TAM TUR: işaretli dönüş birikir; ≈300° dolunca tok bir efekt + az enerji. Duraksayınca birikim silinir.
       if (race && !dead && !pre) {
         if (righting <= 0) spinAcc += P.w * dt;
         if (Math.abs(P.w) < 0.35) spinIdle += dt; else spinIdle = 0;
         if (spinIdle > 1.2) spinAcc = 0;
         spinChainT = Math.max(0, spinChainT - dt); if (spinChainT <= 0) spinChain = 0;
-        if (Math.abs(spinAcc) >= 6.2832) {
-          spinAcc -= (spinAcc > 0 ? 6.2832 : -6.2832);
+        if (Math.abs(spinAcc) >= 5.236) {                // ≈300°: dönüşün büyük kısmı yeter; gemi hedef yöne varıp dururken tam 360° dolmaz
+          spinAcc = 0;
           spinChain++; spinChainT = 3.2;
           gainEn(.05); if (lock && en > .25) lock = false;
           flash = Math.max(flash, .35); shake = Math.max(shake, .22);
@@ -2253,12 +2388,12 @@
       el.classList.toggle('devcam', devOn);
     }
     function devWarp() {                                           // dev kapanınca: mekik, kameranın olduğu sektöre doğrudan gider
-      var tx = Math.max(-cw * .6, Math.min(cw * .6, dv.x)), ty = dv.y, x = tx, y = ty, ms = [.16, .11, .06, 0], mi, k, a, rr, found = false;
+      var tcw = T(dv.y), tx = tcw + Math.max(-cw * .6, Math.min(cw * .6, dv.x - tcw)), ty = dv.y, x = tx, y = ty, ms = [.16, .11, .06, 0], mi, k, a, rr, found = false;
       if (race) {                                                  // engelin içine düşmemesi için en yakın boş noktayı ara
         for (mi = 0; mi < ms.length && !found; mi++) {
           for (k = 0; k < 90; k++) {
             a = k * 2.4; rr = k ? S * .035 * Math.sqrt(k) : 0;
-            x = Math.max(-cw * .7, Math.min(cw * .7, tx + Math.cos(a) * rr)); y = ty + Math.abs(Math.sin(a)) * rr;   // aşağı (geri) yönde ara: önde yer kalsın
+            x = tcw + Math.max(-cw * .7, Math.min(cw * .7, tx - tcw + Math.cos(a) * rr)); y = ty + Math.abs(Math.sin(a)) * rr;   // aşağı (geri) yönde ara: önde yer kalsın
             if (clearAt(x, y, S * ms[mi])) { found = true; break; }
           }
         }
@@ -2297,9 +2432,9 @@
       var d = distM(), sc = Math.floor(d / 50);
       if (sc > sector) { sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4; sfxSector(); vib(12); }
       // kenar duvarları (esnek)
-      var cwp = cw;
-      if (P.x > cwp - Rs) { P.x = cwp - Rs; if (P.vx > 0) { P.vx *= -.45; shake = Math.max(shake, .2); } }
-      if (P.x < -cwp + Rs) { P.x = -cwp + Rs; if (P.vx < 0) { P.vx *= -.45; shake = Math.max(shake, .2); } }
+      var tcP = T(P.y), cwp = cw * Lw(P.y), wvx = Tp(P.y) * P.vy;   // wvx: gemi yükseldikçe duvarın yanal hızı
+      if (P.x > tcP + cwp - Rs) { P.x = tcP + cwp - Rs; if (P.vx > wvx) { P.vx = wvx - (P.vx - wvx) * .45; shake = Math.max(shake, .2); } }
+      if (P.x < tcP - cwp + Rs) { P.x = tcP - cwp + Rs; if (P.vx < wvx) { P.vx = wvx + (wvx - P.vx) * .45; shake = Math.max(shake, .2); } }
       // alev: zamanla, sektörle hızlanır, nefes alır; çok geride kalırsa yetişir (gerilim). Ölüm: görünen alev ucu gemiye değince.
       waveT += dt;
       var wv = S * Math.min(.36, .085 + .0022 * waveT + .006 * sector) * (1 + .1 * Math.sin(waveT * .7)), gap = waveY - P.y;
@@ -2762,14 +2897,30 @@
         if (sk.chip) sk.rot += sk.vr * dtl; if (sk.l <= 0) lzSp.splice(i, 1);
       }
       cx.save(); cx.lineCap = 'round'; cx.lineJoin = 'round';
-      // koridor kenarları
-      for (k = -1; k <= 1; k += 2) {
+      // koridor kenarları (kıvrımlı): yalnızca sınır kayalarının başladığı yerin gerisinde
+      if (tk.length) {
+        var wy0 = Math.max(-oy - 40, bOn ? bStartY : -1e9), wy1 = H - oy + 40;
+        if (wy0 < wy1) {
+          var st = 22, ny = Math.max(2, Math.ceil((wy1 - wy0) / st)), j, wyy, ex, tt, ll;
+          for (k = -1; k <= 1; k += 2) {
+            var pr = 1 - Math.min(1, Math.abs(P.x - (T(P.y) + k * cw * Lw(P.y))) / (S * .45)), px = [], py = [];
+            for (j = 0; j <= ny; j++) { wyy = wy0 + (wy1 - wy0) * j / ny; px.push(ox + T(wyy) + k * cw * Lw(wyy)); py.push(oy + wyy); }
+            for (j = 0; j < ny; j++) {                                  // iç ışıma: her dilim kendi yatay geçişiyle
+              g = cx.createLinearGradient(px[j], 0, px[j] - k * S * .22, 0); g.addColorStop(0, rgba(OR, .2 * pr)); g.addColorStop(1, rgba(OR, 0));
+              cx.fillStyle = g; cx.beginPath(); cx.moveTo(px[j], py[j]); cx.lineTo(px[j + 1], py[j + 1]);
+              cx.lineTo(px[j + 1] - k * S * .22, py[j + 1]); cx.lineTo(px[j] - k * S * .22, py[j]); cx.closePath(); cx.fill();
+            }
+            cx.setLineDash([12, 14]); cx.lineDashOffset = -P.y * .5; cx.strokeStyle = rgba(OR, .22 + .5 * pr); cx.lineWidth = 1.5;
+            cx.beginPath(); cx.moveTo(px[0], py[0]); for (j = 1; j <= ny; j++) cx.lineTo(px[j], py[j]); cx.stroke(); cx.setLineDash([]);
+          }
+        }
+      } else for (k = -1; k <= 1; k += 2) {
         x = ox + k * cw; if (x < -30 || x > W + 30) continue;
-        var pr = 1 - Math.min(1, Math.abs(P.x - k * cw) / (S * .45)), ly = bOn ? Math.max(0, Math.min(H, oy + bStartY)) : 0;   // sınır kayalarının başladığı yerden ileride çizgi yok
+        var pr0 = 1 - Math.min(1, Math.abs(P.x - k * cw) / (S * .45)), ly = bOn ? Math.max(0, Math.min(H, oy + bStartY)) : 0;
         if (ly >= H) continue;
-        g = cx.createLinearGradient(x, 0, x - k * S * .22, 0); g.addColorStop(0, rgba(OR, .2 * pr)); g.addColorStop(1, rgba(OR, 0));
+        g = cx.createLinearGradient(x, 0, x - k * S * .22, 0); g.addColorStop(0, rgba(OR, .2 * pr0)); g.addColorStop(1, rgba(OR, 0));
         cx.fillStyle = g; cx.fillRect(Math.min(x, x - k * S * .22), ly, S * .22, H - ly);
-        cx.setLineDash([12, 14]); cx.lineDashOffset = -P.y * .5; cx.strokeStyle = rgba(OR, .22 + .5 * pr); cx.lineWidth = 1.5;
+        cx.setLineDash([12, 14]); cx.lineDashOffset = -P.y * .5; cx.strokeStyle = rgba(OR, .22 + .5 * pr0); cx.lineWidth = 1.5;
         cx.beginPath(); cx.moveTo(x, ly); cx.lineTo(x, H); cx.stroke(); cx.setLineDash([]);
       }
       // ödüller
