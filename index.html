@@ -388,6 +388,13 @@
   #spvt::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 2px; border-radius: 2px; background: rgba(244,242,238,.16); }
   #spvt i { position: absolute; left: 0; top: 16px; height: 2px; border-radius: 2px; background: var(--fg); }
   #spvt b { position: absolute; top: 8px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 12px rgba(244,242,238,.25); }
+  #sppv { position: absolute; z-index: 2; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 14px); display: none; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
+  #space.pv.play #sppv { display: flex; }
+  #space.pv #spause { display: none !important; }
+  #sppv small { font-size: 10px; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: var(--dim); }
+  #sppv small b { font-weight: 400; color: var(--soft); }
+  #sppv [data-sa] { pointer-events: auto; padding: 9px 20px; border: 1px solid rgba(244,242,238,.3); border-radius: 16px; font-size: 11px; letter-spacing: .24em; text-indent: .24em; text-transform: uppercase; color: var(--soft); cursor: pointer; transition: background .2s ease; }
+  #sppv [data-sa]:active { background: rgba(244,242,238,.12); }
   #spico { flex: 1 1 auto; align-self: stretch; position: relative; touch-action: none; cursor: grab; margin: 2vh 0 1vh; }
   #spico .cr { position: absolute; inset: 0; }
   #spico .sl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; will-change: transform, opacity; pointer-events: none; }
@@ -506,6 +513,19 @@
   #shop .s-ab.buy:active { opacity:.75; }
   #shop .s-ab.no { border-color:rgba(255,138,92,.6); color:var(--warm); }
   #shop .s-ab.off { opacity:.35; pointer-events:none; }
+  #shop .s-bt { display:flex; gap:10px; margin-top:12px; }
+  #shop .s-bt .s-ab { margin-top:0; width:auto; flex:1 1 0; }
+  #shop .s-bt .s-try { flex:0 0 32%; }
+  /* satın alma efekti: sakin ve kısa */
+  @keyframes s-buy { 0% { filter:drop-shadow(0 0 0 rgba(244,242,238,0)) brightness(1); transform:scale(1); } 30% { filter:drop-shadow(0 0 16px rgba(244,242,238,.5)) brightness(1.25); transform:scale(1.035); } 100% { filter:drop-shadow(0 0 0 rgba(244,242,238,0)) brightness(1); transform:scale(1); } }
+  #shop .s-ring { position:absolute; left:50%; top:42%; width:56px; height:56px; margin:-28px 0 0 -28px; border:1px solid rgba(244,242,238,.5); border-radius:50%; pointer-events:none; animation:s-rg 1s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes s-rg { from { transform:scale(.5); opacity:.6; } to { transform:scale(5.5); opacity:0; } }
+  #shop .s-pt { position:absolute; left:50%; top:42%; width:3px; height:3px; margin:-1.5px; border-radius:50%; background:var(--fg); pointer-events:none; opacity:0; animation:s-pt 1s ease-out forwards; }
+  #shop .s-pt.b { background:var(--blue); }
+  @keyframes s-pt { 0% { opacity:0; transform:translate(0,0) scale(.6); } 15% { opacity:.9; } 100% { opacity:0; transform:translate(var(--x),var(--y)) scale(1); } }
+  #shop .s-tp .s-ic.bump { animation:s-bump .7s ease-out; }
+  @keyframes s-bump { from { box-shadow:0 0 0 0 rgba(140,194,255,.45); } to { box-shadow:0 0 0 16px rgba(140,194,255,0); } }
+  @media (prefers-reduced-motion: reduce) { #shop .s-ring, #shop .s-pt { display:none; } }
 
   /* güçlendirmeler: liste + alttan panel */
   #shop .s-list { flex:1; min-height:0; margin-top:6px; padding:0 22px 12px; overflow-y:auto; scrollbar-width:none; touch-action:pan-y; -webkit-overflow-scrolling:touch; }
@@ -621,7 +641,7 @@
     <div class="s-info"><div class="s-nm"></div><div class="s-stt"></div><p class="s-ds"></p></div>
     <p class="s-hn"></p>
     <div class="s-th"></div>
-    <button class="s-ab" data-k="act"></button>
+    <div class="s-bt"><button class="s-ab s-try" data-k="try">Dene</button><button class="s-ab" data-k="act"></button></div>
   </section>
   <section class="s-v s-pv"><div class="s-list"></div></section>
   <div class="s-sh"><div class="s-sc" data-k="x"></div><div class="s-sp" role="dialog" aria-modal="true">
@@ -636,7 +656,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div></div></div>
 </div>
 
 <script>
@@ -656,7 +676,8 @@
     { id:'hayalet', n:'Hayalet', price:500, p:{a:'none',b:'none',c:'none',w:'#f4f2ee',n:'#f4f2ee',f:'#f4f2ee',s:'#f4f2ee'}, d:'Yalnızca ince çizgilerden oluşan, karanlıkta süzülen mekik.' }
   ];
   var POW = [
-    { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' }
+    { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
+    { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:12, f:'+#% itiş gücü', d:'Daha güçlü motor: daha hızlı kalkar, ters yöne itişle çok daha çabuk durursun. Alev de gücüne göre büyür. Güçlü itiş yakıtı da aynı oranda hızlı yakar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' }
   ];
 
   /* ===== Kalıcı veri ===== */
@@ -673,7 +694,7 @@
 
   /* Oyundaki jet alevinin aynısı: th = itiş (0-1). Alevi değiştiren güçlendirmeler ileride buradan ayarlanır. */
   function flame(th) {
-    var y0 = 2.08, L = .3 + 2.6 * th, w0 = .17 + .1 * th, w1 = w0 * .45, Lc = L * .55, k, d = '';
+    var tfs = 1 + .5 * .12 * ((D && D.lv && D.lv.itis) | 0), y0 = 2.08, L = .3 + 2.6 * th * tfs, w0 = (.17 + .1 * th) * (1 + .4 * (tfs - 1)), w1 = w0 * .45, Lc = L * .55, k, d = '';
     for (k = 1; k <= 3; k++) if (th > .4) d += '<ellipse cx="0" cy="' + (y0 + L * .2 * k) + '" rx="' + (w0 * .38 * (1 - .2 * k)) + '" ry=".1" fill="#fff" fill-opacity="' + (.8 * (th - .3) * (1 - .22 * k)) + '"/>';
     return '<defs><radialGradient id="s-gg" cx="0" cy="' + (y0 + .2) + '" r=".9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,190,130)" stop-opacity="' + .3 * th + '"/><stop offset="1" stop-color="rgb(255,140,70)" stop-opacity="0"/></radialGradient>' +
       '<linearGradient id="s-go" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + L) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,246,232)" stop-opacity=".95"/><stop offset=".3" stop-color="rgb(255,200,140)" stop-opacity=".7"/><stop offset="1" stop-color="rgb(255,120,60)" stop-opacity="0"/></linearGradient>' +
@@ -723,6 +744,7 @@
     q('.s-th').innerHTML = h;
     var a = q('[data-k=act]');
     if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', it.price, 'Satın al');
+    q('[data-k=try]').style.display = own ? 'none' : '';
     q('.s-cv .s-hn').textContent = !own && bal() < it.price ? HINT : '';
   }
   function paintP(nw) {
@@ -759,21 +781,50 @@
   }
   function changed() { if (API.onChange) API.onChange(); }
 
+  function buyFx() {
+    var hero = q('.s-hero'), sv = q('.s-ship svg'), i, d, r, a, dist;
+    if (API.onBuy) API.onBuy('c');
+    if (!hero || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    if (sv) { sv.style.animation = 'none'; void sv.getBoundingClientRect(); sv.style.animation = 's-buy .9s cubic-bezier(.2,.7,.2,1)'; }
+    r = document.createElement('i'); r.className = 's-ring'; hero.appendChild(r);
+    setTimeout(function () { if (r.parentNode) r.parentNode.removeChild(r); }, 1100);
+    for (i = 0; i < 9; i++) {
+      d = document.createElement('i'); d.className = 's-pt' + (i % 3 === 0 ? ' b' : '');
+      a = -Math.PI / 2 + (Math.random() - .5) * 2.6; dist = 50 + Math.random() * 70;
+      d.style.setProperty('--x', Math.cos(a) * dist + 'px'); d.style.setProperty('--y', Math.sin(a) * dist + 'px');
+      d.style.animationDelay = (Math.random() * .15) + 's'; d.style.animationDuration = (.8 + Math.random() * .5) + 's';
+      hero.appendChild(d); (function (n) { setTimeout(function () { if (n.parentNode) n.parentNode.removeChild(n); }, 1600); })(d);
+    }
+  }
   function doAct() {
-    var it = cfind(S.sel);
+    var it = cfind(S.sel), nw = false;
     if (D.owned[it.id]) D.eq = it.id;
-    else if (bal() >= it.price) { if (!dev()) D.coins -= it.price; D.owned[it.id] = 1; D.eq = it.id; }
+    else if (bal() >= it.price) { if (!dev()) D.coins -= it.price; D.owned[it.id] = 1; D.eq = it.id; nw = true; }
     else return;
-    save(); paint(); changed();
+    save(); paint(); changed(); if (nw) buyFx();
   }
   function doUp() {
     var it = pfind(S.open), l = lvl(it), c = cost(it); if (l >= it.max || bal() < c) return;
-    if (!dev()) D.coins -= c; D.lv[it.id] = l + 1; save(); paint(it.id); changed();
+    if (!dev()) D.coins -= c; D.lv[it.id] = l + 1; save(); S.shown = ''; paint(it.id); changed();
+    var ic = q('.s-tp .s-ic'); if (ic) { ic.classList.remove('bump'); void ic.offsetWidth; ic.classList.add('bump'); }
+    if (API.onBuy) API.onBuy('p');
   }
-  function swipe(d) {
-    var i = 0; COST.forEach(function (c, k) { if (c.id === S.sel) i = k; });
-    i = Math.max(0, Math.min(COST.length - 1, i + d)); S.sel = COST[i].id; paint();
+  var EASE = 'transform .28s cubic-bezier(.22,.61,.36,1), opacity .28s ease';
+  function cidx() { var i = 0; COST.forEach(function (c, k) { if (c.id === S.sel) i = k; }); return i; }
+  function pick(id, dir) {                                   // eski mekik çıkar, yenisi karşı yönden girer; yazılar anında güncellenir
+    if (id === S.sel) return;
+    var sh = q('.s-ship'), hero = q('.s-hero'), W = hero.clientWidth || 300, old = sh.querySelector('svg'), o, os, nw;
+    if (old) {
+      o = sh.cloneNode(false); o.className = 's-ship s-out'; o.style.animation = 'none'; os = old.cloneNode(true);
+      os.style.transition = 'none'; o.appendChild(os); hero.appendChild(o); void o.offsetWidth;
+      os.style.transition = EASE; os.style.transform = 'translateX(' + (-dir * W * .5) + 'px)'; os.style.opacity = '0';
+      setTimeout(function () { if (o.parentNode) o.parentNode.removeChild(o); }, 320);
+    }
+    S.sel = id; paint(); nw = sh.querySelector('svg'); if (!nw) return;
+    nw.style.transition = 'none'; nw.style.transform = 'translateX(' + (dir * W * .5) + 'px)'; nw.style.opacity = '0'; void nw.offsetWidth;
+    nw.style.transition = EASE; nw.style.transform = 'none'; nw.style.opacity = '1';
   }
+  function swipe(d) { var n = COST.length; if (n > 1) pick(COST[(cidx() + d + n) % n].id, d); }
 
   root.addEventListener('click', function (e) {
     var t = e.target, b;
@@ -787,18 +838,28 @@
       v.classList.remove('in'); void v.offsetWidth; v.classList.add('in');
       return;
     }
-    if ((b = t.closest('.s-t'))) { S.sel = b.getAttribute('data-id'); paint(); return; }
+    if ((b = t.closest('.s-t'))) { var tid = b.getAttribute('data-id'), ti = 0; COST.forEach(function (c, k) { if (c.id === tid) ti = k; }); pick(tid, ti >= cidx() ? 1 : -1); return; }
     if ((b = t.closest('.s-rw'))) { S.open = b.getAttribute('data-id'); paint(); return; }
     if (t.closest('[data-k=x]')) { S.open = ''; paint(); return; }
+    if (t.closest('[data-k=try]')) { if (API.onPreview) API.onPreview(S.sel); return; }
     if (t.closest('[data-k=act]')) return doAct();
     if (t.closest('[data-k=sact]')) return doUp();
   });
-  var x0 = null, hero = q('.s-hero');
-  hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-  hero.addEventListener('touchend', function (e) {
-    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
-    if (Math.abs(dx) > 40) swipe(dx < 0 ? 1 : -1);
+  var x0 = null, t0 = 0, hero = q('.s-hero');
+  function hsvg() { return q('.s-ship svg'); }
+  hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; t0 = Date.now(); var v = hsvg(); if (v) v.style.transition = 'none'; }, { passive: true });
+  hero.addEventListener('touchmove', function (e) {
+    if (x0 === null) return; var dx = e.touches[0].clientX - x0, W = hero.clientWidth || 300, v = hsvg(); if (!v) return;
+    if (COST.length < 2) dx = Math.max(-40, Math.min(40, dx * .25));
+    v.style.transform = 'translateX(' + dx * .9 + 'px)'; v.style.opacity = Math.max(.25, 1 - Math.abs(dx) / W * .8);
   }, { passive: true });
+  function hend(e) {
+    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0, dt = Math.max(1, Date.now() - t0), W = hero.clientWidth || 300, v = hsvg(); x0 = null;
+    var go = COST.length > 1 && (Math.abs(dx) > W * .2 || (Math.abs(dx) / dt > .4 && Math.abs(dx) > 24));
+    if (go) { if (v) { v.style.transition = 'none'; } swipe(dx < 0 ? 1 : -1); }
+    else if (v) { v.style.transition = EASE; v.style.transform = 'none'; v.style.opacity = '1'; }
+  }
+  hero.addEventListener('touchend', hend, { passive: true }); hero.addEventListener('touchcancel', hend, { passive: true });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.open && root.classList.contains('on')) { S.open = ''; paint(); } });
   window.addEventListener('resize', tabBar);
 
@@ -807,7 +868,10 @@
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
     onChange: null,                            // kostüm / seviye değişince çağrılır
-    open: function () { load(); S.sel = D.eq; S.shown = ''; setTab('c'); paint(); q('.s-cv').classList.remove('in'); q('.s-pv').classList.remove('in'); root.classList.add('on'); tabBar(); },
+    pv: '',
+    look: function () { return API.pv || D.eq; },
+    onPreview: null, onBuy: null,
+    open: function (id) { load(); S.sel = (id && cfind(id)) ? id : D.eq; S.shown = ''; setTab('c'); paint(); q('.s-cv').classList.remove('in'); q('.s-pv').classList.remove('in'); root.classList.add('on'); tabBar(); },
     close: function () { S.open = ''; root.classList.remove('on'); },
     costume: function () { return D.eq; },
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
@@ -1793,6 +1857,16 @@
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
+    var tfk = 1, pvOn = false;
+    function pvStart(id) {                                      // kostüm önizleme: serbest uçuş, süre sınırı yok
+      if (!window.DDShop) return; pvOn = true; DDShop.pv = id; race = false;
+      $('sppv').firstElementChild.innerHTML = 'Önizleme · <b>' + DDShop.name(id) + '</b>';
+      DDShop.close(); el.classList.add('pv'); play(true);
+    }
+    function pvEnd() {
+      if (!pvOn) return; var id = DDShop.pv; pvOn = false; DDShop.pv = ''; el.classList.remove('pv');
+      showMenu(0); DDShop.open(id);
+    }
     var elIco = $('spico'), crList = [], crI = 0, crX = 0, crId = null, crX0 = 0, crT0 = 0, crW = 1, crBusy = false, crTm = 0;
     function crPaint() {
       var sl = elIco.querySelectorAll('.sl'), i;
@@ -1839,7 +1913,11 @@
       crSnap(dir);
     }
     crBuild();
-    if (window.DDShop) DDShop.onChange = function () { crBuild(); };
+    if (window.DDShop) {
+      DDShop.onChange = function () { crBuild(); };
+      DDShop.onPreview = pvStart;
+      DDShop.onBuy = function () { audioInit(); if (aSnd) { bell(semi(7), .11, 0, 0, 1.5); bell(semi(12), .08, 0, .07, 1.7); bell(semi(16), .06, 0, .14, 1.9); } vib([10, 50, 12]); };
+    }
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
       if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div><div class="dock"><div class="dk" data-sa="exit" aria-label="Oyunlar"><b><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></b><small>Oyunlar</small></div><div class="dk" data-sa="shop" aria-label="Dükkan"><b><svg viewBox="0 0 24 24"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/></svg></b><small>Dükkan</small></div><div class="dk" data-sa="settings" aria-label="Ayarlar"><b><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg></b><small>Ayarlar</small></div></div>';
@@ -1896,7 +1974,7 @@
       el.classList.toggle('race', !!race); if (fresh) tutShow();
       if (fresh && race && el.classList.contains('tut')) { obs = []; pick = []; wait = true; }   // öğretici boş gökyüzünde; parkur bitince geminin olduğu yerde kurulur
     }
-    function pause() { if (mode === 1) showMenu(2); }
+    function pause() { if (mode === 1) { if (pvOn) pvEnd(); else showMenu(2); } }
     function endIntro() {
       if (!introOn) return; introOn = false; clearTimeout(introTm);
       elSm.classList.remove('intro');
@@ -1925,6 +2003,7 @@
       else if (a === 'restart') play(true);
       else if (a === 'resume') play(false);
       else if (a === 'shop') DDShop.open();
+      else if (a === 'pvend') pvEnd();
       else if (a === 'exit') close();
       else if (a === 'settings') showSettings(true);
       else if (a === 'sback') showSettings(false);
@@ -2359,7 +2438,7 @@
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
     function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); gainApply(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); if (master) master.gain.value = muted ? 0 : 0.9; }
+    function close() { pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); if (master) master.gain.value = muted ? 0 : 0.9; }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -2510,7 +2589,8 @@
       if (th > 0.3 && !jetT) jetT = performance.now();
       if (want && !wasOn && th < 0.12) ign = 1; wasOn = want; ign = Math.max(0, ign - dt / 0.24);
       heat += (th - heat) * (1 - Math.exp(-dt / (th > heat ? 0.15 : 0.9)));
-      var A = S * 0.11 * th, dm = Math.exp(-dt * 0.05);
+      tfk = 1 + .12 * (window.DDShop ? DDShop.lv('itis') : 0);       // İniş-kalkış desteği: itiş gücü çarpanı
+      var A = S * 0.11 * th * tfk, dm = Math.exp(-dt * 0.05);
       // HIZLANMA güçlendirmesi: ani fırlatma yok. Kalan itiş (boostRem) ~0.6 sn'de yumuşakça eklenir, gemi bu sırada yönlendirilebilir.
       // İtiş yönü: burun ileri bakıyorsa burun, değilse gidiş yönü. Hız boostCap'i aşmaz (yüksek hızda güçlendirme neredeyse etkisizdir).
       if (boostRem > 0.5) {
@@ -2546,7 +2626,7 @@
       var k = 1 - Math.exp(-dt / 0.35); cam.x += (P.x - cam.x) * k; cam.y += (P.y - cam.y) * k;
       var ox = P.x - cam.x, oy = P.y - cam.y, lim = S * 0.28, ol = Math.hypot(ox, oy);
       if (ol > lim) { cam.x = P.x - ox / ol * lim; cam.y = P.y - oy / ol * lim; }
-      if (th > 0.15) { emit += dt * 46 * th; while (emit >= 1) { emit--; spawn(th); } }
+      if (th > 0.15) { var tfp = 1 + .5 * (tfk - 1); emit += dt * 46 * th * tfp; while (emit >= 1) { emit--; spawn(th * tfp); } }
       for (var i = parts.length - 1; i >= 0; i--) {
         var q = parts[i]; q.x += q.vx * dt; q.y += q.vy * dt; q.l -= dt / q.d;
         if (q.l <= 0) parts.splice(i, 1);
@@ -2559,7 +2639,7 @@
       // enerji: yalnızca jet harcar (basılı kaldıkça artan hızda); joystick yardımı sınırsız; dinlenince dolar
       if (th > 0.05) burn += dt; else burn = Math.max(0, burn - dt * 2);
       var using = th > 0.05;
-      var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
+      var drain = th * 0.17 * tfk * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
       if (using) { idleT = 0; en -= drain * dt; } else { idleT += dt; if (idleT > 0.7) en = Math.min(1, en + 0.08 * dt); }
       if (en <= 0) { en = 0; if (!lock) { lock = true; if (typeof playNope === 'function') playNope(); } }
       if (lock && en > 0.25) lock = false;
@@ -2921,17 +3001,17 @@
     function ship(sx, sy, ts) {
       // minimal beyaz mekik: üstten görünüm, çift delta kanat, iki tonlu düz gölge. Burun gidiş yönüne bakar.
       var u = S * 0.026, t = ts / 1000, g, k, CR = '#f4f2ee', WR = '#cfcbc1', GR = '#b3aea2',
-          gh = window.DDShop && DDShop.costume() === 'hayalet';   // Hayalet kostümü: yalnızca çizgi
+          gh = window.DDShop && DDShop.look() === 'hayalet';   // Hayalet kostümü: yalnızca çizgi
       function pf(c) { if (gh) { cx.lineWidth = .09; cx.lineJoin = 'round'; cx.strokeStyle = CR; cx.stroke(); } else { cx.fillStyle = c; cx.fill(); } }
       cx.save(); cx.translate(sx, sy); cx.rotate(P.h + Math.PI / 2); cx.scale(u, u);
-      cx.translate(Math.sin(t * 83) * .025 * th, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th);   // süzülme + yüksek itişte hafif titreşim
+      cx.translate(Math.sin(t * 83) * .025 * th * tfk, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th * tfk);   // süzülme + yüksek itişte hafif titreşim
       var y0 = 2.08;
       if (th > 0.03) {                                          // ana motor: ince, beyaz çekirdekli, ucu turuncuya sönen alev
         var fl = 1 + .05 * Math.sin(t * 61) + .04 * Math.sin(t * 97 + 1.3),
-            L = (.3 + 2.6 * th) * fl * (1 + .55 * ign), w0 = .17 + .1 * th;
+            L = (.3 + 2.6 * th * tfk) * fl * (1 + .55 * ign), wk = 1 + .6 * (tfk - 1), w0 = (.17 + .1 * th) * wk;
         cx.globalCompositeOperation = 'lighter';
-        g = cx.createRadialGradient(0, y0 + .2, .05, 0, y0 + .2, .9); g.addColorStop(0, 'rgba(255,190,130,' + .3 * th + ')'); g.addColorStop(1, 'rgba(255,140,70,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.arc(0, y0 + .2, .9, 0, 6.2832); cx.fill();
+        g = cx.createRadialGradient(0, y0 + .2, .05, 0, y0 + .2, .9 * wk); g.addColorStop(0, 'rgba(255,190,130,' + Math.min(.6, .3 * th * wk) + ')'); g.addColorStop(1, 'rgba(255,140,70,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, y0 + .2, .9 * wk, 0, 6.2832); cx.fill();
         cx.globalCompositeOperation = 'source-over';
         g = cx.createLinearGradient(0, y0, 0, y0 + L); g.addColorStop(0, 'rgba(255,246,232,.95)'); g.addColorStop(.3, 'rgba(255,200,140,.7)'); g.addColorStop(1, 'rgba(255,120,60,0)');
         cx.fillStyle = g; cx.beginPath(); cx.moveTo(-w0, y0);
@@ -2942,8 +3022,8 @@
         cx.fillStyle = g; cx.beginPath(); cx.moveTo(-w1, y0);
         cx.bezierCurveTo(-w1, y0 + Lc * .4, -w1 * .4, y0 + Lc * .8, 0, y0 + Lc);
         cx.bezierCurveTo(w1 * .4, y0 + Lc * .8, w1, y0 + Lc * .4, w1, y0); cx.fill();
-        if (th > .4) for (k = 1; k <= 3; k++) {                 // şok elmasları
-          cx.fillStyle = 'rgba(255,255,255,' + .8 * (th - .3) * (1 - .22 * k) + ')';
+        var ths = Math.min(1, th * tfk); if (ths > .4) for (k = 1; k <= 3; k++) {                 // şok elmasları
+          cx.fillStyle = 'rgba(255,255,255,' + .8 * (ths - .3) * (1 - .22 * k) + ')';
           cx.beginPath(); cx.ellipse(0, y0 + L * (.2 * k + .015 * Math.sin(t * 37 + k * 2)), w0 * .38 * (1 - .2 * k), .1, 0, 0, 6.2832); cx.fill();
         }
         if (ign > 0) { cx.fillStyle = 'rgba(255,245,225,' + .55 * ign + ')'; cx.beginPath(); cx.arc(0, y0 + .15, .25 + .55 * (1 - ign), 0, 6.2832); cx.fill(); }   // ateşleme parlaması
