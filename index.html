@@ -732,17 +732,64 @@
   #shop .k-ls { margin:16px -20px 0; padding:2px 20px; display:flex; flex-direction:row; gap:10px; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; touch-action:pan-x; scrollbar-width:none; }
   #shop .k-ls::-webkit-scrollbar { display:none; }
   #shop .k-ls::after { content:''; flex:none; width:10px; }
-  #shop .k-en { flex:none; width:128px; display:flex; flex-direction:column; align-items:flex-start; justify-content:space-between; gap:12px; padding:14px; border-radius:20px; background:#1a1a19; border:1.5px solid #1a1a19; text-align:left; scroll-snap-align:start; transition:border-color .2s ease, background .2s ease; }
+  #shop .k-ph .k-nr { display:flex; align-items:center; gap:10px; margin-top:6px; }
+  #shop .k-ph .k-nr b { margin-top:0; }
+  #shop .k-tg2 { font-style:normal; font-size:11px; letter-spacing:.04em; padding:3px 9px; border-radius:999px; background:#232321; color:#b9b7b2; }
+  #shop .k-en { flex:none; width:176px; min-height:76px; display:flex; align-items:center; gap:12px; padding:10px 12px 10px 10px; border-radius:20px; background:#1a1a19; border:1.5px solid #1a1a19; text-align:left; scroll-snap-align:start; transition:border-color .2s ease, background .2s ease; }
   #shop .k-en:active { background:#222220; }
   #shop .k-en.sel { border-color:#8cc2ff; }
-  #shop .k-ck { display:none; }
-  #shop .k-ni { flex:1; min-width:0; width:100%; }
-  #shop .k-n { display:block; font-size:14.5px; line-height:1.25; font-weight:300; letter-spacing:.03em; }
-  #shop .k-g { display:block; margin-top:3px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#8a8884; }
-  #shop .k-s { flex:none; display:flex; align-items:center; gap:5px; padding:6px 11px; border-radius:999px; background:#262624; font-size:11.5px; letter-spacing:.05em; color:#b9b7b2; font-variant-numeric:tabular-nums; }
-  #shop .k-s.eq { background:#16222f; color:#8cc2ff; }
-  #shop .k-ds { margin:14px 4px 0; min-height:44px; font-size:14px; line-height:1.55; color:#d3d1cc; }
+  #shop .k-ic2 { flex:none; width:48px; height:54px; border-radius:14px; background:#242422; display:flex; align-items:center; justify-content:center; }
+  #shop .k-ic2 svg { height:42px; width:auto; overflow:visible; }
+  #shop .k-ic2 .bd { fill:#f4f2ee; }
+  #shop .k-ic2 .w { fill:#8a8884; transition:fill .25s ease; }
+  #shop .k-ic2 .nz { fill:#4b4a47; transition:fill .25s ease; }
+  #shop .k-ic2 .fl { fill:#4b4a47; transition:fill .25s ease; }
+  #shop .k-en.sel .k-ic2 .w, #shop .k-en.sel .k-ic2 .nz, #shop .k-en.sel .k-ic2 .fl { fill:#8cc2ff; }
+  #shop .k-ni { flex:1; min-width:0; align-self:stretch; display:flex; flex-direction:column; justify-content:center; gap:4px; }
+  #shop .k-n { display:flex; align-items:flex-end; min-height:35px; font-size:14px; line-height:1.25; font-weight:300; letter-spacing:.02em; }
+  #shop .k-s { display:flex; align-items:center; gap:5px; font-size:11.5px; letter-spacing:.04em; color:#8a8884; font-variant-numeric:tabular-nums; }
+  #shop .k-s.eq { color:#8cc2ff; }
+  /* özellik listesi: artış yeşil, düşüş kırmızı; çubuk ortadan sağa (artış) ya da sola (düşüş) dolar */
+  #shop .k-st { margin:12px 0 0; padding:4px 14px 6px; border-radius:18px; background:#161615; }
+  #shop .k-stc { padding:8px 0 4px; font-size:11px; letter-spacing:.04em; color:#6f6d69; }
+  #shop .k-r { display:grid; grid-template-columns:8px 1fr 72px 44px; align-items:center; gap:10px; height:30px; }
+  #shop .k-r i { width:6px; height:6px; border-radius:50%; background:#3a3a37; }
+  #shop .k-r.up i { background:#5fd38a; }
+  #shop .k-r.dn i { background:#ff6b6b; }
+  #shop .k-rl { font-size:14px; font-weight:300; letter-spacing:.01em; color:#6f6d69; }
+  #shop .k-r.up .k-rl, #shop .k-r.dn .k-rl { color:#f4f2ee; }
+  #shop .k-rb { position:relative; height:4px; border-radius:2px; background:#262624; }
+  #shop .k-rb::after { content:''; position:absolute; left:50%; top:-2px; width:1px; height:8px; margin-left:-.5px; background:#3a3a37; }
+  #shop .k-rb u { position:absolute; top:0; bottom:0; width:calc(var(--w) * .5); border-radius:2px; text-decoration:none; animation:k-gr .6s cubic-bezier(.22,.61,.36,1) both; }
+  #shop .k-r.up u { left:50%; background:#5fd38a; transform-origin:left center; }
+  #shop .k-r.dn u { right:50%; background:#ff6b6b; transform-origin:right center; }
+  @keyframes k-gr { from { transform:scaleX(0); } }
+  #shop .k-r b { text-align:right; font-size:14px; font-weight:400; font-variant-numeric:tabular-nums; color:#5a5856; }
+  #shop .k-r.up b { color:#5fd38a; }
+  #shop .k-r.dn b { color:#ff6b6b; }
+  /* açıklama: tek satır, dokununca açılır */
+  #shop .k-ds { display:flex; align-items:flex-start; gap:10px; width:100%; margin:10px 0 0; padding:4px 4px; text-align:left; font-size:13.5px; line-height:1.5; color:#b9b7b2; }
+  #shop .k-dt2 { flex:1; min-width:0; display:-webkit-box; -webkit-line-clamp:1; -webkit-box-orient:vertical; overflow:hidden; }
+  #shop .k-ds.open .k-dt2 { display:block; -webkit-line-clamp:unset; }
+  #shop .k-ds svg { flex:none; width:16px; height:16px; margin-top:3px; fill:none; stroke:#8a8884; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; transition:transform .3s ease; }
+  #shop .k-ds.open svg { transform:rotate(180deg); }
   #shop .k-pn .s-ab { margin-top:14px; border-radius:18px; }
+  /* bütün görünüm: parçalar yeniden birleşir, yakınlaşma sıfırlanır, panel iner; son olarak gemi kısa bir ışıltı verir */
+  #shop .s-km.wh .k-ship .sh-a, #shop .s-km.wh .k-ship .sh-b, #shop .s-km.wh .k-ship .sh-n { transform:none; opacity:1; }
+  #shop .s-km.wh .k-ship .sh-c, #shop .s-km.wh .k-ship .sh-w { opacity:1; }
+  #shop .s-km.wh .k-ui, #shop .s-km.wh .k-hn { opacity:0; pointer-events:none; transition-delay:0s; }
+  #shop .s-km.wh .k-p, #shop .s-km.wh .k-hit { pointer-events:none; }
+  #shop .s-km.wh + .k-pn { transform:translateY(102%); pointer-events:none; }
+  @keyframes k-lock { 0%,100% { filter:none; } 45% { filter:drop-shadow(0 0 12px rgba(140,194,255,.5)); } }
+  #shop .s-km.wh .k-ship { animation:k-lock 1.1s ease-out .7s; }
+  #shop .k-wh { position:absolute; z-index:3; top:8px; right:16px; width:40px; height:40px; border-radius:50%; background:#161615; border:1px solid #2b2b29; display:flex; align-items:center; justify-content:center; transition:background .2s ease, border-color .2s ease, transform .2s ease; }
+  #shop .k-wh:active { transform:scale(.92); background:#222220; }
+  #shop .k-wh svg { width:20px; height:20px; }
+  #shop .k-wh rect { fill:#f4f2ee; transform-box:fill-box; transition:transform .6s cubic-bezier(.22,.61,.36,1), fill .3s ease; }
+  #shop .k-wh.on { border-color:#8cc2ff; }
+  #shop .k-wh.on rect { fill:#8cc2ff; }
+  #shop .k-wh.on .ra { transform:translateX(4px); }
+  #shop .k-wh.on .rc { transform:translateX(-4px); }
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
@@ -831,7 +878,7 @@
     <div class="s-th"></div>
     <div class="s-bt"><button class="s-ab s-try" data-k="ftry">Dene</button><button class="s-ab" data-k="fact"></button></div>
   </section>
-  <section class="s-v s-kv"><div class="s-km"></div><div class="k-pn" role="dialog" aria-label="Parça ayrıntısı"></div></section>
+  <section class="s-v s-kv"><div class="s-km"></div><div class="k-pn" role="dialog" aria-label="Parça ayrıntısı"></div><button class="k-wh" data-k="kwh" aria-label="Bütün hali göster" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="ra" x="2" y="5" width="4" height="14" rx="1.2"/><rect class="rb" x="10" y="3" width="4" height="18" rx="1.2"/><rect class="rc" x="18" y="5" width="4" height="14" rx="1.2"/></svg></button></section>
   <section class="s-v s-pv"><div class="s-list"></div></section>
   <div class="s-sh s-ih"><div class="s-sc" data-k="ix"></div><div class="s-sp" role="dialog" aria-modal="true">
     <button class="s-gr" data-k="ix" aria-label="Kapat"></button>
@@ -885,7 +932,12 @@
      dy: şekil dinamiği (L: boy, w: genişlik, m/c: orta/çekirdek boyu, cw: çekirdek eni, am: SVG dalgalanma, tm: SVG hız çarpanı, fa/f: titreme, s/sa: ucun savrulması)
      k: özel katman (vd: spiral iplikçik + yörünge kıvılcımları, au: akan şeritler, io: şok elmasları + yıldırım) */
   var ENGINE = 'jet';
-  var ENG = [ { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru.' } ];   // Parçalar sayfası: yeni motor = yeni satır (price 0 = açık, >0 = yıldızla satın alınır)
+  var STATS = [
+    { k:'ivme', n:'İvmelenme',     up:'İvmelenmeyi artırır',      dn:'İvmelenmeyi azaltır' },
+    { k:'man',  n:'Manevra',       up:'Manevrayı kolaylaştırır',  dn:'Manevrayı zorlaştırır' },
+    { k:'hiz',  n:'En yüksek hız', up:'En yüksek hızı artırır',   dn:'En yüksek hızı düşürür' }
+  ];   // parça özellikleri: st:{ ivme:+12, man:-8 } = standart değerlere göre yüzde değişim
+  var ENG = [ { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru.' } ];   // Parçalar sayfası: yeni motor = yeni satır (price 0 = açık, >0 = yıldızla satın alınır)
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
       dy:{ L:1, w:1, m:1, c:1, cw:1, am:1, tm:1, fa:1, f:[57,91,33], s:[19,43], sa:1 },
@@ -922,7 +974,7 @@
   ];
 
   /* ===== Kalıcı veri ===== */
-  var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1, kp:'', ke:'jet', kshown:'', kdone:false };
+  var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1, kp:'', ke:'jet', kshown:'', kdone:false, kw:false, wk:'', kdo:false };
   function dev() { try { return localStorage.getItem('dd_dev') === '1'; } catch (e) { return false; } }   // geliştirici modu: sınırsız yıldız
   function bal() { return dev() ? Infinity : D.coins; }
   function load() {
@@ -1091,7 +1143,7 @@
 
   function paintC() {
     var it = cfind(S.sel), own = D.owned[it.id], eq = D.eq === it.id, h = '', st = q('.s-stt');
-    if (S.shown !== it.id) { crBuild(); S.shown = it.id; }
+    if (S.shown !== it.id || S.wk !== D.wn) { crBuild(); S.shown = it.id; S.wk = D.wn; }   // kanat değişince de yeniden çiz
     q('.s-nm').textContent = it.n; q('.s-ds').textContent = it.d;
     st.className = 's-stt' + (eq ? ' eq' : ''); st.innerHTML = eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price);
     COST.forEach(function (c) {
@@ -1132,14 +1184,18 @@
      Çizim alanı 360×520; mekik ortada (x 180). Yalnızca mekanik olarak değişen parçalar burada yer alır. */
   var KW = 360, KH = 520, KZ = 1.8, KSY = 44;
   var WNG = [
-    { id:'std',    n:'Standart Kanat', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' },
+    { id:'std',    n:'Standart Kanat', tag:'Orijinal', price:0, st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' },
     { id:'delta',  n:'Delta Kanat',    price:200, d:'Geniş, düz üçgen kanat. Gövdeden dışa doğru açılan sert bir siluet verir.',
+      st:{ ivme:12, man:-8 },
       sh:[['M', .4, -1], ['L', .8, .2], ['L', 1.42, 1.95], ['L', .4, 1.95]] },
     { id:'supurme', n:'Süpürme Kanat', price:300, d:'Geriye süpürülmüş ince kanat; uçları arka kenarın ötesine uzanır.',
+      st:{ hiz:14, ivme:-6 },
       sh:[['M', .4, -.9], ['L', .62, -.2], ['L', 1.35, 1.7], ['L', 1.5, 2.2], ['L', 1.2, 1.95], ['L', .4, 1.95]] },
     { id:'kademe', n:'Kademeli Kanat', price:300, d:'İki basamaklı, köşeli kanat. Teknik ve sert görünümlüdür.',
+      st:{ man:15, hiz:-10 },
       sh:[['M', .4, -1.2], ['L', .7, -.5], ['L', .7, .55], ['L', 1.4, .95], ['L', 1.4, 1.95], ['L', .4, 1.95]] },
     { id:'hilal',  n:'Hilal Kanat',    price:400, d:'İçe bükülen zarif bir kenara sahip, hilal gibi kıvrımlı kanat.',
+      st:{ man:12, ivme:8, hiz:-6 },
       sh:[['M', .4, -1.4], ['Q', .7, .5, 1.52, 1.95], ['L', .4, 1.95]] }
   ];
   var KPART = [
@@ -1182,6 +1238,8 @@
     });
     KPART.forEach(function (p) { km.classList.toggle('kz-' + p.id, S.kp === p.id); });
     km.classList.toggle('zm', !!S.kp);
+    km.classList.toggle('wh', !!S.kw);
+    var wb = q('.k-wh'); if (wb) { wb.classList.toggle('on', !!S.kw); wb.setAttribute('aria-pressed', S.kw ? 'true' : 'false'); wb.setAttribute('aria-label', S.kw ? 'Parçalara ayır' : 'Bütün hali göster'); }
     kPanel(); kPreview(); kZoom();
   }
   /* Canlı önizleme: panelde seçili (henüz kuşanılmamış) seçenek gemide anında görünür; panel kapanınca kuşanılan seçeneğe dönülür.
@@ -1195,18 +1253,35 @@
     a.setAttribute('d', wsvg(it.sh || WSTD, -1)); b.setAttribute('d', wsvg(it.sh || WSTD, 1));
     [a, b].forEach(function (e) { e.style.animation = 'none'; void e.getBBox(); e.style.animation = 'k-sw .45s cubic-bezier(.2,.7,.2,1)'; });
   }
+  function kStats(e) {                                          // özellik satırları: artış yeşil, düşüş kırmızı, değişmeyen sönük
+    var h = '', i, t, v;
+    for (i = 0; i < STATS.length; i++) {
+      t = STATS[i]; v = (e.st && e.st[t.k]) | 0;
+      h += '<div class="k-r ' + (v > 0 ? 'up' : v < 0 ? 'dn' : 'z') + '"><i></i><span class="k-rl">' + (v > 0 ? t.up : v < 0 ? t.dn : t.n) + '</span>' +
+           '<span class="k-rb"><u style="--w:' + Math.min(100, Math.abs(v) / 20 * 100) + '%"></u></span><b>' + (v ? (v > 0 ? '+' : '\u2212') + Math.abs(v) + '%' : '\u2014') + '</b></div>';
+    }
+    return h;
+  }
+  function kIco(p, g) {                                         // seçenek kartındaki küçük mekik: kanatta o kanat, motorda lüle ve alev vurgulanır
+    var bd = '<path class="bd" d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z"/>', sh = g.sh || WSTD;
+    return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true"><path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/>' + bd +
+      '<rect class="nz" x="-.22" y="1.98" width=".44" height=".2" rx=".08"/><path class="fl" d="M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z"/></svg>';
+  }
   function kPanel() {                                           // yakınlaşınca açılan panel: seçili parçanın seçenekleri
     var pn = q('.k-pn'), p = kpart(S.kp), e, own, eq, a, h;
     if (!p) return;                                             // kapanırken içerik yerinde kalır, panel aşağı kayar
     var old = pn.querySelector('.k-ls'), sx = old ? old.scrollLeft : 0, sl;
     e = kfind(p, S.ke) || kcur(p); S.ke = e.id; own = kown(p, e); eq = D[p.cur] === e.id;
-    h = '<div class="k-ph"><div><small>' + p.t + '</small><b>' + e.n + '</b></div><button class="k-x" data-k="kx" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="k-ls">';
+    h = '<div class="k-ph"><div><small>' + p.t + '</small><div class="k-nr"><b>' + e.n + '</b>' + (e.tag ? '<em class="k-tg2">' + e.tag + '</em>' : '') + '</div></div><button class="k-x" data-k="kx" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="k-ls">';
     p.list.forEach(function (g) {
       var o = kown(p, g), on = D[p.cur] === g.id;
-      h += '<button class="k-en' + (g.id === e.id ? ' sel' : '') + '" data-eid="' + g.id + '"><i class="k-ck"></i><span class="k-ni"><span class="k-n">' + g.n + '</span>' + (g.tag ? '<span class="k-g">' + g.tag + '</span>' : '') + '</span>' +
-           '<span class="k-s' + (on ? ' eq' : '') + '">' + (on ? 'Kuşanıldı' : o ? 'Sahipsin' : STAR + fmt(g.price)) + '</span></button>';
+      h += '<button class="k-en' + (g.id === e.id ? ' sel' : '') + '" data-eid="' + g.id + '"><span class="k-ic2">' + kIco(p, g) + '</span><span class="k-ni"><span class="k-n">' + g.n + '</span>' +
+           '<span class="k-s' + (on ? ' eq' : '') + '">' + (on ? 'Kuşanıldı' : o ? 'Sahipsin' : STAR + fmt(g.price)) + '</span></span></button>';
     });
-    pn.innerHTML = h + '</div><p class="k-ds">' + e.d + '</p><button class="s-ab" data-k="kact"></button>';
+    h += '</div><div class="k-st"><div class="k-stc">Standart değerlere göre değişim</div>' + kStats(e) + '</div>' +
+         '<button class="k-ds' + (S.kdo ? ' open' : '') + '" data-k="kdo" aria-expanded="' + (S.kdo ? 'true' : 'false') + '"><span class="k-dt2">' + e.d + '</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>' +
+         '<button class="s-ab" data-k="kact"></button>';
+    pn.innerHTML = h;
     sl = pn.querySelector('.k-ls'); if (sl) { sl.scrollLeft = sx; if (!old) { var se = sl.querySelector('.sel'); if (se) sl.scrollLeft = Math.max(0, se.offsetLeft - 20); } }
     a = pn.querySelector('[data-k=kact]');
     if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', e.price, 'Satın al');
@@ -1214,7 +1289,7 @@
   function kZoom() {                                            // seçilen bölgeye yumuşakça yakınlaş; bölge panelin üstündeki boşluğun ortasına gelir
     var km = q('.s-km'), w = km.querySelector('.k-w'), sv = km.querySelector('svg'), p = kpart(S.kp), r, kv, k, oy, cy, Z;
     if (!w) return;
-    if (!p) { w.style.transform = ''; return; }
+    if (!p || S.kw) { w.style.transform = ''; return; }
     r = sv.getBoundingClientRect(); kv = q('.s-kv').getBoundingClientRect(); if (!r.width) return;
     Z = p.z || KZ; k = Math.min(r.width / KW, r.height / KH); oy = (r.height - KH * k) / 2;
     cy = Math.max(80, ((kv.bottom - q('.k-pn').offsetHeight) - r.top) / 2);
@@ -1234,7 +1309,7 @@
     own = fown(it); eq = D.fx[S.eng] === it.id;
     for (i = 0; i < ENG.length; i++) ch += '<button class="s-ch' + (ENG[i].id === S.eng ? ' on' : '') + '" data-e="' + ENG[i].id + '">' + ENG[i].n + '</button>';
     qf('.s-ec').innerHTML = ch;
-    key = it.id + '|' + D.eq + '|' + ((D.lv.itis | 0));
+    key = it.id + '|' + D.eq + '|' + ((D.lv.itis | 0)) + '|' + D.wn;
     fs = qf('.s-fship');
     if (S.fshown !== key) {
       S.fshown = key; fs.innerHTML = ship(cp, 1, it);
@@ -1263,7 +1338,7 @@
     u.style.width = b.offsetWidth + 'px'; u.style.transform = 'translateX(' + b.offsetLeft + 'px)';
   }
   function setTab(t) {
-    S.tab = t; S.open = ''; S.kdone = false; S.kp = ''; S.kshown = ''; q('.s-ih').classList.remove('on');
+    S.tab = t; S.open = ''; S.kdone = false; S.kp = ''; S.kw = false; S.kshown = ''; q('.s-ih').classList.remove('on');
     var bs = root.querySelectorAll('.s-tabs button');
     for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-t') === t ? 'on' : '';
     tabBar();
@@ -1358,6 +1433,9 @@
       v.classList.remove('in'); void v.offsetWidth; v.classList.add('in');
       return;
     }
+    if (t.closest('[data-k=kwh]')) { S.kw = !S.kw; paint(); return; }                       // bütün ⇄ parçalı
+    if (t.closest('[data-k=kdo]')) { S.kdo = !S.kdo; var dd = q('.k-ds'); if (dd) { dd.classList.toggle('open', S.kdo); dd.setAttribute('aria-expanded', S.kdo ? 'true' : 'false'); } kZoom(); return; }
+    if (S.tab === 'k' && S.kw && t.closest('.s-km')) { S.kw = false; paint(); return; }    // bütün görünümde gemiye dokununca tekrar parçalanır
     if ((b = t.closest('.k-p'))) { S.kp = b.getAttribute('data-part'); S.ke = D[kpart(S.kp).cur]; paint(); return; }
     if (t.closest('[data-k=kx]')) { S.kp = ''; paint(); return; }
     if ((b = t.closest('.k-en'))) { S.ke = b.getAttribute('data-eid'); paint(); return; }
@@ -1394,7 +1472,7 @@
   var fx0 = null, fhero = q('.s-fhero');                    // efekt önizlemesinde sağa/sola kaydırarak geç
   fhero.addEventListener('touchstart', function (e) { fx0 = e.touches[0].clientX; }, { passive: true });
   fhero.addEventListener('touchend', function (e) { if (fx0 === null) return; var dx = e.changedTouches[0].clientX - fx0; fx0 = null; if (Math.abs(dx) > 40) fstep(dx < 0 ? 1 : -1); }, { passive: true });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('on')) { if (q('.s-ih').classList.contains('on')) infoOpen(false); else if (S.kp) { S.kp = ''; paint(); } else if (S.open) { S.open = ''; paint(); } } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('on')) { if (q('.s-ih').classList.contains('on')) infoOpen(false); else if (S.kw) { S.kw = false; paint(); } else if (S.kp) { S.kp = ''; paint(); } else if (S.open) { S.open = ''; paint(); } } });
   root.addEventListener('keydown', function (e) { var b = e.target.closest && e.target.closest('.k-p'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); b.dispatchEvent(new MouseEvent('click', { bubbles:true })); } });
   window.addEventListener('resize', function () { tabBar(); if (S.tab === 'k' && S.kp) kZoom(); });
 
@@ -1403,7 +1481,7 @@
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
     onChange: null,                            // kostüm / seviye değişince çağrılır
-    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
+    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kw = false; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
     pv: '',
     engine: ENGINE,
     look: function () { return (API.pv && cfind(API.pv)) ? API.pv : D.eq; },
@@ -1419,6 +1497,7 @@
     motor: function () { return D.en; },
     kanat: function () { return D.wn; },
     wing: function () { return curW(); },
+    stats: function () { var o = {}, k; STATS.forEach(function (t) { o[t.k] = 0; }); KPART.forEach(function (p) { var it = kcur(p); if (it && it.st) for (k in it.st) o[k] = (o[k] | 0) + it.st[k]; }); return o; },   // kuşanılan parçaların toplam yüzde değişimi (oyuna bağlamak için)
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
     name: function (id) { if (id && id.indexOf('fx:') === 0) { var f = ffind(id.slice(3)); return f ? f.n : ''; } var c = cfind(id); return c ? c.n : ''; },
     equip: function (id) { if (cfind(id) && D.owned[id]) { D.eq = id; save(); } },
