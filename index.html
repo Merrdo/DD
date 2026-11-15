@@ -391,11 +391,12 @@
   #spico { flex: 1 1 auto; align-self: stretch; position: relative; touch-action: none; cursor: grab; margin: 2vh 0 1vh; }
   #spico .cr { position: absolute; inset: 0; }
   #spico .sl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; will-change: transform, opacity; pointer-events: none; }
-  #spico .cr.snap .sl { transition: transform .34s cubic-bezier(.22,.61,.36,1), opacity .34s ease; }
+  #spico .cr.snap .sl { transition: transform .27s cubic-bezier(.22,.61,.36,1), opacity .27s ease; }
   #spico .sh { position: relative; }
   #spico svg { display: block; width: min(28vw, 14vh, 112px); height: auto; }
-  #spico .crn { position: absolute; left: 0; right: 0; bottom: 7%; text-align: center; font-size: 11px; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: var(--soft); pointer-events: none; }
-  #spico .crd { position: absolute; left: 0; right: 0; bottom: 2%; display: flex; justify-content: center; gap: 7px; pointer-events: none; }
+  #spico .crn { position: absolute; left: 0; right: 0; bottom: 7%; text-align: center; font-size: 11px; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: var(--soft); pointer-events: none; transition: opacity .8s ease; }
+  #spico .crd { position: absolute; left: 0; right: 0; bottom: 2%; display: flex; justify-content: center; gap: 7px; pointer-events: none; transition: opacity .8s ease; }
+  #spmenu.intro #spico .crn, #spmenu.intro #spico .crd { opacity: 0; transition: none; }
   #spico .crd i { width: 5px; height: 5px; border-radius: 50%; background: rgba(244,242,238,.25); transition: background .25s ease, transform .25s ease; }
   #spico .crd i.on { background: var(--fg); transform: scale(1.25); }
   #splist .dock { display: flex; gap: 30px; margin-top: 4.5vh; }
@@ -1814,10 +1815,16 @@
       var cr = elIco.querySelector('.cr'); if (!cr) return;
       crBusy = true; cr.classList.add('snap'); crX = -dir * crW; crPaint();
       clearTimeout(crTm);
+      if (dir) {                                                // ad, nokta ve kuşanma kaydırma başlar başlamaz güncellenir
+        var n = crList.length, ni = (crI + dir + n) % n, nm = elIco.querySelector('.crn'), ds = elIco.querySelectorAll('.crd i'), j;
+        DDShop.equip(crList[ni]);
+        if (nm) nm.textContent = DDShop.name(crList[ni]);
+        for (j = 0; j < ds.length; j++) ds[j].className = j === ni ? 'on' : '';
+      }
       crTm = setTimeout(function () {
-        if (dir) { var n = crList.length; crI = (crI + dir + n) % n; DDShop.equip(crList[crI]); crBuild(); }
+        if (dir) { crI = (crI + dir + crList.length) % crList.length; crBuild(); }
         else { cr.classList.remove('snap'); crBusy = false; }
-      }, 340);
+      }, 270);
     }
     function crGo(dir) { if (crList.length > 1 && !crBusy && mode === 0 && !introOn && !stOn) { crW = elIco.clientWidth || crW; crSnap(dir); } }
     function crDown(e) { if (crBusy || crList.length < 1) return; crId = e.pointerId; crX0 = e.clientX; crT0 = performance.now(); crW = elIco.clientWidth || 300; var cr = elIco.querySelector('.cr'); if (cr) cr.classList.remove('snap'); try { el.setPointerCapture(e.pointerId); } catch (_) {} }
