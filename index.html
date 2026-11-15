@@ -316,6 +316,8 @@
   #spen s svg { display: block; width: 100%; height: 100%; fill: currentColor; stroke: none; }
   #spen.wd s { display: block; }
   #spen s.on { color: #7fd4ff; }
+  #spen s.no { animation: tno .4s ease; }
+  @keyframes tno { 0%,100% { transform: translateX(0); color: #ff8a5c; } 20% { transform: translateX(-2px); } 40% { transform: translateX(2px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(1px); } }
   #spen s.act { color: #fff; filter: drop-shadow(0 0 4px rgba(127,212,255,1)); }
   #space.play::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 190px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
   /* ilk giriş rehberi: sol / sağ yarıda ne yapılacağı */
@@ -988,7 +990,7 @@
     { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, nz:'std', st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru. Çan biçimli tek lüle, dengeli itiş.' },
     { id:'genis', n:'Geniş Motor', tag:'Yeni', price:600, nz:'wide', st:{ ivme:-8, man:-4 },
       ex:['Çift dokun: turbo', 'Normal depo ≈ standart'],
-      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır ama iki depodan oluşur: beyaz yarı normal uçuş içindir ve standart motordaki kadar dayanır, mavi yarı turbo içindir. Turbo için sağ tarafa çift dokunup ikinci dokunuşta basılı tut: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama mavi depo hızla boşalır ve çok yavaş dolar. Mavi depo bitince normal moda dönülür.' }
+      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır ama iki depodan oluşur: beyaz yarı normal uçuş içindir ve standart motordaki kadar dayanır, mavi yarı turbo içindir. Turbo için sağ tarafa çift dokunup ikinci dokunuşta basılı tut: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama mavi depo hızla boşalır. Uçarken yavaş, dinlenirken hızlı dolar. Boşken denersen motor marş basıp tutmaz. Mavi depo bitince normal moda dönülür.' }
   ];
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
@@ -2516,6 +2518,42 @@
     bell(semi(12 + s), 0.1, -0.15, 0.03, 1.0); bell(semi(19 + s), 0.08, 0.15, 0.09, 1.2); bell(semi(24 + s), 0.05, 0, 0.16, 1.5);
   }
 
+  /* TURBO sesleri */
+  var thrT = 0;                                                  // turbo yoğunluğu (0..1): sürekli jet sesini kalınlaştırır ve parlatır
+  function tSweep(type, f0, f1, dur, vol, delay, lp) {          // frekans süpürmeli tek sesli yardımcı
+    var t0 = AC.currentTime + (delay || 0) + 0.005, o = AC.createOscillator(), g = voiceOut(0), f = AC.createBiquadFilter();
+    o.type = type; o.frequency.setValueAtTime(f0, t0); o.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    f.type = 'lowpass'; f.frequency.value = lp || 1200; f.Q.value = 0.7;
+    g.gain.setValueAtTime(0.0001, t0); g.gain.linearRampToValueAtTime(vol, t0 + Math.min(0.02, dur * 0.3)); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(f); f.connect(g); o.start(t0); o.stop(t0 + dur + 0.05);
+  }
+  function sfxTurbo() { try { sfxTurbo_(); } catch (e) {} }     // turbo ateşlenir: alçak tok vuruş + yükselen testere süpürmesi + parlak rüzgar
+  function sfxTurbo_() {
+    if (!AC) return;
+    tSweep('sine', 150, 42, 0.32, 0.24, 0, 400);
+    tSweep('sawtooth', 70, 520, 0.42, 0.07, 0.02, 1800);
+    tSweep('square', 140, 900, 0.3, 0.025, 0.06, 2200);
+    breath(0.55, 0.1, 500, 6000, 0.02);
+    bell(semi(24), 0.05, 0, 0.3, 0.9);
+  }
+  function sfxTurboFail() { try { sfxTurboFail_(); } catch (e) {} }   // turbo boş: marş basıp tutmayan motor (tıkırtı + öksürme)
+  function sfxTurboFail_() {
+    if (!AC) return;
+    var i, d;
+    for (i = 0; i < 4; i++) {
+      d = i * 0.12;
+      tSweep('sawtooth', 95 - i * 9, 48 - i * 4, 0.1, 0.09 * (1 - i * 0.18), d, 420);
+      breath(0.05, 0.05 * (1 - i * 0.15), 2400, 500, d);
+    }
+    tSweep('sine', 60, 30, 0.35, 0.1, 0.5, 200);
+  }
+  function sfxTurboOut() { try { sfxTurboOut_(); } catch (e) {} }     // turbo bitti: yükselen güç hızla düşer
+  function sfxTurboOut_() {
+    if (!AC) return;
+    tSweep('sawtooth', 380, 55, 0.4, 0.06, 0, 900);
+    breath(0.35, 0.05, 3000, 300, 0);
+  }
+
   var thr = null;   // sürekli jet sesi (filtrelenmiş gürültü)
   function thrustInit() { try { thrustInit_(); } catch (e) { thr = null; } }
   function thrustInit_() {
@@ -2531,8 +2569,8 @@
   function thrustSet(l) { try { thrustSet_(l); } catch (e) {} }
   function thrustSet_(l) {
     if (!thr || !AC) return;
-    thr.g.gain.setTargetAtTime(l * 0.075, AC.currentTime, 0.07);
-    thr.bp.frequency.setTargetAtTime(150 + l * 300, AC.currentTime, 0.09);
+    thr.g.gain.setTargetAtTime(l * 0.075 * (1 + 0.7 * thrT), AC.currentTime, 0.07);
+    thr.bp.frequency.setTargetAtTime(150 + l * 300 + 420 * thrT * l, AC.currentTime, 0.09);
   }
 
   /* ===== ASTRO müziği: üretken (generative), Re majör pentatonik =====
@@ -3494,8 +3532,15 @@
         }
       } else if (!race) spinAcc = 0;
       var jetting = jetId !== null || keys[' '];
-      if (!jetting || engK() !== 'wide' || tb <= 0) tOn = false;
-      else if (tReq && !tOn) { tOn = true; pop('TURBO', P.x, P.y - S * .1, true); sfxBoost(); vib([12, 18, 12]); }
+      if (!jetting || engK() !== 'wide') tOn = false;
+      else if (tReq && !tOn) {
+        if (tb > .02) { tOn = true; pop('TURBO', P.x, P.y - S * .1, true); sfxTurbo(); vib([12, 18, 12]); }
+        else {                                                  // turbo boş: marş basıyor ama tutmuyor
+          sfxTurboFail(); vib([25, 35, 25, 35, 25]); pop('TURBO BOŞ', P.x, P.y - S * .1, false);
+          var nic = elEn.querySelector('s'); if (nic) { nic.classList.remove('no'); void nic.offsetWidth; nic.classList.add('no'); }
+        }
+      }
+      if (tOn && tb <= 0) { tOn = false; sfxTurboOut(); }
       tReq = false;
       var want = (jetting && ((!lock && en > 0) || (tOn && tb > 0))) ? 1 : 0;
       th += (want - th) * (1 - Math.exp(-dt / (want ? 0.08 : 0.18)));
@@ -3563,16 +3608,16 @@
       var using = th > 0.05, wideE = engK() === 'wide';
       var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
       // GENİŞ MOTOR: tek çubuk, iki depo. Sol yarı (en) normal uçuş: standart motordaki depoya çok yakın (%7 daha az dayanır).
-      // Sağ yarı (tb) TURBO: yalnızca sağ tarafa çift dokunup basılı tutunca açılır, ~2,5 sn'de biter, çok yavaş dolar (~55 sn).
+      // Sağ yarı (tb) TURBO: yalnızca sağ tarafa çift dokunup basılı tutunca açılır, ~2,5 sn'de biter. Normal jetteyken ~28 sn, dinlenirken ~11 sn'de dolar.
       // Turbo açıkken yalnızca tb harcanır; tb bitince normal moda dönülür.
       var odT = (wideE && using && tOn && tb > 0) ? 1 : 0;
       odK += (odT - odK) * (1 - Math.exp(-dt / (odT ? .25 : .35)));
       odC += (odT - odC) * (1 - Math.exp(-dt / (odT ? .4 : 2.5)));      // tavan hız yavaş söner: turbo bitince hız ani kesilmez
       if (!wideE) { odK = 0; odC = 0; }
-      if (using) { idleT = 0; if (odT) tb = Math.max(0, tb - drain * 2.3 * dt); else en -= (wideE ? drain / .93 : drain) * dt; }
+      if (using) { idleT = 0; if (odT) tb = Math.max(0, tb - drain * 2.3 * dt); else { en -= (wideE ? drain / .93 : drain) * dt; if (wideE && tb < 1) tb = Math.min(1, tb + .035 * dt); } }
       else {
         idleT += dt;
-        if (idleT > 0.7) { if (en < 1) en = Math.min(1, en + (wideE ? .075 : .08) * dt); if (wideE && tb < 1) tb = Math.min(1, tb + .018 * dt); }
+        if (idleT > 0.7) { if (en < 1) en = Math.min(1, en + (wideE ? .075 : .08) * dt); if (wideE && tb < 1) tb = Math.min(1, tb + .09 * dt); }
       }
       if (en <= 0) { en = 0; if (!lock) { lock = true; if (typeof playNope === 'function') playNope(); } }
       if (lock && en > 0.25) lock = false;
@@ -3603,7 +3648,7 @@
       }
       bA += (((jetId !== null || keys[' ']) ? 1 : 0) - bA) * (1 - Math.exp(-dt / 0.12)); pulse = Math.max(0, pulse - dt / 0.5);
       if (jetId === null && bA < 0.02) { bbx = bx; bby = by; }
-      thrustSet(th);
+      thrT = odK; thrustSet(th);
       var t, tl2;
       if (race && !pre) runStep(dt, px0, py0);
       t = (sp / (S * 0.1)).toFixed(1); tl2 = 'm/sn';
