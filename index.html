@@ -1873,7 +1873,7 @@
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
-    var tfk = 1, asK = 0, pvOn = false, cpK = 0, cpx = 0, cpy = 0, cpAcc = 0, cpSnd = 0;
+    var tfk = 1, asK = 0, pvOn = false, cpK = 0, cpx = 0, cpy = 0, cpAcc = 0, cpSnd = 0, cpSl = 0;
     var CPP = [[.97,.6],[1.2,1.9],[0,2.15],[-1.2,1.9],[-.97,.6],[-.46,-.9],[0,-2.3],[.46,-.9]];   // yan motor portları: 0=E, 1=SE, 2=S ... (45° adımlarla)
     function cpPort() {                                         // dünya yönü (cpx,cpy) → gövdeye göre en yakın port
       var a = P.h + Math.PI / 2, lx = cpx * Math.cos(a) + cpy * Math.sin(a), ly = -cpx * Math.sin(a) + cpy * Math.cos(a);
@@ -2595,6 +2595,8 @@
         var rw = Math.min(1, righting / 0.35), rt = Math.atan2(P.vy, P.vx);
         alpha += (wrap(rt - P.h) * 20 - P.w * 8) * rw;
       }
+      if (cpSl > .02 && m <= .18 && Math.hypot(P.vx, P.vy) > S * .05)   // önleyici kaydırırken burun yumuşakça gidiş yönüne döner (oyuncu yönlendirmiyorsa)
+        alpha += (wrap(Math.atan2(P.vy, P.vx) - P.h) * 9 - P.w * 5) * cpSl;
       P.w += alpha * dt; P.h += P.w * dt; hv = alpha;
       // TAM TUR: işaretli dönüş birikir; ≈300° dolunca tok bir efekt + az enerji. Duraksayınca birikim silinir.
       if (race && !dead && !pre) {
@@ -2983,7 +2985,7 @@
       // süzülen kayalar + kaya-kaya çarpışma
       rocksStep(dt);
       // engeller
-      var nearBest = 0, lvC = window.DDShop ? DDShop.lv('onl') : 0, cpT = 0, cnx = 0, cny = 0;
+      var nearBest = 0, lvC = window.DDShop ? DDShop.lv('onl') : 0, cpT = 0, cnx = 0, cny = 0, cax = 0, cay = 0, csh = 1e9;
       var cpSpd = Math.hypot(P.vx, P.vy), cpUx = cpSpd ? P.vx / cpSpd : 0, cpUy = cpSpd ? P.vy / cpSpd : 0,
           cpCap = S * (.06 + .03 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .09S … seviye 5 = .21S
           cpMaxS = Math.min(S * 1.5, cpSpd * cpSpd / (2 * cpCap) * 1.5 + S * .15),   // ne kadar ileriye bakılacağı
@@ -3030,8 +3032,8 @@
           if (sH >= 0) {
             // yalnızca ENGELE DOĞRU olan hız bileşeni kesilir: tam dik geliyorsan durursun, eğik geliyorsan yan hızın korunur ve engelin yanından süzülürsün
             var cs = Math.max(0, cpUx * cpNx + cpUy * cpNy), rq = cpSpd * cpSpd * cs / (2 * Math.max(sH, S * .004)) * 1.35;   // 1.35: pay
-            rq = sH < S * .05 ? cpCap * 1.5 : Math.min(cpCap, rq);                                                           // çarpmaya çok yakınsa tam güç
-            if (rq > cpNeed) { cpNeed = rq; cnx = cpNx; cny = cpNy; }
+            rq = sH < S * .05 ? cpCap * 1.5 * (.3 + .7 * cs) : Math.min(cpCap, rq);                                                           // çarpmaya çok yakınsa tam güç
+            if (rq > cpNeed) { cpNeed = rq; cnx = cpNx; cny = cpNy; cax = anx; cay = any_; csh = sH; }
           }
         }
         if (clr < 0 && o.t !== 'beam' && graceT <= 0) { if (o.t === 'spin') lzArmSpin(o); if (o.t === 'hole') hd = 1; kill(1); return; }
@@ -3043,10 +3045,15 @@
         }
       }
       // Çarpışma önleyici: yoldaki engelin önünde durmaya yetecek kadar fren uygulanır (kapasiteyi aşmaz); çarpacağın taraftaki yan motorlar ateşlenir
-      var cpD = (cpOn && cpNeed > cpCap * .2) ? cpNeed : 0;                           // küçük ihtiyaçta (kapasitenin %20'si altı) karışma
+      var cpSlideNow = 0, cpD = (cpOn && cpNeed > cpCap * .2) ? cpNeed : 0;                           // küçük ihtiyaçta (kapasitenin %20'si altı) karışma
       cpT = Math.min(1, cpD / cpCap);
       cpK += (cpT - cpK) * (1 - Math.exp(-dt / (cpT > cpK ? .06 : .22)));              // yalnızca görsel/ses şiddeti için
       if (cpD > 0) {
+        var wN = Math.max(0, Math.min(1, 1 - csh / (S * .4))), cl = Math.hypot(cax, cay);   // yaklaştıkça tahmin edilen çarpma normali yerine güncel normal (gemi→engel yüzeyi) karışır
+        if (wN > 0 && cl > 1e-3) {
+          var nbx = cnx * (1 - wN) + cax / cl * wN, nby = cny * (1 - wN) + cay / cl * wN, nbl = Math.hypot(nbx, nby);
+          if (nbl > 1e-3) { cnx = nbx / nbl; cny = nby / nbl; }
+        }
         cpx = cnx; cpy = cny;
         var vnn = P.vx * cnx + P.vy * cny, dvc = Math.min(cpD * dt, Math.max(0, vnn));   // yalnızca engele doğru bileşeni azaltır; yan hıza dokunmaz, geri itmez
         var spB = Math.hypot(P.vx, P.vy), tvx = P.vx - cnx * vnn, tvy = P.vy - cny * vnn, tvm = Math.hypot(tvx, tvy);   // tvx/tvy: engele teğet (yan) hız
@@ -3055,10 +3062,11 @@
         // Tam dik geliyorsan (teğet hız ≈ 0) aktarılacak yön de, oran da yoktur: gerçekten durursun.
         if (dvc > 0 && tvm > S * .004 && spB > 1e-3) {
           var gl = Math.min(1, 1.6 * tvm / spB) * dvc;                                  // oran: sinθ ile büyür (dikte 0, yaklaşık 40°+ eğimde tam aktarım)
-          P.vx += tvx / tvm * gl; P.vy += tvy / tvm * gl;
+          P.vx += tvx / tvm * gl; P.vy += tvy / tvm * gl; cpSlideNow = 1;
           var spA = Math.hypot(P.vx, P.vy); if (spA > spB) { P.vx *= spB / spA; P.vy *= spB / spA; }   // enerji korunur: hız büyüklüğü artmaz
         }
       }
+      cpSl += (cpSlideNow - cpSl) * (1 - Math.exp(-dt / .25));
       if (lvC > 0 && cpK > .01) {
         cpAcc += dt * 34 * cpK;
         while (cpAcc >= 1) { cpAcc--; var pi2 = cpPort(), pa = pi2 * Math.PI / 4; puff(CPP[pi2][0], CPP[pi2][1], Math.cos(pa), Math.sin(pa)); }
