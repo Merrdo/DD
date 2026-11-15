@@ -300,11 +300,6 @@
   #spl { font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--dim); }
   #spen { position: relative; transition: opacity .5s ease; margin-top: 9px; width: 72px; height: 3px; background: rgba(244,242,238,.16); border-radius: 3px; overflow: hidden; }
   #spen b { position: absolute; top: 0; height: 100%; left: 0; width: 0; background: #8cc2ff; opacity: 0; pointer-events: none; }
-  #spst { display: flex; gap: 11px; justify-content: center; height: 28px; margin-top: 8px; }   /* durum simgeleri sırası: yeni güçlendirmeler (ör. kalkan) buraya eklenir */
-  #spst i { display: block; width: 28px; height: 28px; color: #ff4a3a; filter: drop-shadow(0 0 6px rgba(255,74,58,.65)); opacity: 0; transition: opacity .18s ease; }
-  #spst i svg { display: block; width: 100%; height: 100%; stroke-width: 1.8; }
-  #spst i.hi { animation: spsp .5s ease-in-out infinite; }
-  @keyframes spsp { 50% { transform: scale(1.16); } }
   #spen i { display: block; height: 100%; width: 100%; background: var(--fg); transform-origin: left; transition: background .25s ease; }
   #space.play::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 190px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
   /* ilk giriş rehberi: sol / sağ yarıda ne yapılacağı */
@@ -674,7 +669,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16.5" cy="7.5" r="4"/><path d="M6.5 21V12.5"/><path d="M3.6 15.4l2.9-2.9 2.9 2.9"/><path d="M10.8 15.4h3.4"/><path d="M10.8 19h2.2"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
 </div>
 
 <script>
@@ -696,7 +691,7 @@
   var POW = [
     { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
     { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:9, f:'+#% yardım gücü', d:'Motora kısa süreli yardım: ilk kalkışta ve hızlıyken ters yöne itişle yapılan ani frenlerde devreye girer. Hız oturunca ya da normal uçuşta çalışmaz. O anlarda alev de büyür, yakıt biraz fazla yanar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' },
-    { id:'Otomatik çalışır. Gittiğin yolda bir engele çarpacağını fark ettiğinde yan motorlar kendiliğinden ateşlenir, hızını keser ve seni engelin önünde durdurur; devredeyken üstte önleyici simgesi yanar. Süzülen ve salınan kayalardan ise yan motorlarla yoldan kaçmaya çalışır; kayanın hızı ve mesafesi yetmezse kurtulamayabilirsin. Seviye arttıkça itiş gücü artar. Jet açıkken, kara deliğe, dönen çubuğa ve lazere karşı çalışmaz; çok hızlıyken ve engeli geç fark edersen yine çarparsın.', n:'Çarpışma önleyici', base:250, max:5, s:33, f:'+#% fren gücü', d:'Otomatik çalışır. Bir engele çarpmak üzereyken çarpacağın taraftaki küçük yan motorlar kendiliğinden ateşlenir ve o yöndeki hızını keser. Süzülen kayalara karşı yan motorlarla yoldan çekilmeye çalışır. Yeterince erken fark edersen çarpışmayı önler.', ic:'<circle cx="16.5" cy="7.5" r="4"/><path d="M6.5 21V12.5"/><path d="M3.6 15.4l2.9-2.9 2.9 2.9"/><path d="M10.8 15.4h3.4"/><path d="M10.8 19h2.2"/>' }
+    { id:'Otomatik çalışır. Gittiğin yolda bir engele çarpacağını fark ettiğinde yan motorlar kendiliğinden ateşlenir, hızını keser ve seni engelin önünde durdurur; devredeyken üstte Önleyici devrede yazar. Seviye arttıkça fren gücü artar. Jet açıkken, süzülen kayalara, kara deliğe ve lazere karşı çalışmaz; çok hızlıyken ve engeli geç fark edersen yine çarparsın.', n:'Çarpışma önleyici', base:250, max:5, s:33, f:'+#% fren gücü', d:'Otomatik çalışır. Bir engele çarpmak üzereyken çarpacağın taraftaki küçük yan motorlar kendiliğinden ateşlenir ve o yöndeki hızını keser. Yeterince erken fark edersen çarpışmayı önler.', ic:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M12 8v5"/>' }
   ];
 
   /* ===== Kalıcı veri ===== */
@@ -1878,21 +1873,8 @@
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
-    var tfk = 1, asK = 0, pvOn = false, cpK = 0, cpx = 0, cpy = 0, cpAcc = 0, cpSnd = 0, cpSl = 0, cpEa = 0, cpEdx = 0, cpEdy = 0;
+    var tfk = 1, asK = 0, pvOn = false, cpK = 0, cpx = 0, cpy = 0, cpAcc = 0, cpSnd = 0;
     var CPP = [[.97,.6],[1.2,1.9],[0,2.15],[-1.2,1.9],[-.97,.6],[-.46,-.9],[0,-2.3],[.46,-.9]];   // yan motor portları: 0=E, 1=SE, 2=S ... (45° adımlarla)
-    var elCp = null, lastCpO = -1, lastCpH = false;
-    function cpIcon(k) {                                        // önleyici simgesi: fren şiddetiyle belirir, sert frende nabız atar
-      if (!elCp) elCp = $('spcp'); if (!elCp) return;
-      var o = k < .05 ? 0 : Math.round((.55 + .45 * Math.min(1, k)) * 20) / 20, h = k > .6;
-      if (o !== lastCpO) { lastCpO = o; elCp.style.opacity = o; }
-      if (h !== lastCpH) { lastCpH = h; elCp.classList.toggle('hi', h); }
-    }
-    function cpPuff(i) {                                        // önleyici gazı: büyük, kısa ömürlü sıcak kıvılcımlar
-      var u = S * .026, pa = i * Math.PI / 4, p = loc(CPP[i][0], CPP[i][1]), e = loc(Math.cos(pa), Math.sin(pa)), sp = S * (.28 + Math.random() * .2), j = S * .03;
-      parts.push({ x: P.x + p.x * u, y: P.y + p.y * u, vx: P.vx + e.x * sp + (Math.random() - .5) * j, vy: P.vy + e.y * sp + (Math.random() - .5) * j,
-        l: 1, d: .22 + Math.random() * .2, r: u * (.16 + Math.random() * .14), c: 7 });
-      if (parts.length > 160) parts.shift();
-    }
     function cpPort() {                                         // dünya yönü (cpx,cpy) → gövdeye göre en yakın port
       var a = P.h + Math.PI / 2, lx = cpx * Math.cos(a) + cpy * Math.sin(a), ly = -cpx * Math.sin(a) + cpy * Math.cos(a);
       return ((Math.round(Math.atan2(ly, lx) / (Math.PI / 4)) % 8) + 8) % 8;
@@ -2613,8 +2595,6 @@
         var rw = Math.min(1, righting / 0.35), rt = Math.atan2(P.vy, P.vx);
         alpha += (wrap(rt - P.h) * 20 - P.w * 8) * rw;
       }
-      if (cpSl > .02 && m <= .18 && Math.hypot(P.vx, P.vy) > S * .05)   // önleyici kaydırırken burun yumuşakça gidiş yönüne döner (oyuncu yönlendirmiyorsa)
-        alpha += (wrap(Math.atan2(P.vy, P.vx) - P.h) * 9 - P.w * 5) * cpSl;
       P.w += alpha * dt; P.h += P.w * dt; hv = alpha;
       // TAM TUR: işaretli dönüş birikir; ≈300° dolunca tok bir efekt + az enerji. Duraksayınca birikim silinir.
       if (race && !dead && !pre) {
@@ -2775,25 +2755,6 @@
       }
       return -1;
     }
-    var cpEx = 0, cpEy = 0;
-    function cpEvade(o, Rs) {                                     // süzülen/salınan kaya: göreli yörüngeyi tahmin et, çarpacaksa kaçmak için gereken yanal ivmeyi ver (çarpmayacaksa -1)
-      var v = rv(o), rx = o.x - P.x, ry = o.y - P.y, wx = v.x - P.vx, wy = v.y - P.vy,           // w: kayanın gemiye göre hızı
-          a = wx * wx + wy * wy, b = rx * wx + ry * wy, Rc = o.r * .88 + Rs + S * .03,           // Rc: kaçınma yarıçapı (çarpma + küçük pay)
-          tm, mx, my, dm, wl, px, py, ms, sg, tc, te;
-      if (rx * rx + ry * ry > S * S * 1.44 || a < S * S * 1e-4 || b >= 0) return -1;            // algılama menzili (1.2 S) dışında, göreli hareket yok ya da uzaklaşıyor
-      tm = -b / a; if (tm > 2.2) return -1;                                                      // algılama ufku: 2.2 sn sonrası için tepki verilmez
-      mx = rx + wx * tm; my = ry + wy * tm; dm = Math.hypot(mx, my);                             // en yakın geçiş noktası ve ıska mesafesi
-      if (dm >= Rc) return -1;                                                                   // zaten ıskalıyor
-      wl = Math.sqrt(a); px = -wy / wl; py = wx / wl;                                            // göreli hıza dik birim: ıska mesafesini en verimli büyüten yön
-      ms = mx * px + my * py;
-      if (Math.abs(ms) < S * .012) {                                                             // tam kafa kafaya: yan seçimi koridorun ortasına doğru; seçim sabit kalır (titremez)
-        if (o.es === undefined) { tc = T(P.y) - P.x; o.es = px * tc >= 0 ? 1 : -1; }
-        sg = o.es;
-      } else { sg = ms > 0 ? -1 : 1; o.es = sg; }
-      cpEx = sg * px; cpEy = sg * py;
-      te = Math.max(tm, .2);
-      return 2 * (Rc - dm) / (te * te) * 1.35;                                                   // ıskalamak için gereken yanal ivme (1.35 pay); kapasiteyi aşarsa kurtulamayabilirsin
-    }
     function kill(kind) {
       if (dead) return;
       dead = kind; deadT = 0; shake = kind === 2 ? 0 : 1; flash = kind === 2 ? .3 : .9; th = 0; thrustSet(0); Music.thrust(0);
@@ -2925,7 +2886,6 @@
       cx.restore(); cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
     }
     function stepDead(dt) {
-      cpIcon(0); cpEa = 0;
       deadT += dt; shake = Math.max(0, shake - dt * 1.6); flash = Math.max(0, flash - dt * 2);
       if (dead === 2) { P.x += P.vx * dt * .6; P.y += P.vy * dt * .6; var dm = Math.exp(-dt * .8); P.vx *= dm; P.vy *= dm; }
       else { P.x += P.vx * dt * .25; P.y += P.vy * dt * .25; P.vx *= Math.exp(-dt * 2); P.vy *= Math.exp(-dt * 2); }
@@ -3023,13 +2983,12 @@
       // süzülen kayalar + kaya-kaya çarpışma
       rocksStep(dt);
       // engeller
-      var nearBest = 0, lvC = window.DDShop ? DDShop.lv('onl') : 0, cpT = 0, cnx = 0, cny = 0, cax = 0, cay = 0, csh = 1e9;
+      var nearBest = 0, lvC = window.DDShop ? DDShop.lv('onl') : 0, cpT = 0, cnx = 0, cny = 0;
       var cpSpd = Math.hypot(P.vx, P.vy), cpUx = cpSpd ? P.vx / cpSpd : 0, cpUy = cpSpd ? P.vy / cpSpd : 0,
           cpCap = S * (.06 + .03 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .09S … seviye 5 = .21S
           cpMaxS = Math.min(S * 1.5, cpSpd * cpSpd / (2 * cpCap) * 1.5 + S * .15),   // ne kadar ileriye bakılacağı
           cpJet = (jetId !== null || keys[' ']) && !lock && en > 0,                          // jet basılıysa sürücü bilerek itiyor: önleyici devre dışı
-          cpOn = lvC > 0 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0,
-          cpOnE = lvC > 0 && !dead && !cpJet, eNeed = 0, edx = 0, edy = 0;   // süzülen kayalar için kaçınma: gemi dururken bile çalışır (kaya gelir)
+          cpOn = lvC > 0 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0;
       for (i = 0; i < obs.length; i++) {
         o = obs[i];
         if (Math.abs(o.y - P.y) > S * 1.6) continue;
@@ -3071,13 +3030,9 @@
           if (sH >= 0) {
             // yalnızca ENGELE DOĞRU olan hız bileşeni kesilir: tam dik geliyorsan durursun, eğik geliyorsan yan hızın korunur ve engelin yanından süzülürsün
             var cs = Math.max(0, cpUx * cpNx + cpUy * cpNy), rq = cpSpd * cpSpd * cs / (2 * Math.max(sH, S * .004)) * 1.35;   // 1.35: pay
-            rq = sH < S * .05 ? cpCap * 1.5 * (.3 + .7 * cs) : Math.min(cpCap, rq);                                                           // çarpmaya çok yakınsa tam güç
-            if (rq > cpNeed) { cpNeed = rq; cnx = cpNx; cny = cpNy; cax = anx; cay = any_; csh = sH; }
+            rq = sH < S * .05 ? cpCap * 1.5 : Math.min(cpCap, rq);                                                           // çarpmaya çok yakınsa tam güç
+            if (rq > cpNeed) { cpNeed = rq; cnx = cpNx; cny = cpNy; }
           }
-        }
-        if (cpOnE && clr > 0 && o.t === 'rock' && (o.dv || o.amp)) {   // süzülen/salınan kaya: fren değil, yan motorlarla yoldan kaçma girişimi
-          var ea = cpEvade(o, Rs);
-          if (ea > eNeed) { eNeed = ea; edx = cpEx; edy = cpEy; }
         }
         if (clr < 0 && o.t !== 'beam' && graceT <= 0) { if (o.t === 'spin') lzArmSpin(o); if (o.t === 'hole') hd = 1; kill(1); return; }
         if (!o.near && !o.fix && clr > 0 && clr < S * .032 && sp > S * .14 && !(o.t === 'beam')) {
@@ -3088,19 +3043,10 @@
         }
       }
       // Çarpışma önleyici: yoldaki engelin önünde durmaya yetecek kadar fren uygulanır (kapasiteyi aşmaz); çarpacağın taraftaki yan motorlar ateşlenir
-      var cpSlideNow = 0, cpD = (cpOn && cpNeed > cpCap * .2) ? cpNeed : 0;                           // küçük ihtiyaçta (kapasitenin %20'si altı) karışma
-      var eRoom = cpD > 0 ? Math.max(cpCap * .3, cpCap - cpD) : cpCap,                  // fren de aynı motorları kullanır: ortak kapasite
-          eTar = (cpOnE && eNeed > cpCap * .05) ? Math.min(eRoom, eNeed) : 0;           // gereken ivme kapasiteyi aşarsa en güçlü hâliyle dener, yetmezse çarpar
-      if (eTar > 0) { cpEdx = edx; cpEdy = edy; }
-      cpEa += (eTar - cpEa) * (1 - Math.exp(-dt / .12));                                // motorlar anında tam güce çıkmaz: ~0.12 sn ateşleme gecikmesi
-      cpT = Math.min(1, Math.max(cpD, cpEa) / cpCap);
+      var cpD = (cpOn && cpNeed > cpCap * .2) ? cpNeed : 0;                           // küçük ihtiyaçta (kapasitenin %20'si altı) karışma
+      cpT = Math.min(1, cpD / cpCap);
       cpK += (cpT - cpK) * (1 - Math.exp(-dt / (cpT > cpK ? .06 : .22)));              // yalnızca görsel/ses şiddeti için
       if (cpD > 0) {
-        var wN = Math.max(0, Math.min(1, 1 - csh / (S * .4))), cl = Math.hypot(cax, cay);   // yaklaştıkça tahmin edilen çarpma normali yerine güncel normal (gemi→engel yüzeyi) karışır
-        if (wN > 0 && cl > 1e-3) {
-          var nbx = cnx * (1 - wN) + cax / cl * wN, nby = cny * (1 - wN) + cay / cl * wN, nbl = Math.hypot(nbx, nby);
-          if (nbl > 1e-3) { cnx = nbx / nbl; cny = nby / nbl; }
-        }
         cpx = cnx; cpy = cny;
         var vnn = P.vx * cnx + P.vy * cny, dvc = Math.min(cpD * dt, Math.max(0, vnn));   // yalnızca engele doğru bileşeni azaltır; yan hıza dokunmaz, geri itmez
         var spB = Math.hypot(P.vx, P.vy), tvx = P.vx - cnx * vnn, tvy = P.vy - cny * vnn, tvm = Math.hypot(tvx, tvy);   // tvx/tvy: engele teğet (yan) hız
@@ -3109,19 +3055,13 @@
         // Tam dik geliyorsan (teğet hız ≈ 0) aktarılacak yön de, oran da yoktur: gerçekten durursun.
         if (dvc > 0 && tvm > S * .004 && spB > 1e-3) {
           var gl = Math.min(1, 1.6 * tvm / spB) * dvc;                                  // oran: sinθ ile büyür (dikte 0, yaklaşık 40°+ eğimde tam aktarım)
-          P.vx += tvx / tvm * gl; P.vy += tvy / tvm * gl; cpSlideNow = 1;
+          P.vx += tvx / tvm * gl; P.vy += tvy / tvm * gl;
           var spA = Math.hypot(P.vx, P.vy); if (spA > spB) { P.vx *= spB / spA; P.vy *= spB / spA; }   // enerji korunur: hız büyüklüğü artmaz
         }
       }
-      if (cpEa > cpCap * .02) {                                                          // kaçınma itişi: ivme, kayadan uzağa; egzoz ise ters yöne (kayaya doğru) çıkar
-        P.vx += cpEdx * cpEa * dt; P.vy += cpEdy * cpEa * dt;
-        if (cpEa > cpD && cpEa > cpCap * .05) { cpx = -cpEdx; cpy = -cpEdy; }
-      }
-      cpSl += (cpSlideNow - cpSl) * (1 - Math.exp(-dt / .25));
-      cpIcon(cpK);
       if (lvC > 0 && cpK > .01) {
         cpAcc += dt * 34 * cpK;
-        while (cpAcc >= 1) { cpAcc--; var pi2 = cpPort(), pa = pi2 * Math.PI / 4; cpPuff(pi2); }
+        while (cpAcc >= 1) { cpAcc--; var pi2 = cpPort(), pa = pi2 * Math.PI / 4; puff(CPP[pi2][0], CPP[pi2][1], Math.cos(pa), Math.sin(pa)); }
         if (cpK > .2 && cpSnd <= 0) { sfxCp(); vib(5); cpSnd = .4; }
       } else if (cpK <= .01) cpAcc = 0;
       cpSnd -= dt;
@@ -3156,6 +3096,7 @@
       else if (warnOn = warnOn ? waveY - P.y < H * .6 : waveY - P.y < H * .5) dkMsg('warn', '', 'Alev yaklaşıyor', '');
       else if (bannerT > 0) dkMsg('ok', '', banner.charAt(0) + banner.slice(1).toLowerCase(), '');
       else if (startMsgT > 0) dkMsg('ok', '', 'Kaç', '');
+      else if (cpK > .3) dkMsg('ok', '', 'Önleyici devrede', '');
       else dkMsg('', '', '', '');
       bannerT = Math.max(0, bannerT - dt); shake = Math.max(0, shake - dt * 1.4); flash = Math.max(0, flash - dt * 1.6);
       for (i = pops.length - 1; i >= 0; i--) { pops[i].a += dt; pops[i].y -= S * .06 * dt; if (pops[i].a > 1.5) pops.splice(i, 1); }
@@ -3224,18 +3165,12 @@
       cx.fillStyle = gh ? CR : '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
       var hh = Math.min(1, heat * .85);                                                  // nozul: soğukken koyu gri, yanarken turuncuya
       cx.fillStyle = 'rgb(' + (75 + 180 * hh | 0) + ',' + (74 + 76 * hh | 0) + ',' + (71 + 19 * hh | 0) + ')'; rr(-.22, 1.98, .44, .2, .08); cx.fill();
-      if (cpK > .03) {                                           // çarpışma önleyici: çarpacak taraftaki yan itici; belirgin kızıl-turuncu alev
-        var cpi = cpPort(), cpa = cpi * Math.PI / 4, ci = Math.min(1, .5 + cpK), fz = 1 + .14 * Math.sin(t * 90) + .08 * Math.sin(t * 57 + 1),
-            Lf = (.7 + 1.5 * ci) * fz, wf = .15 + .13 * ci;
-        cx.save(); cx.translate(CPP[cpi][0], CPP[cpi][1]); cx.rotate(cpa);
-        cx.fillStyle = 'rgba(48,46,44,.95)'; cx.beginPath(); cx.moveTo(-.02, -.2); cx.lineTo(-.02, .2); cx.lineTo(.2, .13); cx.lineTo(.2, -.13); cx.closePath(); cx.fill();   // nozul ağzı
-        cx.globalCompositeOperation = 'lighter';
-        g = cx.createRadialGradient(.1, 0, .02, .1, 0, 1.0 * ci + .4); g.addColorStop(0, 'rgba(255,120,70,' + .55 * ci + ')'); g.addColorStop(1, 'rgba(255,70,40,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.arc(.1, 0, 1.0 * ci + .4, 0, 6.2832); cx.fill();   // parlama
-        g = cx.createLinearGradient(.1, 0, Lf, 0); g.addColorStop(0, 'rgba(255,245,225,1)'); g.addColorStop(.35, 'rgba(255,150,80,.9)'); g.addColorStop(1, 'rgba(255,60,40,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.moveTo(.1, -wf); cx.bezierCurveTo(Lf * .4, -wf * 1.1, Lf * .8, -wf * .45, Lf, 0); cx.bezierCurveTo(Lf * .8, wf * .45, Lf * .4, wf * 1.1, .1, wf); cx.closePath(); cx.fill();   // dış alev
-        g = cx.createLinearGradient(.1, 0, Lf * .55, 0); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(1, 'rgba(255,230,190,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.moveTo(.1, -wf * .45); cx.lineTo(Lf * .55, 0); cx.lineTo(.1, wf * .45); cx.closePath(); cx.fill();   // beyaz çekirdek
+      if (cpK > .03) {                                           // çarpışma önleyici: çarpacak taraftaki küçük itiş motoru
+        var cpi = cpPort(), cpa = cpi * Math.PI / 4, Lf = (.22 + .7 * cpK) * (1 + .12 * Math.sin(t * 90)), wf = .06 + .05 * cpK;
+        cx.save(); cx.translate(CPP[cpi][0], CPP[cpi][1]); cx.rotate(cpa); cx.globalCompositeOperation = 'lighter';
+        g = cx.createLinearGradient(0, 0, Lf, 0); g.addColorStop(0, 'rgba(255,255,255,' + Math.min(1, .5 + cpK) + ')'); g.addColorStop(.45, 'rgba(190,215,255,' + .6 * cpK + ')'); g.addColorStop(1, 'rgba(150,190,255,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, -wf); cx.bezierCurveTo(Lf * .4, -wf, Lf * .8, -wf * .4, Lf, 0); cx.bezierCurveTo(Lf * .8, wf * .4, Lf * .4, wf, 0, wf); cx.closePath(); cx.fill();
+        cx.globalCompositeOperation = 'source-over'; cx.fillStyle = 'rgba(255,255,255,' + Math.min(.9, cpK + .2) + ')'; cx.beginPath(); cx.arc(0, 0, .07, 0, 6.2832); cx.fill();
         cx.restore();
       }
       cx.restore();
