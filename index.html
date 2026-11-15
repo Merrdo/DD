@@ -306,14 +306,17 @@
   #spst i.hi { animation: spsp .5s ease-in-out infinite; }
   @keyframes spsp { 50% { transform: scale(1.16); } }
   #spen i { display: block; height: 100%; width: 100%; background: var(--fg); transform-origin: left; transition: background .25s ease; }
-  /* geniş motor: tek parça çubuk. Sağ yarı mavi (turbo, önce harcanır), sol yarı beyaz (normal). Ortada turbo simgesi */
+  /* geniş motor: tek parça çubuk. Sol yarı beyaz (normal depo), sağ yarı mavi (turbo deposu), ortada turbo simgesi */
   #spen.wd { width: 88px; overflow: visible; }
-  #spen.wd i { background: linear-gradient(90deg, var(--fg) 0 50%, #7fd4ff 50% 100%) !important; transform: none !important; border-radius: 3px; }
-  #spen.wd.lo i { background: linear-gradient(90deg, #ff8a5c 0 50%, #7fd4ff 50% 100%) !important; }
-  #spen s { display: none; position: absolute; left: 50%; top: 50%; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%; background: #0b0d12; color: rgba(244,242,238,.55); text-decoration: none; transition: color .2s ease, filter .2s ease; }
+  #spen.wd i { width: 50%; border-radius: 3px 0 0 3px; }
+  #spen u { display: none; position: absolute; left: 50%; top: 0; width: 50%; height: 100%; background: #7fd4ff; border-radius: 0 3px 3px 0; transform-origin: left; transition: box-shadow .2s ease; }
+  #spen.wd u { display: block; }
+  #spen.wd.od u { box-shadow: 0 0 7px 1px rgba(127,212,255,.95); }
+  #spen s { display: none; position: absolute; left: 50%; top: 50%; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%; background: #0b0d12; color: rgba(244,242,238,.4); text-decoration: none; transition: color .2s ease, filter .2s ease; }
   #spen s svg { display: block; width: 100%; height: 100%; fill: currentColor; stroke: none; }
   #spen.wd s { display: block; }
-  #spen s.on { color: #7fd4ff; filter: drop-shadow(0 0 4px rgba(127,212,255,.95)); }
+  #spen s.on { color: #7fd4ff; }
+  #spen s.act { color: #fff; filter: drop-shadow(0 0 4px rgba(127,212,255,1)); }
   #space.play::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 190px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
   /* ilk giriş rehberi: sol / sağ yarıda ne yapılacağı */
   #sptut { position: absolute; inset: 0; z-index: 1; display: none; pointer-events: none; }
@@ -940,7 +943,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><u></u><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
 </div>
 
 <script>
@@ -984,8 +987,8 @@
   var ENG = [
     { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, nz:'std', st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru. Çan biçimli tek lüle, dengeli itiş.' },
     { id:'genis', n:'Geniş Motor', tag:'Yeni', price:600, nz:'wide', st:{ ivme:-8, man:-4 },
-      ex:['Tek çubuk: mavi yarı turbo', 'Biraz daha büyük depo'],
-      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır: sağ yarısı mavi, sol yarısı beyazdır, ortasında turbo simgesi durur. Jete basınca önce mavi kısım yanar: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama bu çok kısa sürer. Mavi kısım bitince beyaz kısımla çalışan, standart motordan biraz güçsüz normal moda geçilir. Toplam enerji deposu standart motordan biraz daha büyüktür.' }
+      ex:['Çift dokun: turbo', 'Normal depo ≈ standart'],
+      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır ama iki depodan oluşur: beyaz yarı normal uçuş içindir ve standart motordaki kadar dayanır, mavi yarı turbo içindir. Turbo için sağ tarafa çift dokunup ikinci dokunuşta basılı tut: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama mavi depo hızla boşalır ve çok yavaş dolar. Mavi depo bitince normal moda dönülür.' }
   ];
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
@@ -1193,7 +1196,7 @@
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flameSet(fx, nzKind()) : '') +
       '<path class="sh-a" d="' + wsvg(curW(), -1) + '" fill="' + p.a + '"' + st + '/>' +
       '<path class="sh-b" d="' + wsvg(curW(), 1) + '" fill="' + p.b + '"' + st + '/>' +
-      '<path class="sh-c" d="' + hullD(nzKind()) + '" fill="' + p.c + '"' + st + '/>' +
+      '<path class="sh-c" d="' + hullD(nzKind()) + '" fill="' + ((p.c === 'none' && p.s) ? '#000' : p.c) + '"' + st + '/>' +
       '<path class="sh-w" d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
       '<g class="sh-n" data-c="' + p.n + '" data-s="' + (p.s || '') + '">' + nozSvg(nzKind(), p.n, p.s) + '</g>' +
       (big || nf ? '' : smallFl(nzKind(), p.f)) +
@@ -2656,7 +2659,7 @@
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
     var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [];
-    var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
+    var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var frameErr = 0;
     var hd = 0, lz = null, lzSp = [], lzLast = 0, nowT = 0;   // lazer ölümü durumu, lazer-kaya kıvılcım/kırıntı havuzu, son çizim zamanı
@@ -2930,7 +2933,7 @@
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0;
-      pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
+      pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
@@ -3349,7 +3352,7 @@
           jbx = Math.max(jr + 8, Math.min(W - jr - 8, p.x)); jby = Math.max(jr + 8, Math.min(H - jr - 8, p.y));
         }
       }
-      else if (jetId === null) { jetId = e.pointerId; bUsed = 1; pulse = 1; bbx = Math.max(W / 2 + br + 6, Math.min(W - br - 10, p.x)); bby = Math.max(br + 10, Math.min(H - br - 10, p.y)); }
+      else if (jetId === null) { jetId = e.pointerId; jetPress(); bUsed = 1; pulse = 1; bbx = Math.max(W / 2 + br + 6, Math.min(W - br - 10, p.x)); bby = Math.max(br + 10, Math.min(H - br - 10, p.y)); }
     }, { passive: false });
     el.addEventListener('pointermove', function (e) {
       if (e.pointerId === crId) { e.preventDefault(); crMove(e); return; }
@@ -3366,7 +3369,10 @@
       if (e.pointerId === joyId) { e.preventDefault(); joy(pos(e)); }
     });
     el.addEventListener('wheel', function (e) { if (devOn) { e.preventDefault(); devZoom(Math.exp(-e.deltaY * .0015)); } }, { passive: false });
-    function up(e) { e.stopPropagation(); if (e.pointerId === crId) { crUp(e); return; } delete devPts[e.pointerId]; if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) jetId = null; }
+    // TURBO: sağ tarafa (ya da Boşluk'a) çift dokunup ikinci basışta basılı tutmak mavi depoyu açar
+    function jetPress() { var n = performance.now(); tReq = (n - jetTapT) < 350; jetDownT = n; }
+    function jetRel() { var n = performance.now(); jetTapT = ((n - jetDownT) < 230) ? n : 0; tReq = false; }
+    function up(e) { e.stopPropagation(); if (e.pointerId === crId) { crUp(e); return; } delete devPts[e.pointerId]; if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) { jetId = null; jetRel(); } }
     el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     window.addEventListener('keydown', function (e) {
       if (!on) return;
@@ -3375,9 +3381,10 @@
       if (mode === 0 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { crGo(e.key === 'ArrowRight' ? 1 : -1); return; }
       if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
+      if (e.key === ' ' && !keys[' ']) jetPress();
       keys[e.key.toLowerCase()] = 1; audioInit(); thrustInit();
     }, true);
-    window.addEventListener('keyup', function (e) { if (on) delete keys[e.key.toLowerCase()]; });
+    window.addEventListener('keyup', function (e) { if (on) { if (e.key === ' ' && keys[' ']) jetRel(); delete keys[e.key.toLowerCase()]; } });
     window.addEventListener('resize', function () { if (on) size(); });
     function autoPause() { if (!on) return; joyId = null; jetId = null; jv.x = jv.y = 0; keys = {}; devPts = {}; if (mode === 1) { try { pause(); } catch (e) {} } }
     document.addEventListener('visibilitychange', function () { if (document.hidden) autoPause(); });
@@ -3486,7 +3493,11 @@
           sfxSpin(spinChain - 1); vib([14, 22, 10]);
         }
       } else if (!race) spinAcc = 0;
-      var want = ((jetId !== null || keys[' ']) && (!lock && en > 0)) ? 1 : 0;
+      var jetting = jetId !== null || keys[' '];
+      if (!jetting || engK() !== 'wide' || tb <= 0) tOn = false;
+      else if (tReq && !tOn) { tOn = true; pop('TURBO', P.x, P.y - S * .1, true); sfxBoost(); vib([12, 18, 12]); }
+      tReq = false;
+      var want = (jetting && ((!lock && en > 0) || (tOn && tb > 0))) ? 1 : 0;
       th += (want - th) * (1 - Math.exp(-dt / (want ? 0.08 : 0.18)));
       if (th > 0.3 && !jetT) jetT = performance.now();
       if (want && !wasOn && th < 0.12) ign = 1; wasOn = want; ign = Math.max(0, ign - dt / 0.24);
@@ -3551,14 +3562,18 @@
       if (th > 0.05) burn += dt; else burn = Math.max(0, burn - dt * 2);
       var using = th > 0.05, wideE = engK() === 'wide';
       var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
-      // GENİŞ MOTOR: tek çubuk. Sağ yarı (en > .5) TURBO: önce o harcanır, mekik aşırı hızlanır ama çok kısa sürer (~2,5 sn).
-      // Sol yarı normal moddur (standart motordan biraz güçsüz). Depo toplamda standart motordan ~%35 büyüktür (WIDE_CAP).
-      var WIDE_CAP = 1.35, odT = (wideE && using && en > .5) ? 1 : 0;
+      // GENİŞ MOTOR: tek çubuk, iki depo. Sol yarı (en) normal uçuş: standart motordaki depoya çok yakın (%7 daha az dayanır).
+      // Sağ yarı (tb) TURBO: yalnızca sağ tarafa çift dokunup basılı tutunca açılır, ~2,5 sn'de biter, çok yavaş dolar (~55 sn).
+      // Turbo açıkken yalnızca tb harcanır; tb bitince normal moda dönülür.
+      var odT = (wideE && using && tOn && tb > 0) ? 1 : 0;
       odK += (odT - odK) * (1 - Math.exp(-dt / (odT ? .25 : .35)));
       odC += (odT - odC) * (1 - Math.exp(-dt / (odT ? .4 : 2.5)));      // tavan hız yavaş söner: turbo bitince hız ani kesilmez
       if (!wideE) { odK = 0; odC = 0; }
-      if (using) { idleT = 0; en -= (wideE ? drain / WIDE_CAP * (odT ? 1.6 : 1) : drain) * dt; }
-      else { idleT += dt; if (idleT > 0.7 && en < 1) en = Math.min(1, en + (wideE ? (en < .5 ? .07 : .04) : 0.08) * dt); }
+      if (using) { idleT = 0; if (odT) tb = Math.max(0, tb - drain * 2.3 * dt); else en -= (wideE ? drain / .93 : drain) * dt; }
+      else {
+        idleT += dt;
+        if (idleT > 0.7) { if (en < 1) en = Math.min(1, en + (wideE ? .075 : .08) * dt); if (wideE && tb < 1) tb = Math.min(1, tb + .018 * dt); }
+      }
       if (en <= 0) { en = 0; if (!lock) { lock = true; if (typeof playNope === 'function') playNope(); } }
       if (lock && en > 0.25) lock = false;
       if (el.classList.contains('tut')) {                       // rehber: yalnızca gerçekten denenince (≈3 sn) solar; dokunurken silikleşir
@@ -3571,20 +3586,19 @@
       if (enGainT > 0) {
         enGainT = Math.max(0, enGainT - dt);
         var gl = Math.min(enFrom, en), gw = Math.max(0, Math.min(enTo, en) - gl);
-        elGain.style.left = (gl * 100) + '%'; elGain.style.width = (gw * 100) + '%'; elGain.style.opacity = Math.min(1, enGainT / .6);
+        var gk = engK() === 'wide' ? .5 : 1; elGain.style.left = (gl * 100 * gk) + '%'; elGain.style.width = (gw * 100 * gk) + '%'; elGain.style.opacity = Math.min(1, enGainT / .6);
       } else if (elGain.style.opacity !== '0') elGain.style.opacity = 0;
-      elEn.style.opacity = (en > 0.995 && enGainT <= 0) ? .45 : 1;
-      var wz = engK() === 'wide';
-      if (elEn.classList.contains('wd') !== wz) { elEn.classList.toggle('wd', wz); lastE = ''; elEn.firstElementChild.style.transform = ''; elEn.firstElementChild.style.clipPath = ''; }
-      var es = en.toFixed(2) + (wz ? (en > .5 ? 't' : 'n') : '');
+      elEn.style.opacity = (en > 0.995 && (engK() !== 'wide' || tb > 0.995) && enGainT <= 0) ? .45 : 1;
+      var wz = engK() === 'wide', lw = lock || en < 0.2;
+      if (elEn.classList.contains('wd') !== wz) { elEn.classList.toggle('wd', wz); lastE = ''; }
+      var es = en.toFixed(2) + '|' + (wz ? tb.toFixed(2) + (tOn ? 'o' : '') : '') + (lw ? 'l' : '');
       if (es !== lastE) {
         lastE = es; var bar = elEn.firstElementChild;
+        bar.style.transform = 'scaleX(' + en + ')'; bar.style.background = lw ? '#ff8a5c' : '';
         if (wz) {
-          bar.style.clipPath = 'inset(0 ' + ((1 - en) * 100).toFixed(1) + '% 0 0)'; bar.style.background = '';
-          elEn.classList.toggle('lo', lock || en < 0.2);
-          elEn.lastElementChild.classList.toggle('on', en > .5);
-        } else {
-          bar.style.transform = 'scaleX(' + en + ')'; bar.style.background = (lock || en < 0.2) ? '#ff8a5c' : '';
+          elEn.querySelector('u').style.transform = 'scaleX(' + tb + ')';
+          elEn.classList.toggle('od', !!tOn);
+          var ic = elEn.querySelector('s'); ic.classList.toggle('on', tb > .02); ic.classList.toggle('act', !!tOn);
         }
       }
       bA += (((jetId !== null || keys[' ']) ? 1 : 0) - bA) * (1 - Math.exp(-dt / 0.12)); pulse = Math.max(0, pulse - dt / 0.5);
@@ -3726,7 +3740,7 @@
       P.x += P.vx * dt; P.y += P.vy * dt; P.vx -= P.vx * hk; P.vy -= P.vy * hk; P.w = 0; P.h += wrap(-Math.PI / 2 - P.h) * hk;
       P.x += (Math.max(-cw * .5, Math.min(cw * .5, P.x)) - P.x) * hk;   // duvara çok yakınsa yatayda hafifçe içeri
       cam.x += (P.x - cam.x) * hk; cam.y += (P.y - cam.y) * hk; trail = [];
-      th += (0 - th) * hk; thrustSet(th); en = 1; odK = 0; odC = 0; lock = false; burn = 0; idleT = 0; boostRem = 0;
+      th += (0 - th) * hk; thrustSet(th); en = 1; tb = 1; tOn = false; odK = 0; odC = 0; lock = false; burn = 0; idleT = 0; boostRem = 0;
       cdT -= dt;
       if (cdT <= 0) { P.vx = P.vy = 0; P.h = -Math.PI / 2; pre = 0; startMsgT = .8; sfxSector(); return; }
       var n = Math.ceil(cdT);
@@ -3856,7 +3870,7 @@
       }
       if (Math.abs(y - P.y) > S * .3) devJump = true;              // ileri ışınlanma: puan/rekor sayılmaz
       P.x = x; P.y = y; P.vx = 0; P.vy = 0; P.h = -Math.PI / 2; P.w = 0; th = 0; thrustSet(0); Music.thrust(0);
-      trail = []; parts = []; cam.x = P.x; cam.y = P.y; en = 1; odK = 0; odC = 0; burn = 0; flash = .6; combo = 0; pops = [];
+      trail = []; parts = []; cam.x = P.x; cam.y = P.y; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; burn = 0; flash = .6; combo = 0; pops = [];
       if (race) {
         waveY = P.y + Math.max(H * .95, S * 1.3); waveT = 0; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
         var sc = Math.floor(distM() / 50); sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4;
@@ -3916,7 +3930,7 @@
       var cpSpd = Math.hypot(P.vx, P.vy), cpUx = cpSpd ? P.vx / cpSpd : 0, cpUy = cpSpd ? P.vy / cpSpd : 0,
           cpCap = S * (.06 + .03 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .09S … seviye 5 = .21S
           cpMaxS = Math.min(S * 1.5, cpSpd * cpSpd / (2 * cpCap) * 1.5 + S * .15),   // ne kadar ileriye bakılacağı
-          cpJet = (jetId !== null || keys[' ']) && !lock && en > 0,                          // jet basılıysa sürücü bilerek itiyor: önleyici devre dışı
+          cpJet = (jetId !== null || keys[' ']) && ((!lock && en > 0) || (tOn && tb > 0)),                          // jet basılıysa sürücü bilerek itiyor: önleyici devre dışı
           cpOn = lvC > 0 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0,
           cpOnE = lvC > 0 && !dead && !cpJet, eNeed = 0, edx = 0, edy = 0, cpEc = cpCap * 1.5;   // yanal gaz iticileri fren motorlarından güçlü   // süzülen kayalar için kaçınma: gemi dururken bile çalışır (kaya gelir)
       for (i = 0; i < obs.length; i++) {
@@ -4065,8 +4079,8 @@
     /* --- çizim --- */
     function hr(a, b, k) { var n = Math.sin(a * 127.1 + b * 311.7 + k * 74.7) * 43758.5453; return n - Math.floor(n); }
     function rr(a, b, w, h, r) { cx.beginPath(); if (cx.roundRect) cx.roundRect(a, b, w, h, r); else cx.rect(a, b, w, h); }
-    function hullP() {                                          // gövde: motorun girintisi (std) ya da çıkıntısı (wide) silüetin parçasıdır
-      cx.beginPath(); cx.moveTo(0, -2.45); cx.bezierCurveTo(.2, -2.2, .42, -1.4, .44, -.6);
+    function hullP(ap) {                                        // gövde: motorun girintisi (std) ya da çıkıntısı (wide) silüetin parçasıdır; ap: yeni yol başlatma (kırpma için)
+      if (!ap) cx.beginPath(); cx.moveTo(0, -2.45); cx.bezierCurveTo(.2, -2.2, .42, -1.4, .44, -.6);
       if (engK() === 'wide') {
         cx.lineTo(.44, 1.05); cx.bezierCurveTo(.44, 1.5, .92, 1.4, .94, 1.85); cx.lineTo(.9, 2.1); cx.quadraticCurveTo(.89, 2.17, .82, 2.17);
         cx.lineTo(-.82, 2.17); cx.quadraticCurveTo(-.89, 2.17, -.9, 2.1); cx.lineTo(-.94, 1.85); cx.bezierCurveTo(-.92, 1.4, -.44, 1.5, -.44, 1.05);
@@ -4232,8 +4246,10 @@
         }
         cx.restore();
       }
+      if (gh) { cx.save(); cx.beginPath(); cx.rect(-8, -8, 16, 16); hullP(1); cx.clip('evenodd'); }   // Hayalet: kanat çizgileri gövdenin (motor alanı dahil) içinde görünmez
       wingP(-1); pf(CR);                  // kanatlar: ASTRO ikonuyla aynı (sol açık, sağ gölge tonu)
       wingP(1); pf(WR);
+      if (gh) cx.restore();
       cx.fillStyle = GR;                                         // joystickle açılan flap panelleri: yalnızca açıkken görünür
       for (k = -1; k <= 1; k += 2) {
         var fd = .3 * (k < 0 ? flapL : flapR);
@@ -5032,7 +5048,7 @@
         cx.globalAlpha = .9 * ga; cx.fillStyle = kg; cx.beginPath(); cx.arc(jbx + jv.x * jr * .62, jby + jv.y * jr * .62, jr * .4, 0, 6.2832); cx.fill();
       }
       // JET düğmesi (dokunulan yerde belirir, basılınca dolar + dalga)
-      var pr = (jetId !== null || keys[' ']) && !lock && en > 0, ba = dead ? 0 : Math.max(bA, (bUsed || race) ? 0 : .22), low = lock || en < .2, bsx = bbx, bsy = bby;
+      var pr = (jetId !== null || keys[' ']) && ((!lock && en > 0) || (tOn && tb > 0)), ba = dead ? 0 : Math.max(bA, (bUsed || race) ? 0 : .22), low = lock || en < .2, bsx = bbx, bsy = bby;
       if (ba > .01) {
         cx.lineWidth = 1.5; cx.strokeStyle = F; cx.fillStyle = F;
         if (pulse > .01) { cx.globalAlpha = .55 * pulse; cx.beginPath(); cx.arc(bsx, bsy, br * (1.05 + .6 * (1 - pulse)), 0, 6.2832); cx.stroke(); }
@@ -5043,6 +5059,10 @@
         if (en > .005) {
           cx.strokeStyle = low ? '#ff8a5c' : F; cx.globalAlpha = (low ? (lock ? .5 + .5 * Math.sin(ts / 120) : .95) : .85) * ba;
           cx.beginPath(); cx.arc(bsx, bsy, br + 8, -Math.PI / 2, -Math.PI / 2 + 6.2832 * en); cx.stroke();
+        }
+        if (engK() === 'wide' && tb > .005) {                                            // turbo deposu: dış mavi halka
+          cx.lineWidth = 3; cx.strokeStyle = '#7fd4ff'; cx.globalAlpha = (tOn ? .95 : .7) * ba;
+          cx.beginPath(); cx.arc(bsx, bsy, br + 15, -Math.PI / 2, -Math.PI / 2 + 6.2832 * tb); cx.stroke();
         }
         var fs = br * .62;                                                              // düz, hareketsiz alev ikonu (enerjiden etkilenmez)
         cx.strokeStyle = pr ? '#000' : F; cx.lineJoin = 'round'; cx.lineCap = 'round';
