@@ -363,7 +363,7 @@
   /* ASTRO ilk açılış animasyonu: mekik alttan süzülür, yıldızlar çizgiden noktaya yavaşlar, başlık belirir */
   #spmenu.intro { background: transparent; }
   #spmenu.intro #spico { position: relative; animation: spship 3.9s cubic-bezier(.16,.72,.2,1) both; }
-  #spmenu.intro #spico::after { content: ''; position: absolute; left: 50%; top: 86%; width: 1.5px; height: 46vh; margin-left: -.75px; transform-origin: top; background: linear-gradient(to bottom, rgba(244,242,238,.5), rgba(244,242,238,0)); animation: sptail 3.9s ease-out both; }
+  #spmenu.intro #spico .sl[data-k="0"] .sh::after { content: ''; position: absolute; left: 50%; top: 86%; width: 1.5px; height: 46vh; margin-left: -.75px; transform-origin: top; background: linear-gradient(to bottom, rgba(244,242,238,.5), rgba(244,242,238,0)); animation: sptail 3.9s ease-out both; }
   #spmenu.intro #sptitle { animation: spti 1.9s ease both 2.3s; }
   #spmenu.intro #spsub { animation: spfade 1s ease both 3.5s; }
   #spmenu.intro #splist { animation: spfade 1.2s ease both 4s; pointer-events: none; }
@@ -388,7 +388,22 @@
   #spvt::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 2px; border-radius: 2px; background: rgba(244,242,238,.16); }
   #spvt i { position: absolute; left: 0; top: 16px; height: 2px; border-radius: 2px; background: var(--fg); }
   #spvt b { position: absolute; top: 8px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 12px rgba(244,242,238,.25); }
-  #spico svg { display: block; width: min(24vw, 13vh, 96px); height: auto; }
+  #spico { flex: 1 1 auto; align-self: stretch; position: relative; touch-action: none; cursor: grab; margin: 2vh 0 1vh; }
+  #spico .cr { position: absolute; inset: 0; }
+  #spico .sl { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; will-change: transform, opacity; pointer-events: none; }
+  #spico .cr.snap .sl { transition: transform .34s cubic-bezier(.22,.61,.36,1), opacity .34s ease; }
+  #spico .sh { position: relative; }
+  #spico svg { display: block; width: min(28vw, 14vh, 112px); height: auto; }
+  #spico .crn { position: absolute; left: 0; right: 0; bottom: 7%; text-align: center; font-size: 11px; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: var(--soft); pointer-events: none; }
+  #spico .crd { position: absolute; left: 0; right: 0; bottom: 2%; display: flex; justify-content: center; gap: 7px; pointer-events: none; }
+  #spico .crd i { width: 5px; height: 5px; border-radius: 50%; background: rgba(244,242,238,.25); transition: background .25s ease, transform .25s ease; }
+  #spico .crd i.on { background: var(--fg); transform: scale(1.25); }
+  #splist .dock { display: flex; gap: 30px; margin-top: 4.5vh; }
+  #splist .dk { display: flex; flex-direction: column; align-items: center; gap: 9px; cursor: pointer; color: var(--soft); -webkit-tap-highlight-color: transparent; }
+  #splist .dk b { width: 50px; height: 50px; border: 1px solid rgba(244,242,238,.22); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background .2s ease, transform .2s ease; pointer-events: none; }
+  #splist .dk:active b { background: rgba(244,242,238,.12); transform: scale(.94); }
+  #splist .dk svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+  #splist .dk small { font-size: 9.5px; letter-spacing: .2em; text-indent: .2em; text-transform: uppercase; color: var(--dim); pointer-events: none; }
   #splist { display: flex; flex-direction: column; align-items: center; }
   /* ---------- açılış animasyonu (oturum başına bir kez) ---------- */
   #intro {
@@ -433,7 +448,7 @@
   }
   /* ---------- DÜKKAN ---------- */
 
-  #shop { --blue:#8cc2ff; --warm:#ff8a5c; position:absolute; inset:0; z-index:15; background:#000; color:var(--fg); overflow:hidden; display:flex; flex-direction:column; padding-top:8.5%; opacity:0; pointer-events:none; transition:opacity .45s ease; -webkit-user-select:none; user-select:none; font-family:inherit; }
+  #shop { --blue:#8cc2ff; --warm:#ff8a5c; position:absolute; inset:0; z-index:15; background:#000; color:var(--fg); overflow:hidden; display:flex; flex-direction:column; padding-top:calc(max(env(safe-area-inset-top,0px), 24px) + 9%); opacity:0; pointer-events:none; transition:opacity .45s ease; -webkit-user-select:none; user-select:none; font-family:inherit; }
   #shop.on { opacity:1; pointer-events:auto; }
   #shop * { box-sizing:border-box; margin:0; padding:0; }
   #shop button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:inherit; -webkit-tap-highlight-color:transparent; }
@@ -449,18 +464,19 @@
   #shop .s-bal:active { background:none; }
   #shop .s-bal .s-st { color:var(--blue); }
 
-  #shop .s-tabs { position:relative; display:flex; justify-content:center; gap:34px; margin:24px 22px 0; border-bottom:1px solid rgba(244,242,238,.14); }
-  #shop .s-tabs button { padding:0 2px 14px; font-size:15px; font-weight:300; letter-spacing:.04em; color:var(--dim); transition:color .25s ease; }
+  #shop .s-tabs { position:relative; display:flex; justify-content:center; gap:34px; margin:30px 22px 0; border-bottom:1px solid rgba(244,242,238,.14); }
+  #shop .s-tabs button { padding:0 2px 14px; font-size:15px; font-weight:300; letter-spacing:.04em; color:var(--dim); transition:color .18s ease; }
   #shop .s-tabs button.on { color:var(--fg); }
-  #shop .s-tabs b { position:absolute; bottom:-1px; left:0; height:1px; background:var(--fg); transition:transform .35s cubic-bezier(.22,.61,.36,1), width .35s cubic-bezier(.22,.61,.36,1); }
-  #shop .s-v { flex:1; min-height:0; display:flex; flex-direction:column; transition:opacity .2s ease; }
-  #shop .s-v.swap { opacity:0; }
+  #shop .s-tabs b { position:absolute; bottom:-1px; left:0; height:1px; background:var(--fg); transition:transform .28s cubic-bezier(.22,.61,.36,1), width .28s cubic-bezier(.22,.61,.36,1); }
+  #shop .s-v { flex:1; min-height:0; display:flex; flex-direction:column; }
+  #shop .s-v.in { animation:s-in .26s cubic-bezier(.22,.61,.36,1) both; }
+  @keyframes s-in { from { opacity:0; transform:translateX(var(--dx,14px)); } to { opacity:1; transform:none; } }
   #shop.pw .s-cv, #shop:not(.pw) .s-pv { display:none; }
 
   /* kostümler: büyük önizleme + şerit */
   #shop .s-cv { padding:0 22px calc(env(safe-area-inset-bottom,0px) + 18px); }
-  #shop .s-hero { position:relative; flex:1; min-height:0; touch-action:pan-y; }
-  #shop .s-ship { position:absolute; top:2%; bottom:2%; left:0; right:0; display:flex; justify-content:center; animation:s-fl 6s ease-in-out infinite; }
+  #shop .s-hero { position:relative; flex:1; min-height:0; margin-top:4vh; touch-action:pan-y; }
+  #shop .s-ship { position:absolute; top:3%; bottom:2%; left:0; right:0; display:flex; justify-content:center; animation:s-fl 6s ease-in-out infinite; }
   @keyframes s-fl { 50% { transform:translateY(-8px); } }
   #shop .s-ship svg { height:100%; width:auto; }
   #shop .s-flm { transform-box:fill-box; transform-origin:50% 0; animation:s-fk .14s ease-in-out infinite alternate; }
@@ -763,8 +779,11 @@
     if (t.closest('[data-k=back]')) return API.onBack();
     if ((b = t.closest('.s-tabs button'))) {
       if (b.getAttribute('data-t') === S.tab) return;
-      var v = q(S.tab === 'c' ? '.s-cv' : '.s-pv'); v.classList.add('swap');
-      setTimeout(function () { v.classList.remove('swap'); setTab(b.getAttribute('data-t')); paint(); }, 200);
+      var nt = b.getAttribute('data-t');
+      setTab(nt); paint();                                   // anında geç, bekleme yok
+      var v = q(nt === 'c' ? '.s-cv' : '.s-pv');
+      v.style.setProperty('--dx', (nt === 'p' ? 16 : -16) + 'px');
+      v.classList.remove('in'); void v.offsetWidth; v.classList.add('in');
       return;
     }
     if ((b = t.closest('.s-t'))) { S.sel = b.getAttribute('data-id'); paint(); return; }
@@ -787,9 +806,12 @@
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
     onChange: null,                            // kostüm / seviye değişince çağrılır
-    open: function () { load(); S.sel = D.eq; S.shown = ''; setTab('c'); paint(); root.classList.add('on'); tabBar(); },
+    open: function () { load(); S.sel = D.eq; S.shown = ''; setTab('c'); paint(); q('.s-cv').classList.remove('in'); q('.s-pv').classList.remove('in'); root.classList.add('on'); tabBar(); },
     close: function () { S.open = ''; root.classList.remove('on'); },
     costume: function () { return D.eq; },
+    owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
+    name: function (id) { var c = cfind(id); return c ? c.n : ''; },
+    equip: function (id) { if (cfind(id) && D.owned[id]) { D.eq = id; save(); } },
     lv: function (id) { return D.lv[id] | 0; },
     svg: function (id) { return ship((cfind(id || D.eq) || COST[0]).p); },
     earn: function (score) { var n = Math.floor(score / API.rate); if (n > 0) { load(); D.coins += n; save(); return n; } return 0; }
@@ -1769,11 +1791,51 @@
     if (isNaN(aVol)) aVol = 100; aVol = Math.max(0, Math.min(100, aVol));
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
-    $('spico').innerHTML = window.DDShop ? DDShop.svg() : ASTRO_ICO;
-    if (window.DDShop) DDShop.onChange = function () { $('spico').innerHTML = DDShop.svg(); };
+    /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
+    var elIco = $('spico'), crList = [], crI = 0, crX = 0, crId = null, crX0 = 0, crT0 = 0, crW = 1, crBusy = false, crTm = 0;
+    function crPaint() {
+      var sl = elIco.querySelectorAll('.sl'), i;
+      for (i = 0; i < sl.length; i++) {
+        var k = +sl[i].getAttribute('data-k'), off = k * crW + crX, a = Math.min(1, Math.abs(off) / crW);
+        sl[i].style.transform = 'translate3d(' + off + 'px,0,0) scale(' + (1 - .15 * a) + ')';
+        sl[i].style.opacity = Math.max(0, 1 - a * 1.15);
+      }
+    }
+    function crBuild() {
+      if (!window.DDShop) { elIco.innerHTML = ASTRO_ICO; return; }
+      var n, h = '<div class="cr">', k, d = '', i;
+      crList = DDShop.owned(); n = crList.length; crI = Math.max(0, crList.indexOf(DDShop.costume())); crX = 0; crBusy = false; clearTimeout(crTm);
+      for (k = n > 1 ? -1 : 0; k <= (n > 1 ? 1 : 0); k++) h += '<div class="sl" data-k="' + k + '"><div class="sh">' + DDShop.svg(crList[(crI + k + n) % n]) + '</div></div>';
+      h += '</div>';
+      if (n > 1) { for (i = 0; i < n; i++) d += '<i' + (i === crI ? ' class="on"' : '') + '></i>'; h += '<div class="crn">' + DDShop.name(crList[crI]) + '</div><div class="crd">' + d + '</div>'; }
+      elIco.innerHTML = h; crW = elIco.clientWidth || 300; crPaint();
+    }
+    function crSnap(dir) {                                      // dir: +1 sonraki, -1 önceki, 0 yerine dön
+      var cr = elIco.querySelector('.cr'); if (!cr) return;
+      crBusy = true; cr.classList.add('snap'); crX = -dir * crW; crPaint();
+      clearTimeout(crTm);
+      crTm = setTimeout(function () {
+        if (dir) { var n = crList.length; crI = (crI + dir + n) % n; DDShop.equip(crList[crI]); crBuild(); }
+        else { cr.classList.remove('snap'); crBusy = false; }
+      }, 340);
+    }
+    function crGo(dir) { if (crList.length > 1 && !crBusy && mode === 0 && !introOn && !stOn) { crW = elIco.clientWidth || crW; crSnap(dir); } }
+    function crDown(e) { if (crBusy || crList.length < 1) return; crId = e.pointerId; crX0 = e.clientX; crT0 = performance.now(); crW = elIco.clientWidth || 300; var cr = elIco.querySelector('.cr'); if (cr) cr.classList.remove('snap'); try { el.setPointerCapture(e.pointerId); } catch (_) {} }
+    function crMove(e) {
+      var dx = e.clientX - crX0;
+      if (crList.length < 2) dx = Math.max(-40, Math.min(40, dx * .25));            // tek mekik: hafif lastik hissi
+      crX = Math.max(-crW, Math.min(crW, dx)); crPaint();
+    }
+    function crUp(e) {
+      var dx = e.clientX - crX0, dt = Math.max(1, performance.now() - crT0), v = dx / dt, dir = 0; crId = null;
+      if (crList.length > 1 && (Math.abs(dx) > crW * .2 || (Math.abs(v) > .4 && Math.abs(dx) > 24))) dir = dx < 0 ? 1 : -1;
+      crSnap(dir);
+    }
+    crBuild();
+    if (window.DDShop) DDShop.onChange = function () { crBuild(); };
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
-      if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div><div class="mi" data-sa="shop">Dükkan</div>' + snd + '<div class="mi" data-sa="exit">Oyunlar</div>';
+      if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div><div class="dock"><div class="dk" data-sa="exit" aria-label="Oyunlar"><b><svg viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/></svg></b><small>Oyunlar</small></div><div class="dk" data-sa="shop" aria-label="Dükkan"><b><svg viewBox="0 0 24 24"><path d="M12 3l2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2z"/></svg></b><small>Dükkan</small></div><div class="dk" data-sa="settings" aria-label="Ayarlar"><b><svg viewBox="0 0 24 24"><path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg></b><small>Ayarlar</small></div></div>';
       else if (mode === 3) h = '<div class="mi primary" data-sa="restart">Tekrar dene</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
       else h = '<div class="mi primary" data-sa="resume">Devam et</div><div class="mi" data-sa="restart">Yeniden başla</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
       elList.innerHTML = h;
@@ -1790,7 +1852,7 @@
         if (m === 2) ss.innerHTML = 'duraklatıldı' + (best > 0 || race ? '<br><b>' + best + '</b>rekor' + (race ? ' · şu an ' + score() : '') : '');
         else ss.textContent = 'bir mod seç';
       }
-      el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); elSm.classList.toggle('pz', m === 2); menuHtml(); elSm.classList.add('on');
+      el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); elSm.classList.toggle('pz', m === 2); menuHtml(); if (m === 0) crBuild(); elSm.classList.add('on');
     }
     var elTl = $('sptl'), elTr = $('sptr'), tutTm = 0, tutL = 0, tutR = 0;
     function tutEnd() { clearTimeout(tutTm); el.classList.remove('tut'); }
@@ -2307,6 +2369,7 @@
         var sa = tg.closest('[data-sa]');
         if (sa) { spAct(sa.getAttribute('data-sa')); return; }
         if (tg.closest('#spause')) { pause(); return; }
+        if (mode === 0 && !stOn && tg.closest('#spico')) { crDown(e); return; }
         if (tg.closest('#devchip')) { devToggle(!devOn); return; }
         var db = tg.closest('[data-dv]');
         if (db && devOn) { var da = db.getAttribute('data-dv'); if (da === 'in') devZoom(1.35); else if (da === 'out') devZoom(1 / 1.35); else if (da === 'home') { dv.x = P.x; dv.y = P.y; } return; }
@@ -2323,6 +2386,7 @@
       else if (jetId === null) { jetId = e.pointerId; bUsed = 1; pulse = 1; bbx = Math.max(W / 2 + br + 6, Math.min(W - br - 10, p.x)); bby = Math.max(br + 10, Math.min(H - br - 10, p.y)); }
     }, { passive: false });
     el.addEventListener('pointermove', function (e) {
+      if (e.pointerId === crId) { e.preventDefault(); crMove(e); return; }
       if (devOn) {
         var q = devPts[e.pointerId]; if (!q) return; e.preventDefault();
         var np = pos(e), ids = Object.keys(devPts);
@@ -2336,12 +2400,13 @@
       if (e.pointerId === joyId) { e.preventDefault(); joy(pos(e)); }
     });
     el.addEventListener('wheel', function (e) { if (devOn) { e.preventDefault(); devZoom(Math.exp(-e.deltaY * .0015)); } }, { passive: false });
-    function up(e) { e.stopPropagation(); delete devPts[e.pointerId]; if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) jetId = null; }
+    function up(e) { e.stopPropagation(); if (e.pointerId === crId) { crUp(e); return; } delete devPts[e.pointerId]; if (e.pointerId === joyId) { joyId = null; jv.x = jv.y = 0; } if (e.pointerId === jetId) jetId = null; }
     el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
     window.addEventListener('keydown', function (e) {
       if (!on) return;
       e.stopPropagation(); e.preventDefault();
       if (e.key === 'Escape') { if (stOn) { showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else close(); return; }
+      if (mode === 0 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { crGo(e.key === 'ArrowRight' ? 1 : -1); return; }
       if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
       keys[e.key.toLowerCase()] = 1; audioInit(); thrustInit();
