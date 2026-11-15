@@ -431,6 +431,104 @@
   @media (prefers-reduced-motion: reduce) {
     #igrid i, #ititle, #itap { animation-duration: .01s !important; animation-delay: 0s !important; }
   }
+  /* ---------- DÜKKAN ---------- */
+
+  #shop { --blue:#8cc2ff; --warm:#ff8a5c; position:absolute; inset:0; z-index:15; background:#000; color:var(--fg); overflow:hidden; display:flex; flex-direction:column; padding-top:8.5%; opacity:0; pointer-events:none; transition:opacity .45s ease; -webkit-user-select:none; user-select:none; font-family:inherit; }
+  #shop.on { opacity:1; pointer-events:auto; }
+  #shop * { box-sizing:border-box; margin:0; padding:0; }
+  #shop button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:inherit; -webkit-tap-highlight-color:transparent; }
+  #shop .s-st { width:12px; height:12px; flex:none; fill:currentColor; }
+
+  #shop .s-top { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:0 5%; }
+  #shop .s-top h1 { font-size:clamp(24px,6.6vmin,32px); font-weight:100; letter-spacing:.22em; text-indent:.22em; line-height:1; }
+  #shop .s-rnd { height:36px; min-width:36px; border:1px solid rgba(244,242,238,.22); border-radius:18px; display:flex; align-items:center; justify-content:center; color:var(--soft); transition:background .2s ease; }
+  #shop .s-rnd:active { background:rgba(244,242,238,.12); }
+  #shop .s-back { justify-self:start; }
+  #shop .s-back i { display:block; width:8px; height:8px; margin-left:3px; border-left:1.4px solid currentColor; border-bottom:1.4px solid currentColor; transform:rotate(45deg); }
+  #shop .s-bal { justify-self:end; padding:0 14px 0 12px; gap:7px; font-size:14px; font-weight:300; letter-spacing:.04em; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  #shop .s-bal:active { background:none; }
+  #shop .s-bal .s-st { color:var(--blue); }
+
+  #shop .s-tabs { position:relative; display:flex; justify-content:center; gap:34px; margin:24px 22px 0; border-bottom:1px solid rgba(244,242,238,.14); }
+  #shop .s-tabs button { padding:0 2px 14px; font-size:15px; font-weight:300; letter-spacing:.04em; color:var(--dim); transition:color .25s ease; }
+  #shop .s-tabs button.on { color:var(--fg); }
+  #shop .s-tabs b { position:absolute; bottom:-1px; left:0; height:1px; background:var(--fg); transition:transform .35s cubic-bezier(.22,.61,.36,1), width .35s cubic-bezier(.22,.61,.36,1); }
+  #shop .s-v { flex:1; min-height:0; display:flex; flex-direction:column; transition:opacity .2s ease; }
+  #shop .s-v.swap { opacity:0; }
+  #shop.pw .s-cv, #shop:not(.pw) .s-pv { display:none; }
+
+  /* kostümler: büyük önizleme + şerit */
+  #shop .s-cv { padding:0 22px calc(env(safe-area-inset-bottom,0px) + 18px); }
+  #shop .s-hero { position:relative; flex:1; min-height:0; touch-action:pan-y; }
+  #shop .s-ship { position:absolute; top:2%; bottom:2%; left:0; right:0; display:flex; justify-content:center; animation:s-fl 6s ease-in-out infinite; }
+  @keyframes s-fl { 50% { transform:translateY(-8px); } }
+  #shop .s-ship svg { height:100%; width:auto; }
+  #shop .s-flm { transform-box:fill-box; transform-origin:50% 0; animation:s-fk .14s ease-in-out infinite alternate; }
+  @keyframes s-fk { from { transform:scale(.96,.9); } to { transform:scale(1.04,1.08); } }
+  #shop .s-info { text-align:center; padding-top:6px; }
+  #shop .s-nm { font-size:26px; font-weight:200; letter-spacing:.04em; }
+  #shop .s-stt { margin-top:8px; min-height:18px; display:flex; align-items:center; justify-content:center; gap:5px; font-size:13px; letter-spacing:.08em; color:var(--dim); font-variant-numeric:tabular-nums; }
+  #shop .s-stt.eq { color:var(--blue); }
+  #shop .s-ds { margin:10px auto 0; max-width:30ch; min-height:42px; font-size:14px; line-height:1.5; color:var(--soft); }
+  #shop .s-hn { min-height:16px; margin-top:6px; font-size:12px; letter-spacing:.04em; text-align:center; color:var(--dim); }
+  #shop .s-th { display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; padding:12px 2px 4px; touch-action:pan-x; }
+  #shop .s-th::-webkit-scrollbar { display:none; }
+  #shop .s-th > :first-child { margin-left:auto; }
+  #shop .s-th > :last-child { margin-right:auto; }
+  #shop .s-t { position:relative; flex:none; width:74px; height:84px; border:1px solid var(--line); border-radius:18px; display:flex; align-items:center; justify-content:center; transition:background .2s ease, border-color .2s ease, transform .2s ease; }
+  #shop .s-t:active { transform:scale(.96); }
+  #shop .s-t.sel { border-color:var(--fg); background:rgba(244,242,238,.06); }
+  #shop .s-t svg.s-sv { height:58px; width:auto; }
+  #shop .s-t.lk svg.s-sv { opacity:.5; }
+  #shop .s-eqd { position:absolute; top:9px; right:9px; width:7px; height:7px; border-radius:50%; background:var(--blue); }
+  #shop .s-lk { position:absolute; top:7px; right:7px; width:13px; height:13px; fill:none; stroke:var(--dim); stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+
+  #shop .s-ab { margin-top:12px; width:100%; padding:15px 0; border:1px solid rgba(244,242,238,.25); border-radius:16px; display:flex; align-items:center; justify-content:center; gap:8px; font-size:12px; letter-spacing:.18em; text-indent:.18em; text-transform:uppercase; text-align:center; transition:background .2s ease, opacity .2s ease; }
+  #shop .s-ab:active { background:rgba(244,242,238,.12); }
+  #shop .s-ab.buy { background:var(--fg); border-color:var(--fg); color:#000; }
+  #shop .s-ab.buy:active { opacity:.75; }
+  #shop .s-ab.no { border-color:rgba(255,138,92,.6); color:var(--warm); }
+  #shop .s-ab.off { opacity:.35; pointer-events:none; }
+
+  /* güçlendirmeler: liste + alttan panel */
+  #shop .s-list { flex:1; min-height:0; margin-top:6px; padding:0 22px 12px; overflow-y:auto; scrollbar-width:none; touch-action:pan-y; -webkit-overflow-scrolling:touch; }
+  #shop .s-list::-webkit-scrollbar { display:none; }
+  #shop .s-rw { width:100%; display:flex; align-items:center; gap:14px; padding:15px 2px; border-bottom:1px solid rgba(244,242,238,.12); transition:opacity .2s ease; }
+  #shop .s-rw:active { opacity:.6; }
+  #shop .s-ic { width:44px; height:44px; flex:none; border:1.3px solid rgba(244,242,238,.4); border-radius:50%; display:flex; align-items:center; justify-content:center; }
+  #shop .s-ic svg { width:21px; height:21px; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
+  #shop .s-rt { flex:1; min-width:0; }
+  #shop .s-rt .s-n { font-size:16px; font-weight:300; letter-spacing:.05em; }
+  #shop .s-rt .s-e { margin-top:4px; font-size:12px; letter-spacing:.06em; color:var(--dim); }
+  #shop .s-bx { display:flex; gap:5px; flex:none; }
+  #shop .s-bx i { width:12px; height:12px; border-radius:3px; border:1.3px solid rgba(244,242,238,.4); }
+  #shop .s-bx i.on { background:var(--fg); border-color:var(--fg); }
+  #shop .s-bx.mx i.on { background:var(--blue); border-color:var(--blue); }
+  #shop .s-bx i.nw { animation:s-bp .5s ease-out; }
+  @keyframes s-bp { from { transform:scale(1.8); opacity:.4; } }
+
+  #shop .s-sh { position:absolute; inset:0; z-index:2; pointer-events:none; }
+  #shop .s-sc { position:absolute; inset:0; background:rgba(0,0,0,.72); opacity:0; transition:opacity .3s ease; }
+  #shop .s-sp { position:absolute; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; background:#0d0d0d; border:1px solid rgba(244,242,238,.2); border-bottom:0; border-radius:28px 28px 0 0; padding:12px 24px calc(env(safe-area-inset-bottom,0px) + 22px); transform:translateY(105%); transition:transform .4s cubic-bezier(.22,.61,.36,1); }
+  #shop .s-sh.on { pointer-events:auto; }
+  #shop .s-sh.on .s-sc { opacity:1; }
+  #shop .s-sh.on .s-sp { transform:none; }
+  #shop .s-gr { display:block; width:100%; height:24px; position:relative; }
+  #shop .s-gr::after { content:''; position:absolute; left:50%; top:6px; width:36px; height:4px; margin-left:-18px; border-radius:2px; background:rgba(244,242,238,.22); }
+  #shop .s-tp { display:flex; align-items:center; gap:16px; margin-top:4px; }
+  #shop .s-tp .s-ic { width:56px; height:56px; }
+  #shop .s-sn { font-size:22px; font-weight:300; letter-spacing:.03em; }
+  #shop .s-sl { margin-top:9px; display:flex; align-items:center; gap:12px; font-size:12px; letter-spacing:.06em; color:var(--dim); }
+  #shop .s-sl .s-bx i { width:16px; height:16px; border-radius:4px; }
+  #shop .s-sd { margin-top:18px; font-size:14px; line-height:1.55; color:var(--soft); }
+  #shop .s-fx { margin-top:18px; display:flex; border:1px solid rgba(244,242,238,.14); border-radius:16px; }
+  #shop .s-fx div { flex:1; padding:12px 14px; }
+  #shop .s-fx div + div { border-left:1px solid rgba(244,242,238,.14); }
+  #shop .s-fx small { display:block; font-size:11px; letter-spacing:.06em; color:var(--dim); }
+  #shop .s-fx b { display:block; margin-top:5px; font-size:15px; font-weight:300; }
+  #shop .s-sh .s-ab { margin-top:16px; }
+  #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+  @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
 </head>
 <body>
@@ -498,10 +596,207 @@
   </div>
   <div id="conf"><div id="cpanel"><h3>İlerlemeler silinsin mi?</h3><p>Tüm oyunlardaki bölümler, rekorlar ve öğreticiler silinir. Her şey ilk kez yüklenmiş gibi baştan başlar. Bu işlem geri alınamaz.</p><div id="crow"><div id="cno">Vazgeç</div><div id="cyes">Sıfırla</div></div></div></div>
 
+<div id="shop" role="dialog" aria-label="Dükkan">
+  <div class="s-top"><button class="s-rnd s-back" data-k="back" aria-label="Geri"><i></i></button><h1>DÜKKAN</h1><div class="s-rnd s-bal" aria-label="Yıldız bakiyesi"></div></div>
+  <nav class="s-tabs"><button class="on" data-t="c">Kostümler</button><button data-t="p">Güçlendirmeler</button><b></b></nav>
+  <section class="s-v s-cv">
+    <div class="s-hero"><div class="s-ship"></div></div>
+    <div class="s-info"><div class="s-nm"></div><div class="s-stt"></div><p class="s-ds"></p></div>
+    <p class="s-hn"></p>
+    <div class="s-th"></div>
+    <button class="s-ab" data-k="act"></button>
+  </section>
+  <section class="s-v s-pv"><div class="s-list"></div></section>
+  <div class="s-sh"><div class="s-sc" data-k="x"></div><div class="s-sp" role="dialog" aria-modal="true">
+    <button class="s-gr" data-k="x" aria-label="Kapat"></button>
+    <div class="s-tp"><div class="s-ic"></div><div><div class="s-sn"></div><div class="s-sl"></div></div></div>
+    <p class="s-sd"></p>
+    <div class="s-fx"><div><small>Şimdi</small><b class="s-f0"></b></div><div><small>Sonraki seviye</small><b class="s-f1"></b></div></div>
+    <p class="s-hn s-hp"></p>
+    <button class="s-ab" data-k="sact"></button>
+  </div></div>
+</div>
+
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
   <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="spmenu"><div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div></div></div>
 </div>
+
+<script>
+/* ===== Dükkan (ASTRO kostümleri ve güçlendirmeler) ===== */
+(function () {
+  'use strict';
+  var root = document.getElementById('shop'); if (!root) return;
+  var KEY = 'dd_shop', HINT = 'Yıldızlar Kaçış modundan kazanılır.';
+  var STAR = '<svg class="s-st" viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg>';
+  var LOCK = '<svg class="s-lk" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  function q(s) { return root.querySelector(s); }
+
+  /* ===== Veri: ürün eklemek için yalnızca bu iki listeye satır ekle ===== */
+  // p: a/b kanatlar, c gövde, w cam, n lüle, f alev, s (varsa) yalnızca çizgi
+  var COST = [
+    { id:'klasik',  n:'Klasik',  price:0,   p:{a:'#f4f2ee',b:'#cfcbc1',c:'#f4f2ee',w:'#10162a',n:'#4b4a47',f:'#f4f2ee'}, d:'İlk günden beri seninle olan mekik.' },
+    { id:'hayalet', n:'Hayalet', price:500, p:{a:'none',b:'none',c:'none',w:'#f4f2ee',n:'#f4f2ee',f:'#f4f2ee',s:'#f4f2ee'}, d:'Yalnızca ince çizgilerden oluşan, karanlıkta süzülen mekik.' }
+  ];
+  var POW = [
+    { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' }
+  ];
+
+  /* ===== Kalıcı veri ===== */
+  var D, S = { tab:'c', sel:'klasik', open:'', shown:'' };
+  function dev() { try { return localStorage.getItem('dd_dev') === '1'; } catch (e) { return false; } }   // geliştirici modu: sınırsız yıldız
+  function bal() { return dev() ? Infinity : D.coins; }
+  function load() {
+    var j = null; try { j = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+    D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{} };
+    if (j && typeof j === 'object') { D.coins = j.coins | 0; D.owned = j.owned || D.owned; D.eq = j.eq || 'klasik'; D.lv = j.lv || {}; }
+    D.owned.klasik = 1; if (!cfind(D.eq) || !D.owned[D.eq]) D.eq = 'klasik';
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
+
+  /* Oyundaki jet alevinin aynısı: th = itiş (0-1). Alevi değiştiren güçlendirmeler ileride buradan ayarlanır. */
+  function flame(th) {
+    var y0 = 2.08, L = .3 + 2.6 * th, w0 = .17 + .1 * th, w1 = w0 * .45, Lc = L * .55, k, d = '';
+    for (k = 1; k <= 3; k++) if (th > .4) d += '<ellipse cx="0" cy="' + (y0 + L * .2 * k) + '" rx="' + (w0 * .38 * (1 - .2 * k)) + '" ry=".1" fill="#fff" fill-opacity="' + (.8 * (th - .3) * (1 - .22 * k)) + '"/>';
+    return '<defs><radialGradient id="s-gg" cx="0" cy="' + (y0 + .2) + '" r=".9" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,190,130)" stop-opacity="' + .3 * th + '"/><stop offset="1" stop-color="rgb(255,140,70)" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="s-go" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + L) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="rgb(255,246,232)" stop-opacity=".95"/><stop offset=".3" stop-color="rgb(255,200,140)" stop-opacity=".7"/><stop offset="1" stop-color="rgb(255,120,60)" stop-opacity="0"/></linearGradient>' +
+      '<linearGradient id="s-gc" x1="0" y1="' + y0 + '" x2="0" y2="' + (y0 + Lc) + '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="rgb(190,215,255)" stop-opacity="0"/></linearGradient></defs>' +
+      '<circle cx="0" cy="' + (y0 + .2) + '" r=".9" fill="url(#s-gg)"/><g class="s-flm">' +
+      '<path d="M' + -w0 + ' ' + y0 + 'C' + -w0 * 1.05 + ' ' + (y0 + L * .35) + ' ' + -w0 * .5 + ' ' + (y0 + L * .75) + ' 0 ' + (y0 + L) + 'C' + w0 * .5 + ' ' + (y0 + L * .75) + ' ' + w0 * 1.05 + ' ' + (y0 + L * .35) + ' ' + w0 + ' ' + y0 + 'Z" fill="url(#s-go)"/>' +
+      '<path d="M' + -w1 + ' ' + y0 + 'C' + -w1 + ' ' + (y0 + Lc * .4) + ' ' + -w1 * .4 + ' ' + (y0 + Lc * .8) + ' 0 ' + (y0 + Lc) + 'C' + w1 * .4 + ' ' + (y0 + Lc * .8) + ' ' + w1 + ' ' + (y0 + Lc * .4) + ' ' + w1 + ' ' + y0 + 'Z" fill="url(#s-gc)"/>' + d + '</g>';
+  }
+  function ship(p, big) {
+    var st = p.s ? ' stroke="' + p.s + '" stroke-width=".07" stroke-linejoin="round"' : '';
+    return '<svg class="s-sv" viewBox="0 0 40 ' + (big ? 74 : 56) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flame(.85) : '') +
+      '<path d="M-.4 -1.3L-.7 -.45L-1.25 1.72Q-1.3 1.95 -1.18 1.95L-.4 1.95Z" fill="' + p.a + '"' + st + '/>' +
+      '<path d="M.4 -1.3L.7 -.45L1.25 1.72Q1.3 1.95 1.18 1.95L.4 1.95Z" fill="' + p.b + '"' + st + '/>' +
+      '<path d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
+      '<path d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
+      '<rect x="-.22" y="1.98" width=".44" height=".2" rx=".08" fill="' + p.n + '"/>' +
+      (big ? '' : '<path d="M-.17 2.2C-.18 2.5 -.08 2.75 0 2.95C.08 2.75 .18 2.5 .17 2.2Z" fill="' + p.f + '" fill-opacity=".85"/>') +
+      '</g></svg>';
+  }
+  function fmt(n) { if (n === Infinity) return '∞'; return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'); }
+  function cfind(id) { for (var i = 0; i < COST.length; i++) if (COST[i].id === id) return COST[i]; return null; }
+  function pfind(id) { for (var i = 0; i < POW.length; i++) if (POW[i].id === id) return POW[i]; return null; }
+  function lvl(it) { return D.lv[it.id] | 0; }
+  function cost(it) { return it.base * (lvl(it) + 1); }
+  function fx(it, l) { return l ? it.f.replace('#', it.s * l) : 'Yok'; }
+  function setAct(b, st, html) { b.className = 's-ab' + (st ? ' ' + st : ''); b.innerHTML = html; }
+  function buyAct(b, st, price, label) {
+    if (st === 'max') setAct(b, 'off', 'Tamamlandı');
+    else if (bal() >= price) setAct(b, 'buy', label + ' ' + STAR + fmt(price));
+    else setAct(b, 'no', 'Yetersiz yıldız ' + STAR + fmt(price));
+  }
+  function boxes(it, nw) {
+    var l = lvl(it), d = '';
+    for (var i = 0; i < it.max; i++) d += '<i' + (i < l ? ' class="on' + (nw && i === l - 1 ? ' nw' : '') + '"' : '') + '></i>';
+    return '<span class="s-bx' + (l >= it.max ? ' mx' : '') + '">' + d + '</span>';
+  }
+
+  function paintC() {
+    var it = cfind(S.sel), own = D.owned[it.id], eq = D.eq === it.id, h = '', st = q('.s-stt');
+    if (S.shown !== it.id) { q('.s-ship').innerHTML = ship(it.p, 1); S.shown = it.id; }
+    q('.s-nm').textContent = it.n; q('.s-ds').textContent = it.d;
+    st.className = 's-stt' + (eq ? ' eq' : ''); st.innerHTML = eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price);
+    COST.forEach(function (c) {
+      var o = D.owned[c.id];
+      h += '<button class="s-t' + (c.id === it.id ? ' sel' : '') + (o ? '' : ' lk') + '" data-id="' + c.id + '" aria-label="' + c.n + '">' + ship(c.p) + (D.eq === c.id ? '<i class="s-eqd"></i>' : o ? '' : LOCK) + '</button>';
+    });
+    q('.s-th').innerHTML = h;
+    var a = q('[data-k=act]');
+    if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', it.price, 'Satın al');
+    q('.s-cv .s-hn').textContent = !own && bal() < it.price ? HINT : '';
+  }
+  function paintP(nw) {
+    var keep = q('.s-list').scrollTop, h = '';
+    POW.forEach(function (it) {
+      h += '<button class="s-rw" data-id="' + it.id + '"><div class="s-ic"><svg viewBox="0 0 24 24">' + it.ic + '</svg></div><div class="s-rt"><div class="s-n">' + it.n + '</div><div class="s-e">' + fx(it, lvl(it)) + '</div></div>' + boxes(it, nw === it.id) + '</button>';
+    });
+    q('.s-list').innerHTML = h; q('.s-list').scrollTop = keep;
+    var o = S.open && pfind(S.open);
+    if (o) {
+      var l = lvl(o);
+      q('.s-tp .s-ic').innerHTML = '<svg viewBox="0 0 24 24">' + o.ic + '</svg>'; q('.s-sn').textContent = o.n;
+      q('.s-sl').innerHTML = boxes(o, nw === o.id) + '<span>Seviye ' + l + ' / ' + o.max + '</span>';
+      q('.s-sd').textContent = o.d; q('.s-f0').textContent = fx(o, l); q('.s-f1').textContent = l >= o.max ? 'En üst seviye' : fx(o, l + 1);
+      buyAct(q('[data-k=sact]'), l >= o.max ? 'max' : '', cost(o), l ? 'Yükselt' : 'Satın al');
+      q('.s-hp').textContent = l < o.max && bal() < cost(o) ? HINT : '';
+    }
+    q('.s-sh').classList.toggle('on', !!o);
+  }
+  function paint(nw) {
+    q('.s-bal').innerHTML = STAR + fmt(bal());
+    root.classList.toggle('pw', S.tab === 'p');
+    if (S.tab === 'p') paintP(nw); else paintC();
+  }
+  function tabBar() {
+    var b = q('.s-tabs button.on'), u = q('.s-tabs b'); if (!b) return;
+    u.style.width = b.offsetWidth + 'px'; u.style.transform = 'translateX(' + b.offsetLeft + 'px)';
+  }
+  function setTab(t) {
+    S.tab = t; S.open = '';
+    var bs = root.querySelectorAll('.s-tabs button');
+    for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-t') === t ? 'on' : '';
+    tabBar();
+  }
+  function changed() { if (API.onChange) API.onChange(); }
+
+  function doAct() {
+    var it = cfind(S.sel);
+    if (D.owned[it.id]) D.eq = it.id;
+    else if (bal() >= it.price) { if (!dev()) D.coins -= it.price; D.owned[it.id] = 1; D.eq = it.id; }
+    else return;
+    save(); paint(); changed();
+  }
+  function doUp() {
+    var it = pfind(S.open), l = lvl(it), c = cost(it); if (l >= it.max || bal() < c) return;
+    if (!dev()) D.coins -= c; D.lv[it.id] = l + 1; save(); paint(it.id); changed();
+  }
+  function swipe(d) {
+    var i = 0; COST.forEach(function (c, k) { if (c.id === S.sel) i = k; });
+    i = Math.max(0, Math.min(COST.length - 1, i + d)); S.sel = COST[i].id; paint();
+  }
+
+  root.addEventListener('click', function (e) {
+    var t = e.target, b;
+    if (t.closest('[data-k=back]')) return API.onBack();
+    if ((b = t.closest('.s-tabs button'))) {
+      if (b.getAttribute('data-t') === S.tab) return;
+      var v = q(S.tab === 'c' ? '.s-cv' : '.s-pv'); v.classList.add('swap');
+      setTimeout(function () { v.classList.remove('swap'); setTab(b.getAttribute('data-t')); paint(); }, 200);
+      return;
+    }
+    if ((b = t.closest('.s-t'))) { S.sel = b.getAttribute('data-id'); paint(); return; }
+    if ((b = t.closest('.s-rw'))) { S.open = b.getAttribute('data-id'); paint(); return; }
+    if (t.closest('[data-k=x]')) { S.open = ''; paint(); return; }
+    if (t.closest('[data-k=act]')) return doAct();
+    if (t.closest('[data-k=sact]')) return doUp();
+  });
+  var x0 = null, hero = q('.s-hero');
+  hero.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  hero.addEventListener('touchend', function (e) {
+    if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) > 40) swipe(dx < 0 ? 1 : -1);
+  }, { passive: true });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.open && root.classList.contains('on')) { S.open = ''; paint(); } });
+  window.addEventListener('resize', tabBar);
+
+  /* ===== Dışa açılan arayüz ===== */
+  var API = window.DDShop = {
+    rate: 5,                                   // kaç puan = 1 yıldız
+    onBack: function () { API.close(); },
+    onChange: null,                            // kostüm / seviye değişince çağrılır
+    open: function () { load(); S.sel = D.eq; S.shown = ''; setTab('c'); paint(); root.classList.add('on'); tabBar(); },
+    close: function () { S.open = ''; root.classList.remove('on'); },
+    costume: function () { return D.eq; },
+    lv: function (id) { return D.lv[id] | 0; },
+    svg: function (id) { return ship((cfind(id || D.eq) || COST[0]).p); },
+    earn: function (score) { var n = Math.floor(score / API.rate); if (n > 0) { load(); D.coins += n; save(); return n; } return 0; }
+  };
+  load();
+})();
+</script>
 
 <script>
 (function () {
@@ -516,7 +811,7 @@
   }
   // taktik sayfası dışında kaydırma kapalı
   document.addEventListener('touchmove', function (e) {
-    if (e.target && e.target.closest && e.target.closest('#sheet, #hub')) return;
+    if (e.target && e.target.closest && e.target.closest('#sheet, #hub, #shop')) return;
     e.preventDefault();
   }, { passive: false });
   window.addEventListener('scroll', function () { window.scrollTo(0, 0); });
@@ -1466,7 +1761,7 @@
     var hd = 0, lz = null, lzSp = [], lzLast = 0, nowT = 0;   // lazer ölümü durumu, lazer-kaya kıvılcım/kırıntı havuzu, son çizim zamanı
     /* kaçış parkuru durumu */
     var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
-        best = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0;
+        best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     /* ASTRO'ya özel ses ayarı: genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ses düzeyi geri yüklenir */
@@ -1474,10 +1769,11 @@
     if (isNaN(aVol)) aVol = 100; aVol = Math.max(0, Math.min(100, aVol));
     function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
-    $('spico').innerHTML = ASTRO_ICO;
+    $('spico').innerHTML = window.DDShop ? DDShop.svg() : ASTRO_ICO;
+    if (window.DDShop) DDShop.onChange = function () { $('spico').innerHTML = DDShop.svg(); };
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
-      if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div>' + snd + '<div class="mi" data-sa="exit">Oyunlar</div>';
+      if (mode === 0) h = '<div class="mi primary" data-sa="free">Serbest uçuş</div><div class="mi primary" data-sa="race">Kaçış</div><div class="mi" data-sa="shop">Dükkan</div>' + snd + '<div class="mi" data-sa="exit">Oyunlar</div>';
       else if (mode === 3) h = '<div class="mi primary" data-sa="restart">Tekrar dene</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
       else h = '<div class="mi primary" data-sa="resume">Devam et</div><div class="mi" data-sa="restart">Yeniden başla</div>' + snd + '<div class="mi" data-sa="exit">Ana menü</div>';
       elList.innerHTML = h;
@@ -1486,8 +1782,9 @@
       mode = m; joyId = null; jetId = null; jv.x = jv.y = 0; keys = {}; thrustSet(0); Music.mode(m);
       var st = $('sptitle'), ss = $('spsub');
       if (m === 3) {
+        if (race && !paid) { paid = true; earned = window.DDShop ? DDShop.earn(fScore) : 0; }
         st.textContent = dead === 2 || hd ? 'YUTULDUN' : lz ? 'KESİLDİN' : 'KAZA';
-        ss.innerHTML = (newRec ? '<em>yeni rekor</em><br>' : 'puan<br>') + '<b>' + fScore + '</b>' + fDist + ' m  ·  sektör ' + (sector + 1) + '<br>rekor ' + best;
+        ss.innerHTML = (newRec ? '<em>yeni rekor</em><br>' : 'puan<br>') + '<b>' + fScore + '</b>' + fDist + ' m  ·  sektör ' + (sector + 1) + '<br>rekor ' + best + (earned ? '<br>+' + earned + ' yıldız' : '');
       } else {
         st.textContent = 'ASTRO';
         if (m === 2) ss.innerHTML = 'duraklatıldı' + (best > 0 || race ? '<br><b>' + best + '</b>rekor' + (race ? ' · şu an ' + score() : '') : '');
@@ -1558,6 +1855,7 @@
       else if (a === 'race') { race = true; play(true); }
       else if (a === 'restart') play(true);
       else if (a === 'resume') play(false);
+      else if (a === 'shop') DDShop.open();
       else if (a === 'exit') close();
       else if (a === 'settings') showSettings(true);
       else if (a === 'sback') showSettings(false);
@@ -2189,7 +2487,7 @@
       // enerji: yalnızca jet harcar (basılı kaldıkça artan hızda); joystick yardımı sınırsız; dinlenince dolar
       if (th > 0.05) burn += dt; else burn = Math.max(0, burn - dt * 2);
       var using = th > 0.05;
-      var drain = th * 0.17 * (1 + burn * 0.12);
+      var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
       if (using) { idleT = 0; en -= drain * dt; } else { idleT += dt; if (idleT > 0.7) en = Math.min(1, en + 0.08 * dt); }
       if (en <= 0) { en = 0; if (!lock) { lock = true; if (typeof playNope === 'function') playNope(); } }
       if (lock && en > 0.25) lock = false;
@@ -2550,7 +2848,9 @@
     }
     function ship(sx, sy, ts) {
       // minimal beyaz mekik: üstten görünüm, çift delta kanat, iki tonlu düz gölge. Burun gidiş yönüne bakar.
-      var u = S * 0.026, t = ts / 1000, g, k, CR = '#f4f2ee', WR = '#cfcbc1', GR = '#b3aea2';
+      var u = S * 0.026, t = ts / 1000, g, k, CR = '#f4f2ee', WR = '#cfcbc1', GR = '#b3aea2',
+          gh = window.DDShop && DDShop.costume() === 'hayalet';   // Hayalet kostümü: yalnızca çizgi
+      function pf(c) { if (gh) { cx.lineWidth = .09; cx.lineJoin = 'round'; cx.strokeStyle = CR; cx.stroke(); } else { cx.fillStyle = c; cx.fill(); } }
       cx.save(); cx.translate(sx, sy); cx.rotate(P.h + Math.PI / 2); cx.scale(u, u);
       cx.translate(Math.sin(t * 83) * .025 * th, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th);   // süzülme + yüksek itişte hafif titreşim
       var y0 = 2.08;
@@ -2576,15 +2876,15 @@
         }
         if (ign > 0) { cx.fillStyle = 'rgba(255,245,225,' + .55 * ign + ')'; cx.beginPath(); cx.arc(0, y0 + .15, .25 + .55 * (1 - ign), 0, 6.2832); cx.fill(); }   // ateşleme parlaması
       }
-      wingP(-1); cx.fillStyle = CR; cx.fill();                  // kanatlar: ASTRO ikonuyla aynı (sol açık, sağ gölge tonu)
-      wingP(1); cx.fillStyle = WR; cx.fill();
+      wingP(-1); pf(CR);                  // kanatlar: ASTRO ikonuyla aynı (sol açık, sağ gölge tonu)
+      wingP(1); pf(WR);
       cx.fillStyle = GR;                                         // joystickle açılan flap panelleri: yalnızca açıkken görünür
       for (k = -1; k <= 1; k += 2) {
         var fd = .3 * (k < 0 ? flapL : flapR);
         if (fd < .012) continue;
         cx.beginPath(); cx.moveTo(k * .46, 1.95); cx.lineTo(k * 1.17, 1.95); cx.lineTo(k * 1.13, 1.95 + fd); cx.lineTo(k * .5, 1.95 + fd); cx.closePath(); cx.fill();
       }
-      hullP(); cx.fillStyle = CR; cx.fill();                    // gövde
+      hullP(); pf(CR);                    // gövde
       cx.save(); hullP(); cx.clip(); cx.fillStyle = 'rgba(0,0,0,.07)';   // gövde gölgesi (ikondaki aynı şekil)
       cx.beginPath(); cx.moveTo(.14, -2.2); cx.bezierCurveTo(.3, -1.9, .44, -1.3, .44, -.6); cx.lineTo(.44, 1.7);
       cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.14, 2.05); cx.closePath(); cx.fill();
@@ -2594,13 +2894,9 @@
       }
       cx.restore();
       cx.fillStyle = 'rgba(120,114,95,.22)'; rr(-.24, -.55, .48, 2, .1); cx.fill();     // kargo bölümü
-      cx.fillStyle = '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
+      cx.fillStyle = gh ? CR : '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
       var hh = Math.min(1, heat * .85);                                                  // nozul: soğukken koyu gri, yanarken turuncuya
       cx.fillStyle = 'rgb(' + (75 + 180 * hh | 0) + ',' + (74 + 76 * hh | 0) + ',' + (71 + 19 * hh | 0) + ')'; rr(-.22, 1.98, .44, .2, .08); cx.fill();
-      if (th < .25) {                                                                    // ikondaki küçük beyaz egzoz ucu: motor açılınca alevle yer değiştirir
-        cx.globalAlpha = .85 * (1 - th * 4); cx.fillStyle = CR; cx.beginPath(); cx.moveTo(-.17, 2.2);
-        cx.bezierCurveTo(-.18, 2.5, -.08, 2.75, 0, 2.95); cx.bezierCurveTo(.08, 2.75, .18, 2.5, .17, 2.2); cx.closePath(); cx.fill(); cx.globalAlpha = 1;
-      }
       cx.restore();
     }
 
