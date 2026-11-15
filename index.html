@@ -529,8 +529,10 @@
   }
   /* ---------- DÜKKAN ---------- */
 
-  #shop { --blue:#8cc2ff; --warm:#ff8a5c; position:absolute; inset:0; z-index:15; background:#000; color:var(--fg); overflow:hidden; display:flex; flex-direction:column; padding-top:calc(max(env(safe-area-inset-top,0px), 24px) + 9%); opacity:0; pointer-events:none; transition:opacity .45s ease; -webkit-user-select:none; user-select:none; font-family:inherit; }
-  #shop.on { opacity:1; pointer-events:auto; }
+  #shop { --blue:#8cc2ff; --warm:#ff8a5c; position:absolute; inset:0; z-index:15; background:#000; color:var(--fg); overflow:hidden; display:flex; flex-direction:column; padding-top:calc(max(env(safe-area-inset-top,0px), 24px) + 9%); opacity:0; visibility:hidden; pointer-events:none; transition:opacity .45s ease, visibility 0s linear .45s; -webkit-user-select:none; user-select:none; font-family:inherit; }
+  #shop.on { opacity:1; visibility:visible; pointer-events:auto; transition:opacity .45s ease, visibility 0s; }
+  /* KORUMA: dükkan kapalıyken içindeki hiçbir öğe (açıkça pointer-events:auto verilmiş olsa bile) tıklama yakalayamaz */
+  #shop:not(.on), #shop:not(.on) * { pointer-events:none !important; }
   #shop * { box-sizing:border-box; margin:0; padding:0; }
   #shop button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; text-align:inherit; -webkit-tap-highlight-color:transparent; }
   #shop .s-st { width:12px; height:12px; flex:none; fill:currentColor; }
@@ -1219,16 +1221,16 @@
   var WNG = [
     { id:'std',    n:'Standart Kanat', tag:'Orijinal', price:0, st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal kanatlar.' },
     { id:'delta',  n:'Delta Kanat',    price:200, d:'Geniş, düz üçgen kanat. Gövdeden dışa doğru açılan sert bir siluet verir.',
-      st:{ ivme:12, man:-8 },
+      st:{ ivme:25, man:-15 },
       sh:[['M', .4, -1], ['L', .8, .2], ['L', 1.42, 1.95], ['L', .4, 1.95]] },
     { id:'supurme', n:'Süpürme Kanat', price:300, d:'Geriye süpürülmüş ince kanat; uçları arka kenarın ötesine uzanır.',
-      st:{ hiz:14, ivme:-6 },
+      st:{ hiz:30, ivme:-6 },
       sh:[['M', .4, -.9], ['L', .62, -.2], ['L', 1.35, 1.7], ['L', 1.5, 2.2], ['L', 1.2, 1.95], ['L', .4, 1.95]] },
     { id:'kademe', n:'Kademeli Kanat', price:300, d:'İki basamaklı, köşeli kanat. Teknik ve sert görünümlüdür.',
-      st:{ man:15, hiz:-10 },
+      st:{ man:30, hiz:-15 },
       sh:[['M', .4, -1.2], ['L', .7, -.5], ['L', .7, .55], ['L', 1.4, .95], ['L', 1.4, 1.95], ['L', .4, 1.95]] },
     { id:'hilal',  n:'Hilal Kanat',    price:400, d:'İçe bükülen zarif bir kenara sahip, hilal gibi kıvrımlı kanat.',
-      st:{ man:12, ivme:8, hiz:-6 },
+      st:{ man:20, ivme:12, hiz:-10 },
       sh:[['M', .4, -1.4], ['Q', .7, .5, 1.52, 1.95], ['L', .4, 1.95]] }
   ];
   var KPART = [
@@ -1559,6 +1561,7 @@
   window.addEventListener('resize', function () { tabBar(); if (S.tab === 'k' && S.kp) kZoom(); });
 
   /* ===== Dışa açılan arayüz ===== */
+  function shopInert(v) { try { if (v) root.setAttribute('inert', ''); else root.removeAttribute('inert'); } catch (e) {} }   // kapalı dükkan odaklanamaz, tıklanamaz
   var API = window.DDShop = {
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
@@ -1573,8 +1576,8 @@
       load(); var isf = !!id && id.indexOf('fx:') === 0, f = isf ? ffind(id.slice(3)) : null;
       S.sel = (!isf && id && cfind(id)) ? id : D.eq; S.shown = ''; S.fshown = '';
       if (f) { S.fsel = f.id; S.eng = f.eng; }
-      setTab(f ? 'f' : 'c'); paint(); q('.s-cv').classList.remove('in'); q('.s-fv').classList.remove('in'); q('.s-pv').classList.remove('in'); q('.s-kv').classList.remove('in'); root.classList.add('on'); tabBar(); },
-    close: function () { S.open = ''; q('.s-ih').classList.remove('on'); root.classList.remove('on'); },
+      setTab(f ? 'f' : 'c'); paint(); q('.s-cv').classList.remove('in'); q('.s-fv').classList.remove('in'); q('.s-pv').classList.remove('in'); q('.s-kv').classList.remove('in'); shopInert(false); root.classList.add('on'); tabBar(); },
+    close: function () { S.open = ''; S.kp = ''; S.kw = false; S.ks = false; S.kdone = false; q('.s-ih').classList.remove('on'); root.classList.remove('on'); shopInert(true); },
     costume: function () { return D.eq; },
     motor: function () { return D.en; },
     kanat: function () { return D.wn; },
@@ -1588,6 +1591,32 @@
     add: function (n) { load(); D.coins += n; save(); return n; },
     earn: function (score) { var n = Math.floor(score / API.rate); if (n > 0) { load(); D.coins += n; save(); return n; } return 0; }
   };
+  /* Veri kontrolü: yeni kanat/motor eklerken yapılan hata (yanlış kimlik, bozuk şekil, bilinmeyen özellik) oyunu bozmaz;
+     bozuk alan atılır, sorun konsola yazılır. */
+  function dataCheck() {
+    var bad = [], ok = function (v) { return typeof v === 'number' && isFinite(v); };
+    KPART.forEach(function (p) {
+      var seen = {};
+      if (!p.list.length || p.list[0].price !== 0) bad.push(p.id + ': ilk seçenek ücretsiz olmalı');
+      p.list.forEach(function (g) {
+        var k, good;
+        if (seen[g.id]) bad.push(p.id + ': yinelenen kimlik ' + g.id); seen[g.id] = 1;
+        if (g.st) for (k in g.st) if (!STATS.some(function (t) { return t.k === k; }) || !ok(g.st[k])) { bad.push(g.id + ': geçersiz özellik ' + k); delete g.st[k]; }
+        if (g.sh) {
+          good = Array.isArray(g.sh) && g.sh.length >= 3 && g.sh[0][0] === 'M' && g.sh.every(function (c) {
+            return Array.isArray(c) && (c[0] === 'M' || c[0] === 'L' ? c.length === 3 : c[0] === 'Q' ? c.length === 5 : false) && c.slice(1).every(ok);
+          });
+          if (!good) { bad.push(g.id + ': bozuk kanat şekli, standart kullanılıyor'); delete g.sh; }
+        }
+      });
+    });
+    API.problems = bad;
+    if (bad.length && window.console) console.error('[ASTRO veri kontrolü]', bad);
+    return bad;
+  }
+  API.check = dataCheck;
+  dataCheck();
+  shopInert(true);
   load();
 })();
 </script>
@@ -3323,6 +3352,20 @@
       else puff(sd * .18, -2.2, sd * .1, -1);                                      // fren: burundan
     }
     function rcsYaw(sg) { puff(-sg * .3, -2.0, -sg, -.1); puff(sg * 1.25, 1.85, sg, 0); }   // dönüş çifti: burun + kanat ucu
+    /* Kuşanılan kanatların özellikleri → çarpanlar (ivme: itiş gücü, man: dönüş + hava freni, hiz: en yüksek hız). Güvenli aralıkta tutulur. */
+    function wingStats() {
+      var o = { ivme: 1, man: 1, hiz: 1 }, s = null, k, v;
+      try { s = window.DDShop && DDShop.stats && DDShop.stats(); } catch (e) { s = null; }
+      if (s) for (k in o) { v = +s[k]; if (isFinite(v)) o[k] = Math.max(.5, Math.min(1.6, 1 + v / 100)); }
+      return o;
+    }
+    /* En yüksek hız: jet itişi hıza yaklaştıkça sönümlenir; hızlı kanatta daha geç sönümlenir, yavaş kanatta daha erken.
+       Standart kanatta (hz = 1) çarpan tam 1'dir, yani orijinal his değişmez. */
+    function jetTaper(sp, hz) {
+      if (hz === 1) return 1;
+      var r0 = sp / (S * .6), d0 = Math.max(.05, 1 - Math.pow(Math.min(r0, 1), 4)), n1 = 1 - Math.pow(Math.min(r0 / hz, 1), 4);
+      return Math.max(.2, Math.min(1.4, n1 / d0));
+    }
     function step(dt) {
       if (race && dead) { stepDead(dt); return; }
       if (race && pre) {
@@ -3334,9 +3377,10 @@
           ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0),
           vx = jv.x, vy = jv.y, m = Math.hypot(vx, vy);
       if (kx || ky) { var l = Math.hypot(kx, ky); vx = kx / l; vy = ky / l; m = 1; }
+      var WS = wingStats();
       // dönüş: açısal ivme + atalet. RCS torku sınırlı; hız ve jet itişi arttıkça gövde ağırlaşır, tork zorlaşır
       var spd0 = Math.hypot(P.vx, P.vy), auth = (1 / (1 + 1.6 * Math.min(1, spd0 / (S * 0.6)))) * (1 - 0.2 * th),
-          aMax = 8 * auth, wMax = 3.4 * (0.45 + 0.55 * auth) * (0.5 + 0.5 * Math.min(1, m)), alpha = 0;
+          aMax = 8 * auth * WS.man, wMax = 3.4 * (0.45 + 0.55 * auth) * (0.5 + 0.5 * Math.min(1, m)) * WS.man, alpha = 0;
       if (m > 0.18) {
         var err = wrap(Math.atan2(vy, vx) - P.h), ae = Math.abs(err),
             wDes = (err < 0 ? -1 : 1) * Math.min(wMax, 0.9 * Math.sqrt(2 * aMax * ae));
@@ -3388,7 +3432,7 @@
       }
       asK += (asT - asK) * (1 - Math.exp(-dt / (asT > asK ? .12 : .35)));
       tfk = 1 + .09 * lvI * asK;
-      var A = S * 0.11 * th * tfk, dm = Math.exp(-dt * 0.05);
+      var A = S * 0.11 * th * tfk * WS.ivme * jetTaper(spd0, WS.hiz), dm = Math.exp(-dt * 0.05);
       // HIZLANMA güçlendirmesi: ani fırlatma yok. Kalan itiş (boostRem) ~0.6 sn'de yumuşakça eklenir, gemi bu sırada yönlendirilebilir.
       // İtiş yönü: burun ileri bakıyorsa burun, değilse gidiş yönü. Hız boostCap'i aşmaz (yüksek hızda güçlendirme neredeyse etkisizdir).
       if (boostRem > 0.5) {
@@ -3404,7 +3448,7 @@
       var tx = P.vx + Math.cos(P.h) * A * dt, ty = P.vy + Math.sin(P.h) * A * dt, s0 = Math.hypot(tx, ty), tL = 0, tR = 0;
       // joystick = flap / hava freni: hızı yalnızca düşürür ya da yönünü çevirir; hız büyüklüğü asla artmaz
       if (m > 0.18 && s0 > S * 0.004) {
-        var ux = tx / s0, uy = ty / s0, au = .3 + .7 * Math.min(1, s0 / (S * .3)), RC = S * 0.05 * au;
+        var ux = tx / s0, uy = ty / s0, au = .3 + .7 * Math.min(1, s0 / (S * .3)), RC = S * 0.05 * au * WS.man;
         var nx2 = tx + vx * RC * dt, ny2 = ty + vy * RC * dt, s1 = Math.hypot(nx2, ny2);
         if (s1 > s0) { nx2 *= s0 / s1; ny2 *= s0 / s1; }
         var dvx = nx2 - tx, dvy = ny2 - ty, dv = Math.hypot(dvx, dvy);
@@ -3416,7 +3460,7 @@
       var fk = 1 - Math.exp(-dt / 0.12); flapL += (tL - flapL) * fk; flapR += (tR - flapR) * fk;
       if (Math.abs(hv) > 0.7) { rrot += dt * 12 * Math.min(1, Math.abs(hv) / 4); while (rrot >= 1) { rrot--; rcsYaw(hv > 0 ? 1 : -1); } }
       P.vx = tx * dm; P.vy = ty * dm;
-      var sp = Math.hypot(P.vx, P.vy), mx = S * 0.9;
+      var sp = Math.hypot(P.vx, P.vy), mx = S * 0.9 * WS.hiz;
       if (sp > mx) { P.vx *= mx / sp; P.vy *= mx / sp; sp = mx; }
       var px0 = P.x, py0 = P.y;
       P.x += P.vx * dt; P.y += P.vy * dt;
@@ -3913,7 +3957,7 @@
               slow = Math.max(0, Math.min(1, 1 - bv / (S * .45))),                       // 1: neredeyse duruyoruz
               need = Math.max(0, Math.min(1, close * (.45 + .55 * slow) + .12 * slow));
           boostRem = S * (.10 + .34 * need);                                              // toplam ek hız: 0.10S (rahat) … 0.44S (kritik)
-          boostCap = S * (.36 + .30 * need);                                              // güçlendirme sonrası tavan: 0.36S … 0.66S (asla 0.9S'ye fırlatmaz)
+          boostCap = S * (.36 + .30 * need) * wingStats().hiz;                                              // güçlendirme sonrası tavan: 0.36S … 0.66S (asla 0.9S'ye fırlatmaz)
           if (bv > S * .08 && Math.cos(P.h) * P.vx / bv + Math.sin(P.h) * P.vy / bv < .7) righting = .5;   // burun gidiş yönünden sapmışsa yumuşakça toparla
           gainEn(.3); lock = false; bonus += 10; scorePop(10); shake = Math.max(shake, .35); flash = Math.max(flash, .6);
           pop('HIZLANDIN', P.x, P.y - S * .1, true); sfxBoost(); vib([10, 20, 10]);
@@ -4918,6 +4962,27 @@
     }
     return { open: open };
   })();
+
+  /* BEKÇİ: ASTRO menüsünün ilk düğmesinin üstünde, kapalı olması gereken bir katman (dükkan, ayarlar...) tıklama yakalıyorsa
+     otomatik etkisizleştirilir. Böylece gelecekte eklenecek bir arayüz hatası oyunu "donmuş" gibi bırakamaz. */
+  function clickGuard() {
+    try {
+      var sm = document.getElementById('spmenu'), shop = document.getElementById('shop'), b, r, t, o;
+      if (shop && !shop.classList.contains('on') && !shop.hasAttribute('inert')) shop.setAttribute('inert', '');
+      if (!sm || !sm.classList.contains('on') || document.hidden) return;
+      b = sm.querySelector('[data-sa]'); if (!b) return;
+      r = b.getBoundingClientRect(); if (!r.width || !r.height) return;
+      t = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      if (!t || sm.contains(t)) return;
+      o = t.closest ? t.closest('#shop') : null;
+      if (o && !o.classList.contains('on')) {                       // kapalı dükkan menünün üstünde kalmış: etkisizleştir (açılırken inert kalkar)
+        o.setAttribute('inert', '');
+        if (window.console) console.warn('[ASTRO bekçi] menüyü kapatan dükkan katmanı devre dışı bırakıldı');
+      } else if (window.console) console.warn('[ASTRO bekçi] menü düğmesinin üstünde başka öğe var:', t.id || t.className || t.tagName);
+    } catch (e) {}
+  }
+  setInterval(clickGuard, 800);
+  window.__clickGuard = clickGuard;
 
   buildSheet();
   loadPuzzle(G.level);   // tahta menünün arkasında hazır bekler
