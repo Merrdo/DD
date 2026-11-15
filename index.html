@@ -3049,7 +3049,15 @@
       if (cpD > 0) {
         cpx = cnx; cpy = cny;
         var vnn = P.vx * cnx + P.vy * cny, dvc = Math.min(cpD * dt, Math.max(0, vnn));   // yalnızca engele doğru bileşeni azaltır; yan hıza dokunmaz, geri itmez
+        var spB = Math.hypot(P.vx, P.vy), tvx = P.vx - cnx * vnn, tvy = P.vy - cny * vnn, tvm = Math.hypot(tvx, tvy);   // tvx/tvy: engele teğet (yan) hız
         P.vx -= cnx * dvc; P.vy -= cny * dvc;
+        // KAYMA: eğik/sıyırarak geliyorsan kesilen momentumun bir kısmı teğet yöne aktarılır: hızın yön değiştirir, engelin yanından süzülürsün (hız asla artmaz).
+        // Tam dik geliyorsan (teğet hız ≈ 0) aktarılacak yön de, oran da yoktur: gerçekten durursun.
+        if (dvc > 0 && tvm > S * .004 && spB > 1e-3) {
+          var gl = Math.min(1, 1.6 * tvm / spB) * dvc;                                  // oran: sinθ ile büyür (dikte 0, yaklaşık 40°+ eğimde tam aktarım)
+          P.vx += tvx / tvm * gl; P.vy += tvy / tvm * gl;
+          var spA = Math.hypot(P.vx, P.vy); if (spA > spB) { P.vx *= spB / spA; P.vy *= spB / spA; }   // enerji korunur: hız büyüklüğü artmaz
+        }
       }
       if (lvC > 0 && cpK > .01) {
         cpAcc += dt * 34 * cpK;
