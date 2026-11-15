@@ -670,22 +670,24 @@
   #shop .s-is.eq { color:var(--blue); }
   #shop .s-id { margin-top:16px; font-size:15px; line-height:1.6; }
   #shop .s-ih { z-index:3; }
-  /* parçalar: şematik görünüm. Mekik ortada, parçalar etrafında; yerleri düz köşeli dolu çubuklarla gösterilir (hiçbir şey yarı saydam değil) */
+  /* parçalar: şematik görünüm. Mekik ortada, parçalar etrafında; yerleri düz köşeli dolu çubuklarla gösterilir (hiçbir şey yarı saydam değil). Kart ve panel yumuşak, yuvarlak hatlı */
   #shop .s-kv { position:relative; overflow:hidden; }
   #shop .s-km { flex:1; min-height:0; margin:1vh 10px 0; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px); display:flex; overflow:hidden; }
   #shop .s-km > svg { width:100%; height:100%; display:block; overflow:hidden; -webkit-user-select:none; user-select:none; }
   #shop .k-w { transform-box:view-box; transform-origin:0 0; transition:transform .95s cubic-bezier(.22,.61,.36,1); }
   #shop .k-p { cursor:pointer; outline:none; }
   #shop .k-hit { fill:#000; opacity:0; pointer-events:all; }
-  #shop .k-fr { fill:none; stroke:#8cc2ff; stroke-width:2; stroke-linejoin:miter; vector-effect:non-scaling-stroke; pointer-events:none; }
+  #shop .k-fr { fill:none; stroke:#8cc2ff; stroke-width:2; vector-effect:non-scaling-stroke; pointer-events:none; }
   #shop .k-bar { fill:none; stroke:#8cc2ff; stroke-width:3; stroke-linecap:butt; stroke-linejoin:miter; stroke-miterlimit:10; pointer-events:none; }
   #shop .k-hd { fill:#8cc2ff; pointer-events:none; }
-  #shop .k-cd { fill:#0b0b0b; stroke:#4a4946; stroke-width:1; transition:stroke .2s ease; }
-  #shop .k-p:active .k-cd, #shop .k-p:focus-visible .k-cd { stroke:#8cc2ff; }
-  #shop .k-t0 { fill:#8a8884; font-size:9px; letter-spacing:.28em; text-transform:uppercase; }
-  #shop .k-t1 { fill:#f4f2ee; font-size:14px; font-weight:300; letter-spacing:.03em; }
-  #shop .k-t2 { fill:#8a8884; font-size:10px; font-weight:300; letter-spacing:.1em; text-transform:uppercase; }
-  #shop .k-dot { fill:#8cc2ff; }
+  #shop .k-cd { fill:#161615; stroke:#2b2b29; stroke-width:1; transition:fill .2s ease, stroke .2s ease; }
+  #shop .k-p:active .k-cd, #shop .k-p:focus-visible .k-cd { fill:#1f1f1d; stroke:#8cc2ff; }
+  #shop .k-ib { fill:#242422; }
+  #shop .k-ico { fill:none; stroke:#8cc2ff; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+  #shop .k-t0 { fill:#8a8884; font-size:8.5px; letter-spacing:.24em; text-transform:uppercase; }
+  #shop .k-t1 { fill:#f4f2ee; font-size:14px; font-weight:300; letter-spacing:.02em; }
+  #shop .k-tg { fill:#16222f; }
+  #shop .k-t2 { fill:#8cc2ff; font-size:8.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; }
   #shop .k-hint { fill:#8a8884; font-size:9.5px; letter-spacing:.26em; text-transform:uppercase; }
   #shop .k-lb rect { fill:#8cc2ff; }
   #shop .k-lb text { fill:#000; font-size:9px; font-weight:500; letter-spacing:.2em; }
@@ -699,27 +701,29 @@
   @keyframes k-up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @keyframes k-dr { to { stroke-dashoffset:0; } }
   @keyframes k-fi { from { opacity:0; } to { opacity:1; } }
-  /* parça paneli: yakınlaşınca alttan çıkar */
-  #shop .k-pn { position:absolute; z-index:2; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; background:#0d0d0d; border:1px solid #3a3936; border-bottom:0; padding:16px 22px calc(env(safe-area-inset-bottom,0px) + 20px); transform:translateY(102%); transition:transform .7s cubic-bezier(.22,.61,.36,1); pointer-events:none; }
+  /* parça paneli: yakınlaşınca alttan çıkan yuvarlak hatlı sayfa */
+  #shop .k-pn { position:absolute; z-index:2; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; background:#111110; border:1px solid #2b2b29; border-bottom:0; border-radius:30px 30px 0 0; padding:26px 20px calc(env(safe-area-inset-bottom,0px) + 20px); transform:translateY(102%); transition:transform .7s cubic-bezier(.22,.61,.36,1); pointer-events:none; }
+  #shop .k-pn::before { content:''; position:absolute; left:50%; top:9px; width:36px; height:4px; margin-left:-18px; border-radius:2px; background:#3a3a37; }
   #shop .s-km.zm + .k-pn { transform:none; pointer-events:auto; }
-  #shop .k-ph { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  #shop .k-ph { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:0 4px; }
   #shop .k-ph small { display:block; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#8a8884; }
-  #shop .k-ph b { display:block; margin-top:6px; font-size:22px; font-weight:300; letter-spacing:.03em; }
-  #shop .k-x { flex:none; width:34px; height:34px; margin:-2px -4px 0 0; border:1px solid #4a4946; display:flex; align-items:center; justify-content:center; transition:background .2s ease; }
-  #shop .k-x:active { background:#2a2926; }
-  #shop .k-x svg { width:16px; height:16px; fill:none; stroke:#f4f2ee; stroke-width:1.6; stroke-linecap:butt; }
-  #shop .k-ls { margin-top:14px; border-top:1px solid #2c2b29; }
-  #shop .k-en { width:100%; display:flex; align-items:center; gap:14px; padding:14px 2px; border-bottom:1px solid #2c2b29; }
-  #shop .k-en:active { background:#161615; }
-  #shop .k-ck { flex:none; width:14px; height:14px; border:1.5px solid #6b6a66; }
-  #shop .k-en.sel .k-ck { background:#8cc2ff; border-color:#8cc2ff; }
+  #shop .k-ph b { display:block; margin-top:6px; font-size:24px; font-weight:200; letter-spacing:.03em; }
+  #shop .k-x { flex:none; width:36px; height:36px; border-radius:50%; background:#232321; display:flex; align-items:center; justify-content:center; transition:background .2s ease; }
+  #shop .k-x:active { background:#333330; }
+  #shop .k-x svg { width:14px; height:14px; fill:none; stroke:#f4f2ee; stroke-width:1.7; stroke-linecap:round; }
+  #shop .k-ls { margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  #shop .k-en { width:100%; display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:20px; background:#1a1a19; border:1.5px solid #1a1a19; transition:border-color .2s ease, background .2s ease; }
+  #shop .k-en:active { background:#222220; }
+  #shop .k-en.sel { border-color:#8cc2ff; }
+  #shop .k-ck { flex:none; width:20px; height:20px; border-radius:50%; border:1.5px solid #55554f; }
+  #shop .k-en.sel .k-ck { border-color:#8cc2ff; background:#8cc2ff; box-shadow:inset 0 0 0 4.5px #1a1a19; }
   #shop .k-ni { flex:1; min-width:0; }
-  #shop .k-n { display:block; font-size:16px; font-weight:300; letter-spacing:.04em; }
-  #shop .k-g { display:block; margin-top:4px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#8a8884; }
-  #shop .k-s { flex:none; display:flex; align-items:center; gap:5px; font-size:12px; letter-spacing:.06em; color:#8a8884; font-variant-numeric:tabular-nums; }
-  #shop .k-s.eq { color:#8cc2ff; }
-  #shop .k-ds { margin-top:14px; min-height:44px; font-size:14px; line-height:1.55; color:#d3d1cc; }
-  #shop .k-pn .s-ab { margin-top:14px; border-radius:4px; }
+  #shop .k-n { display:block; font-size:16px; font-weight:300; letter-spacing:.03em; }
+  #shop .k-g { display:block; margin-top:3px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#8a8884; }
+  #shop .k-s { flex:none; display:flex; align-items:center; gap:5px; padding:6px 11px; border-radius:999px; background:#262624; font-size:11.5px; letter-spacing:.05em; color:#b9b7b2; font-variant-numeric:tabular-nums; }
+  #shop .k-s.eq { background:#16222f; color:#8cc2ff; }
+  #shop .k-ds { margin:14px 4px 0; min-height:44px; font-size:14px; line-height:1.55; color:#d3d1cc; }
+  #shop .k-pn .s-ab { margin-top:14px; border-radius:18px; }
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
@@ -1097,7 +1101,7 @@
      Çizim alanı 360×520; mekik tam ortada (180, 250). Yalnızca mekanik olarak değişen parçalar burada yer alır. */
   var KW = 360, KH = 520, KZ = 1.8;
   var KPART = [
-    { id:'motor', t:'Motor', fr:[144, 336, 72, 70], cd:[14, 436, 122, 62], bar:[[136, 467], [180, 467], [180, 420]] }
+    { id:'motor', t:'Motor', ic:'<path d="M9 3.5h6v5l3.2 6.5H5.8L9 8.5zM8 19c1 1.3 2.4 2 4 2s3-.7 4-2"/>', fr:[144, 336, 72, 70], cd:[10, 434, 156, 66], bar:[[166, 467], [180, 467], [180, 420]] }
   ];
   function kpart(id) { for (var i = 0; i < KPART.length; i++) if (KPART[i].id === id) return KPART[i]; return null; }
   function paintK() {
@@ -1113,15 +1117,16 @@
         for (j = 1; j < n; j++) d += 'L' + b[j].join(' ');
         h += '<g class="k-p" data-part="' + p.id + '" role="button" tabindex="0" aria-label="' + p.t + '">' +
           '<rect class="k-hit" x="' + (f[0] - 6) + '" y="' + (f[1] - 6) + '" width="' + (f[2] + 12) + '" height="' + (f[3] + 12) + '"/>' +
-          '<rect class="k-fr" x="' + f[0] + '" y="' + f[1] + '" width="' + f[2] + '" height="' + f[3] + '"/>' +
-          '<g class="k-lb"><rect x="' + f[0] + '" y="' + (f[1] - 18) + '" width="' + lw + '" height="18"/><text x="' + (f[0] + 8) + '" y="' + (f[1] - 5.5) + '">' + p.t.toUpperCase() + '</text></g>' +
+          '<rect class="k-fr" x="' + f[0] + '" y="' + f[1] + '" width="' + f[2] + '" height="' + f[3] + '" rx="12"/>' +
+          '<g class="k-lb"><rect x="' + f[0] + '" y="' + (f[1] - 26) + '" width="' + lw + '" height="18" rx="9"/><text x="' + (f[0] + 8) + '" y="' + (f[1] - 13.5) + '">' + p.t.toUpperCase() + '</text></g>' +
           '<g class="k-ui"><path class="k-bar" pathLength="1" d="' + d + '"/>' +
           '<polygon class="k-hd" points="' + (z[0] + ux * 14) + ',' + (z[1] + uy * 14) + ' ' + (z[0] - uy * 7) + ',' + (z[1] + ux * 7) + ' ' + (z[0] + uy * 7) + ',' + (z[1] - ux * 7) + '"/>' +
-          '<g class="k-cg"><rect class="k-cd" x="' + c[0] + '" y="' + c[1] + '" width="' + c[2] + '" height="' + c[3] + '"/>' +
-          '<text class="k-t0" x="' + (c[0] + 14) + '" y="' + (c[1] + 20) + '">' + p.t + '</text>' +
-          '<text class="k-t1 k-en-n" x="' + (c[0] + 14) + '" y="' + (c[1] + 39) + '"></text>' +
-          '<rect class="k-dot" x="' + (c[0] + 14) + '" y="' + (c[1] + 46) + '" width="6" height="6"/>' +
-          '<text class="k-t2 k-en-t" x="' + (c[0] + 26) + '" y="' + (c[1] + 53) + '"></text></g></g></g>';
+          '<g class="k-cg"><rect class="k-cd" x="' + c[0] + '" y="' + c[1] + '" width="' + c[2] + '" height="' + c[3] + '" rx="22"/>' +
+          '<circle class="k-ib" cx="' + (c[0] + 31) + '" cy="' + (c[1] + 33) + '" r="18"/><svg class="k-ico" x="' + (c[0] + 19) + '" y="' + (c[1] + 21) + '" width="24" height="24" viewBox="0 0 24 24">' + p.ic + '</svg>' +
+          '<text class="k-t0" x="' + (c[0] + 60) + '" y="' + (c[1] + 21) + '">' + p.t + '</text>' +
+          '<text class="k-t1 k-en-n" x="' + (c[0] + 60) + '" y="' + (c[1] + 39) + '"></text>' +
+          '<rect class="k-tg" x="' + (c[0] + 60) + '" y="' + (c[1] + 46) + '" width="62" height="14" rx="7"/>' +
+          '<text class="k-t2 k-en-t" x="' + (c[0] + 68) + '" y="' + (c[1] + 56) + '"></text></g></g></g>';
       });
       h += '</g><text class="k-hint k-ui" x="' + (KW / 2) + '" y="34" text-anchor="middle">Bir parçaya dokun</text></svg>';
       km.innerHTML = h;
