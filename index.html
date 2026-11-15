@@ -2756,7 +2756,7 @@
       return 1e9;
     }
     /* --- Mekik çarpışma gövdesi: tek nokta yerine mekiğin şeklini izleyen daireler (birim = çizimdeki u; x = sağ/sol, y = - burun / + kuyruk) --- */
-    var HULLK = .75;                                            // genel ayar: 1 = görünen şekle tam oturur, küçüldükçe daha toleranslı (çok hassas gelirse düşür, içine giriyorsa artır)
+    var HULLK = .5;                                             // genel ayar: 1 = görünen şekle tam oturur, küçüldükçe daha toleranslı (çok hassas gelirse düşür, içine giriyorsa artır)
     var HULL = [[0,-1.9,.3],[0,-1.2,.4],[0,-.3,.42],[0,.7,.42],[0,1.55,.36],
                 [-.6,.4,.18],[.6,.4,.18],[-.78,1.1,.2],[.78,1.1,.2],[-1,1.55,.12],[1,1.55,.12]];
     function hullClr(o) {                                       // gövdenin engele en yakın boşluğu (negatifse içine girmiş)
