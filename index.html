@@ -670,71 +670,56 @@
   #shop .s-is.eq { color:var(--blue); }
   #shop .s-id { margin-top:16px; font-size:15px; line-height:1.6; }
   #shop .s-ih { z-index:3; }
-  /* parçalar: mekik ortada. Düz köşeli, opak bir çubuk bir kez bükülüp bölgeyi gösterir; seçilen bölgeye sahne hafifçe yakınlaşır */
-  #shop .s-kv { padding:0 14px calc(env(safe-area-inset-bottom,0px) + 12px); }
-  #shop .k-stage { position:relative; flex:1; min-height:0; margin-top:1vh; }
-  #shop .k-svg { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:hidden; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
-    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 calc(var(--kt,0) * 10%)); mask-image:linear-gradient(to bottom, transparent 0, #000 calc(var(--kt,0) * 10%)); }
-  #shop .k-pt { --kc:#7d7b76; cursor:pointer; outline:none; }
-  #shop .k-pt.on { --kc:#8cc2ff; }
-  #shop .k-ln { fill:none; stroke:var(--kc); stroke-width:4; stroke-linejoin:miter; stroke-linecap:butt; stroke-miterlimit:10; pointer-events:none; transition:stroke .3s ease; }
-  #shop .k-fr { fill:none; stroke:var(--kc); stroke-width:2; stroke-linejoin:miter; stroke-linecap:butt; pointer-events:none; transition:stroke .3s ease; }
-  #shop .k-pip { fill:var(--kc); pointer-events:none; transition:fill .3s ease; }
-  #shop .k-hit { fill:#000; fill-opacity:0; }
-  #shop .k-lb { --kc:#7d7b76; position:absolute; left:0; top:0; width:124px; height:52px; padding:0 14px; display:flex; flex-direction:column; justify-content:center; gap:5px; background:#0a0a0a; border:2px solid var(--kc); border-radius:0; color:var(--fg); text-align:left; will-change:transform; transition:border-color .3s ease; }
-  #shop .k-lb.on { --kc:#8cc2ff; }
-  #shop .k-l1 { font-size:9.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); line-height:1; }
-  #shop .k-l2 { font-size:14.5px; font-weight:300; letter-spacing:.03em; line-height:1; white-space:nowrap; }
-  #shop .k-pn { position:relative; flex:none; margin-top:8px; background:#0c0c0c; border:1px solid #2b2b29; border-radius:22px; transition:background .3s ease, border-color .3s ease; }
-  #shop .k-in { padding:14px 16px 10px; transition:opacity .3s ease; }
-  #shop .k-pn.idle { background:transparent; border-color:transparent; }
-  #shop .k-pn.idle .k-in { opacity:0; visibility:hidden; }
-  #shop .k-idle { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; letter-spacing:.3em; text-indent:.3em; text-transform:uppercase; color:var(--dim); opacity:0; pointer-events:none; transition:opacity .3s ease; }
-  #shop .k-pn.idle .k-idle { opacity:1; }
-  #shop .k-r1 { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  #shop .k-ov { display:flex; align-items:center; gap:9px; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--soft); }
-  #shop .k-ov i { display:block; width:16px; height:4px; background:var(--blue); }
-  #shop .k-chs { display:flex; gap:6px; }
-  #shop .k-chs .s-ch { padding:6px 12px; display:flex; align-items:center; gap:8px; }
-  #shop .k-chs .s-ch small { font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--blue); }
-  #shop .k-th { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding:12px 2px 2px; touch-action:pan-x; }
-  #shop .k-th::-webkit-scrollbar { display:none; }
-  #shop .k-th > :first-child { margin-left:auto; }
-  #shop .k-th > :last-child { margin-right:auto; }
-  #shop .k-th .s-t { width:62px; height:68px; border-radius:16px; }
-  #shop .k-th .s-t svg.s-sv { height:50px; }
-  #shop .k-r3 { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
-  #shop .k-fn { font-size:17px; font-weight:200; letter-spacing:.04em; }
-  #shop .k-fn small { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-left:6px; vertical-align:middle; }
-  #shop .k-fs { margin-top:5px; min-height:16px; display:flex; align-items:center; gap:5px; font-size:12px; letter-spacing:.08em; color:var(--dim); font-variant-numeric:tabular-nums; }
-  #shop .k-fs.eq { color:var(--blue); }
-  #shop .k-btn { flex:none; min-width:116px; height:42px; padding:0 12px; border:1px solid #4a4946; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; transition:background .2s ease, opacity .2s ease; }
-  #shop .k-btn:active { background:#262624; }
-  #shop .k-btn.buy { background:var(--fg); border-color:var(--fg); color:#000; }
-  #shop .k-btn.buy:active { opacity:.75; background:var(--fg); }
-  #shop .k-btn.no { border-color:#8a4a32; color:var(--warm); }
-  #shop .k-btn.off { opacity:.4; pointer-events:none; }
-  #shop .k-up { display:flex; align-items:center; gap:12px; margin-top:12px; padding-top:12px; border-top:1px solid #262624; }
-  #shop .k-ui { width:38px; height:38px; flex:none; border:1.3px solid #5a5853; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--soft); }
-  #shop .k-ui svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
-  #shop .k-ut { flex:1; min-width:0; overflow:hidden; }
-  #shop .k-un { font-size:14px; font-weight:300; letter-spacing:.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  #shop .k-ue { margin-top:6px; display:flex; align-items:center; gap:9px; font-size:11px; letter-spacing:.05em; color:var(--dim); white-space:nowrap; min-width:0; }
-  #shop .k-ue > span:last-child { min-width:0; overflow:hidden; text-overflow:ellipsis; }
-  #shop .k-ue .s-bx { gap:4px; flex:none; }
-  #shop .k-ue .s-bx i { width:10px; height:10px; border-radius:2px; }
-  #shop .k-hn { min-height:14px; margin-top:8px; font-size:11px; letter-spacing:.04em; text-align:center; color:var(--dim); }
-  #shop .k-stage.ka .k-ss { animation:k-fi .6s ease both; }
-  #shop .k-stage.ka .k-ln { stroke-dasharray:1; stroke-dashoffset:1; animation:k-dr .6s cubic-bezier(.3,.6,.3,1) .35s forwards; }
-  #shop .k-stage.ka .k-fr, #shop .k-stage.ka .k-pip { animation:k-fi .35s ease both .85s; }
-  #shop .k-stage.ka .k-lb { animation:k-fi .4s ease both .25s; }
-  #shop .k-pn.ka { animation:k-up .5s cubic-bezier(.2,.7,.2,1) both .5s; }
-  #shop .k-stage.pop .k-fr { animation:k-pop .55s ease-out; }
-  @keyframes k-up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+  /* parçalar: şematik görünüm. Mekik ortada, parçalar etrafında; yerleri düz köşeli dolu çubuklarla gösterilir (hiçbir şey yarı saydam değil) */
+  #shop .s-kv { position:relative; overflow:hidden; }
+  #shop .s-km { flex:1; min-height:0; margin:1vh 10px 0; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px); display:flex; overflow:hidden; }
+  #shop .s-km > svg { width:100%; height:100%; display:block; overflow:hidden; -webkit-user-select:none; user-select:none; }
+  #shop .k-w { transform-box:view-box; transform-origin:0 0; transition:transform .95s cubic-bezier(.22,.61,.36,1); }
+  #shop .k-p { cursor:pointer; outline:none; }
+  #shop .k-hit { fill:#000; opacity:0; pointer-events:all; }
+  #shop .k-fr { fill:none; stroke:#8cc2ff; stroke-width:2; stroke-linejoin:miter; vector-effect:non-scaling-stroke; pointer-events:none; }
+  #shop .k-bar { fill:none; stroke:#8cc2ff; stroke-width:3; stroke-linecap:butt; stroke-linejoin:miter; stroke-miterlimit:10; pointer-events:none; }
+  #shop .k-hd { fill:#8cc2ff; pointer-events:none; }
+  #shop .k-cd { fill:#0b0b0b; stroke:#4a4946; stroke-width:1; transition:stroke .2s ease; }
+  #shop .k-p:active .k-cd, #shop .k-p:focus-visible .k-cd { stroke:#8cc2ff; }
+  #shop .k-t0 { fill:#8a8884; font-size:9px; letter-spacing:.28em; text-transform:uppercase; }
+  #shop .k-t1 { fill:#f4f2ee; font-size:14px; font-weight:300; letter-spacing:.03em; }
+  #shop .k-t2 { fill:#8a8884; font-size:10px; font-weight:300; letter-spacing:.1em; text-transform:uppercase; }
+  #shop .k-dot { fill:#8cc2ff; }
+  #shop .k-hint { fill:#8a8884; font-size:9.5px; letter-spacing:.26em; text-transform:uppercase; }
+  #shop .k-lb rect { fill:#8cc2ff; }
+  #shop .k-lb text { fill:#000; font-size:9px; font-weight:500; letter-spacing:.2em; }
+  #shop .k-ui { transition:opacity .4s ease; }
+  #shop .k-lb { opacity:0; transition:opacity .5s ease; }
+  #shop .s-km.zm .k-ui { opacity:0; pointer-events:none; }
+  #shop .s-km.zm .k-lb { opacity:1; transition-delay:.5s; }
+  #shop .s-km.ka .k-cg { animation:k-up .55s cubic-bezier(.2,.7,.2,1) .15s both; }
+  #shop .s-km.ka .k-bar { stroke-dasharray:1; stroke-dashoffset:1; animation:k-dr .6s cubic-bezier(.3,.6,.3,1) .45s forwards; }
+  #shop .s-km.ka .k-hd, #shop .s-km.ka .k-fr { animation:k-fi .3s ease 1s both; }
+  @keyframes k-up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @keyframes k-dr { to { stroke-dashoffset:0; } }
   @keyframes k-fi { from { opacity:0; } to { opacity:1; } }
-  @keyframes k-pop { 0% { stroke-width:2; } 35% { stroke-width:6; } 100% { stroke-width:2; } }
-  @media (max-height:700px) { #shop .k-th .s-t { width:56px; height:60px; } #shop .k-th .s-t svg.s-sv { height:44px; } #shop .k-ue .s-bx ~ span { display:none; } #shop .k-in { padding:12px 16px 8px; } #shop .k-hn { display:none; } #shop .k-r3, #shop .k-up { margin-top:9px; } #shop .k-up { padding-top:9px; } }
+  /* parça paneli: yakınlaşınca alttan çıkar */
+  #shop .k-pn { position:absolute; z-index:2; left:0; right:0; bottom:0; max-width:480px; margin:0 auto; background:#0d0d0d; border:1px solid #3a3936; border-bottom:0; padding:16px 22px calc(env(safe-area-inset-bottom,0px) + 20px); transform:translateY(102%); transition:transform .7s cubic-bezier(.22,.61,.36,1); pointer-events:none; }
+  #shop .s-km.zm + .k-pn { transform:none; pointer-events:auto; }
+  #shop .k-ph { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  #shop .k-ph small { display:block; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#8a8884; }
+  #shop .k-ph b { display:block; margin-top:6px; font-size:22px; font-weight:300; letter-spacing:.03em; }
+  #shop .k-x { flex:none; width:34px; height:34px; margin:-2px -4px 0 0; border:1px solid #4a4946; display:flex; align-items:center; justify-content:center; transition:background .2s ease; }
+  #shop .k-x:active { background:#2a2926; }
+  #shop .k-x svg { width:16px; height:16px; fill:none; stroke:#f4f2ee; stroke-width:1.6; stroke-linecap:butt; }
+  #shop .k-ls { margin-top:14px; border-top:1px solid #2c2b29; }
+  #shop .k-en { width:100%; display:flex; align-items:center; gap:14px; padding:14px 2px; border-bottom:1px solid #2c2b29; }
+  #shop .k-en:active { background:#161615; }
+  #shop .k-ck { flex:none; width:14px; height:14px; border:1.5px solid #6b6a66; }
+  #shop .k-en.sel .k-ck { background:#8cc2ff; border-color:#8cc2ff; }
+  #shop .k-ni { flex:1; min-width:0; }
+  #shop .k-n { display:block; font-size:16px; font-weight:300; letter-spacing:.04em; }
+  #shop .k-g { display:block; margin-top:4px; font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:#8a8884; }
+  #shop .k-s { flex:none; display:flex; align-items:center; gap:5px; font-size:12px; letter-spacing:.06em; color:#8a8884; font-variant-numeric:tabular-nums; }
+  #shop .k-s.eq { color:#8cc2ff; }
+  #shop .k-ds { margin-top:14px; min-height:44px; font-size:14px; line-height:1.55; color:#d3d1cc; }
+  #shop .k-pn .s-ab { margin-top:14px; border-radius:4px; }
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
@@ -823,7 +808,7 @@
     <div class="s-th"></div>
     <div class="s-bt"><button class="s-ab s-try" data-k="ftry">Dene</button><button class="s-ab" data-k="fact"></button></div>
   </section>
-  <section class="s-v s-kv"><div class="k-stage"><svg class="k-svg" role="group" aria-label="Mekik parçaları"></svg></div><div class="k-pn idle"><div class="k-in"></div><div class="k-idle">Bir parçaya dokun</div></div></section>
+  <section class="s-v s-kv"><div class="s-km"></div><div class="k-pn" role="dialog" aria-label="Parça ayrıntısı"></div></section>
   <section class="s-v s-pv"><div class="s-list"></div></section>
   <div class="s-sh s-ih"><div class="s-sc" data-k="ix"></div><div class="s-sp" role="dialog" aria-modal="true">
     <button class="s-gr" data-k="ix" aria-label="Kapat"></button>
@@ -877,7 +862,7 @@
      dy: şekil dinamiği (L: boy, w: genişlik, m/c: orta/çekirdek boyu, cw: çekirdek eni, am: SVG dalgalanma, tm: SVG hız çarpanı, fa/f: titreme, s/sa: ucun savrulması)
      k: özel katman (vd: spiral iplikçik + yörünge kıvılcımları, au: akan şeritler, io: şok elmasları + yıldırım) */
   var ENGINE = 'jet';
-  var ENG = [ { id:'jet', n:'Standart Jet', tag:'Orijinal' } ];
+  var ENG = [ { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru.' } ];   // Parçalar sayfası: yeni motor = yeni satır (price 0 = açık, >0 = yıldızla satın alınır)
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
       dy:{ L:1, w:1, m:1, c:1, cw:1, am:1, tm:1, fa:1, f:[57,91,33], s:[19,43], sa:1 },
@@ -914,20 +899,22 @@
   ];
 
   /* ===== Kalıcı veri ===== */
-  var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1 };
+  var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1, kp:'', ke:'jet', kshown:'', kdone:false };
   function dev() { try { return localStorage.getItem('dd_dev') === '1'; } catch (e) { return false; } }   // geliştirici modu: sınırsız yıldız
   function bal() { return dev() ? Infinity : D.coins; }
   function load() {
     var j = null; try { j = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
-    D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 } };
+    D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet' };
     if (j && typeof j === 'object') { D.coins = j.coins | 0; D.owned = j.owned || D.owned; D.eq = j.eq || 'klasik'; D.lv = j.lv || {};
-      if (j.fx && typeof j.fx === 'object') D.fx = j.fx; if (j.fxo && typeof j.fxo === 'object') D.fxo = j.fxo; }
+      if (j.fx && typeof j.fx === 'object') D.fx = j.fx; if (j.fxo && typeof j.fxo === 'object') D.fxo = j.fxo;
+      if (j.eo && typeof j.eo === 'object') D.eo = j.eo; if (j.en) D.en = j.en; }
     (function () {                                                // eski hata: önleyicinin seviyesi uzun bir açıklama metni anahtarıyla kaydedilmişti; 'onl'e taşı
       var k, mv = 0; for (k in D.lv) if (k.length > 24) { mv = Math.max(mv, D.lv[k] | 0); delete D.lv[k]; }
       if (mv) { D.lv.onl = Math.min(5, Math.max(D.lv.onl | 0, mv)); save(); }
     })();
     D.owned.klasik = 1; if (!cfind(D.eq) || !D.owned[D.eq]) D.eq = 'klasik';
     D.fxo.kor = 1; fxFix();
+    D.eo.jet = 1; if (!efind(D.en) || !eown(efind(D.en))) D.en = ENG[0].id;
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
 
@@ -1025,7 +1012,7 @@
     h += '</g><ellipse cx="0" cy="' + (y0 + .04) + '" rx=".34" ry=".2" fill="url(#' + ID + 't)" opacity=".8"/></g>';          // lülede sıcak ışıma
     return h;
   }
-  function ship(p, big, fx, vb) {
+  function ship(p, big, fx, vb, nf) {
     var st = p.s ? ' stroke="' + p.s + '" stroke-width=".07" stroke-linejoin="round"' : '';
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flame(.85, fx) : '') +
       '<path d="M-.4 -1.3L-.7 -.45L-1.25 1.72Q-1.3 1.95 -1.18 1.95L-.4 1.95Z" fill="' + p.a + '"' + st + '/>' +
@@ -1033,7 +1020,7 @@
       '<path d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
       '<path d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
       '<rect x="-.22" y="1.98" width=".44" height=".2" rx=".08" fill="' + p.n + '"/>' +
-      (big ? '' : '<path d="M-.17 2.2C-.18 2.5 -.08 2.75 0 2.95C.08 2.75 .18 2.5 .17 2.2Z" fill="' + p.f + '" fill-opacity=".85"/>') +
+      (big || nf ? '' : '<path d="M-.17 2.2C-.18 2.5 -.08 2.75 0 2.95C.08 2.75 .18 2.5 .17 2.2Z" fill="' + p.f + '" fill-opacity=".85"/>') +
       '</g></svg>';
   }
   function fmt(n) { if (n === Infinity) return '∞'; return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0'); }
@@ -1049,6 +1036,8 @@
       if (!c || c.eng !== ENG[i].id || !fown(c)) { for (j = 0; j < FX.length; j++) if (FX[j].eng === ENG[i].id) { D.fx[ENG[i].id] = FX[j].id; break; } }
     }
   }
+  function efind(id) { for (var i = 0; i < ENG.length; i++) if (ENG[i].id === id) return ENG[i]; return null; }
+  function eown(e) { return e.price === 0 || !!D.eo[e.id]; }
   function pfind(id) { for (var i = 0; i < POW.length; i++) if (POW[i].id === id) return POW[i]; return null; }
   function lvl(it) { return D.lv[it.id] | 0; }
   function cost(it) { return it.base * (lvl(it) + 1); }
@@ -1100,132 +1089,80 @@
     }
     q('.s-sh:not(.s-ih)').classList.toggle('on', !!o);
   }
-  /* ===== Parçalar =====
-     Mekik ortada durur. Her parça için düz köşeli, opak bir çubuk bir kez bükülüp mekiğin üzerinde o bölgeyi gösterir;
-     parça seçilince sahne hafifçe o bölgeye yakınlaşır. Şimdilik yalnızca Motor var.
-     Yeni parça eklemek: PARTS'a bir satır ekle (rg: mekik üzerindeki bölge [x1,y1,x2,y2], mekik birimleriyle, çizim alanı 40×74;
-     sd: etiketin tarafı 1 sağ / -1 sol; dr: etiket çubuğun altında 1 / üstünde -1) ve paintK'daki panel içeriğini o parçaya göre çiz. */
-  var PARTS = [
-    { id:'motor', n:'Motor', rg:[14.5, 40.5, 25.5, 49.5], sd:1, dr:1 }
+  /* ===== Parçalar: şematik sayfa =====
+     Yeni parça eklemek: KPART'a bir satır ekle.
+       fr  = mekik üzerindeki bölgenin çerçevesi [x, y, genişlik, yükseklik]
+       cd  = kartın yeri [x, y, genişlik, yükseklik]
+       bar = çubuğun köşe noktaları (hep dik açıyla bükülür, son nokta ok başının tabanıdır)
+     Çizim alanı 360×520; mekik tam ortada (180, 250). Yalnızca mekanik olarak değişen parçalar burada yer alır. */
+  var KW = 360, KH = 520, KZ = 1.8;
+  var KPART = [
+    { id:'motor', t:'Motor', fr:[144, 336, 72, 70], cd:[14, 436, 122, 62], bar:[[136, 467], [180, 467], [180, 420]] }
   ];
-  var KV = { W:0, H:0, t:0, to:0, raf:0, timer:0, done:0, built:false, els:{}, key:'', zp:PARTS[0], sv:null };
-  var LW = 124, LH = 52;
-  function engOf(id) { for (var i = 0; i < ENG.length; i++) if (ENG[i].id === id) return ENG[i]; return ENG[0]; }
-  function kBuild() {
-    var st = q('.k-stage'), svg = q('.k-svg'), h = '<g class="k-sg"><g class="k-ss"></g></g>', lb = '';
-    PARTS.forEach(function (p) {
-      h += '<g class="k-pt" data-part="' + p.id + '"><path class="k-ln" pathLength="1"/><path class="k-fr"/><rect class="k-pip" width="9" height="9"/><rect class="k-hit" data-part="' + p.id + '"/></g>';
-      lb += '<button class="k-lb" data-part="' + p.id + '" aria-pressed="false"><span class="k-l1">' + p.n + '</span><span class="k-l2"></span></button>';
-    });
-    svg.innerHTML = h; st.insertAdjacentHTML('beforeend', lb);
-    KV.svg = svg; KV.sg = svg.querySelector('.k-sg'); KV.ss = svg.querySelector('.k-ss');
-    PARTS.forEach(function (p) {
-      var g = svg.querySelector('.k-pt[data-part="' + p.id + '"]'), l = st.querySelector('.k-lb[data-part="' + p.id + '"]');
-      KV.els[p.id] = { g:g, ln:g.querySelector('.k-ln'), fr:g.querySelector('.k-fr'), pip:g.querySelector('.k-pip'), hit:g.querySelector('.k-hit'), lb:l, l2:l.querySelector('.k-l2') };
-    });
-    if (window.ResizeObserver) new ResizeObserver(function () { kMeasure(); kGeom(KV.t); }).observe(st); else window.addEventListener('resize', function () { kMeasure(); kGeom(KV.t); });
-    KV.built = true;
-  }
-  function kMeasure() { var st = q('.k-stage'); KV.W = st.clientWidth; KV.H = st.clientHeight; }
-  function kn(v) { return v.toFixed(1); }
-  /* t: 0 = bütün mekik, 1 = seçili bölgeye yakın. Çubuk ve çerçeve ekran koordinatında hesaplanır; yakınlaşırken bölgeyi izler. */
-  function kGeom(t) {
-    var W = KV.W, H = KV.H; if (!W || !H || !KV.built) return;
-    var u = Math.min(H * .9 / 74, W * .5 / 40), ox = W / 2 - 20 * u, oy = (H - 74 * u) / 2,
-        rg = KV.zp.rg, ex = (rg[0] + rg[2]) / 2, ey = (rg[1] + rg[3]) / 2, ax = ox + ex * u, ay = oy + ey * u,
-        zm = 1.25, fx = W / 2, fy = Math.min(ay, H * .97 - (76 - ey) * u * zm),     // yerinde hafifçe büyür; alev altta taşmasın diye gerekirse biraz yukarı kayar
-        zt = 1 + (zm - 1) * t, cx = ax + (fx - ax) * t, cy = ay + (fy - ay) * t, tx = cx - ax * zt, ty = cy - ay * zt;
-    KV.sg.setAttribute('transform', 'translate(' + tx.toFixed(2) + ' ' + ty.toFixed(2) + ') scale(' + zt.toFixed(4) + ')');
-    KV.svg.style.setProperty('--kt', t.toFixed(3));
-    if (KV.sv) { KV.sv.setAttribute('x', ox.toFixed(2)); KV.sv.setAttribute('y', oy.toFixed(2)); KV.sv.setAttribute('width', (40 * u).toFixed(2)); KV.sv.setAttribute('height', (74 * u).toFixed(2)); }
-    PARTS.forEach(function (p) {
-      var e = KV.els[p.id], r = p.rg, s = p.sd, d = p.dr,
-          x1 = tx + (ox + r[0] * u) * zt, y1 = ty + (oy + r[1] * u) * zt, x2 = tx + (ox + r[2] * u) * zt, y2 = ty + (oy + r[3] * u) * zt,
-          by = (y1 + y2) / 2, l = Math.min(x2 - x1, y2 - y1) * .26, ex1 = s > 0 ? x2 : x1,
-          lx = s > 0 ? W - LW - 6 : 6, ly = Math.max(2, Math.min(H - LH - 2, d > 0 ? by + 30 : by - 30 - LH)),
-          bx = s > 0 ? lx + 20 : lx + LW - 20, sy = d > 0 ? ly + 1 : ly + LH - 1;
-      e.ln.setAttribute('d', 'M' + kn(bx) + ' ' + kn(sy) + 'V' + kn(by) + 'H' + kn(ex1));
-      e.fr.setAttribute('d', 'M' + kn(x1) + ' ' + kn(y1 + l) + 'V' + kn(y1) + 'H' + kn(x1 + l) + 'M' + kn(x2 - l) + ' ' + kn(y1) + 'H' + kn(x2) + 'V' + kn(y1 + l) +
-        'M' + kn(x2) + ' ' + kn(y2 - l) + 'V' + kn(y2) + 'H' + kn(x2 - l) + 'M' + kn(x1 + l) + ' ' + kn(y2) + 'H' + kn(x1) + 'V' + kn(y2 - l));
-      e.pip.setAttribute('x', kn(ex1 - 4.5)); e.pip.setAttribute('y', kn(by - 4.5));
-      e.hit.setAttribute('x', kn(x1)); e.hit.setAttribute('y', kn(y1)); e.hit.setAttribute('width', kn(x2 - x1)); e.hit.setAttribute('height', kn(y2 - y1));
-      e.lb.style.transform = 'translate(' + kn(lx) + 'px,' + kn(ly) + 'px)';
-    });
-  }
-  function kGo(to, instant) {
-    cancelAnimationFrame(KV.raf); KV.to = to;
-    var from = KV.t, t0 = 0, dur = 850;
-    if (instant || from === to || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { KV.t = to; kGeom(to); return; }
-    function step(now) {
-      if (!t0) t0 = now;
-      var p = Math.min(1, (now - t0) / dur), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
-      KV.t = from + (to - from) * e; kGeom(KV.t);
-      if (p < 1) KV.raf = requestAnimationFrame(step);
-    }
-    KV.raf = requestAnimationFrame(step);
-  }
-  function kAct(b, st, html) { b.className = 'k-btn' + (st ? ' ' + st : ''); b.innerHTML = html; }
-  function kBuyAct(b, price, label) { if (bal() >= price) kAct(b, 'buy', label + ' ' + STAR + fmt(price)); else kAct(b, 'no', label + ' ' + STAR + fmt(price)); }
-  function paintK(nw) {
-    if (!KV.built) kBuild();
-    var st = q('.k-stage'), pn = q('.k-pn'), fresh = !S.kdone, list, it, own, eq, cp, key, h, i, cur;
+  function kpart(id) { for (var i = 0; i < KPART.length; i++) if (KPART[i].id === id) return KPART[i]; return null; }
+  function paintK() {
+    var km = q('.s-km'), cp = cfind(D.eq) || COST[0], anim = !S.kdone, e = efind(D.en) || ENG[0], h = '';
     S.kdone = true;
-    if (fresh) {                                                 // sekmeye girişte: Motor seçili, orijinal motor ve kuşanılan alev açık
-      S.ksel = PARTS[0].id; S.eng = ENGINE; cur = ffind(D.fx[ENGINE]); if (cur) S.fsel = cur.id; S.fshown = '';
-      cancelAnimationFrame(KV.raf); clearTimeout(KV.timer); clearTimeout(KV.done); KV.t = 0; KV.to = 0;
+    if (S.kshown !== cp.id) {
+      S.kshown = cp.id;
+      h = '<svg viewBox="0 0 ' + KW + ' ' + KH + '" role="group" aria-label="Mekik parçaları"><g class="k-w">' +
+        ship(cp.p, 0, null, null, 1).replace('<svg class="s-sv"', '<svg class="k-ship" x="40" y="80" width="280" height="392" overflow="visible"');
+      KPART.forEach(function (p, i) {
+        var b = p.bar, n = b.length, a = b[n - 2], z = b[n - 1], ux = Math.sign(z[0] - a[0]), uy = Math.sign(z[1] - a[1]),
+            d = 'M' + b[0].join(' '), j, c = p.cd, f = p.fr, lw = 16 + p.t.length * 7;
+        for (j = 1; j < n; j++) d += 'L' + b[j].join(' ');
+        h += '<g class="k-p" data-part="' + p.id + '" role="button" tabindex="0" aria-label="' + p.t + '">' +
+          '<rect class="k-hit" x="' + (f[0] - 6) + '" y="' + (f[1] - 6) + '" width="' + (f[2] + 12) + '" height="' + (f[3] + 12) + '"/>' +
+          '<rect class="k-fr" x="' + f[0] + '" y="' + f[1] + '" width="' + f[2] + '" height="' + f[3] + '"/>' +
+          '<g class="k-lb"><rect x="' + f[0] + '" y="' + (f[1] - 18) + '" width="' + lw + '" height="18"/><text x="' + (f[0] + 8) + '" y="' + (f[1] - 5.5) + '">' + p.t.toUpperCase() + '</text></g>' +
+          '<g class="k-ui"><path class="k-bar" pathLength="1" d="' + d + '"/>' +
+          '<polygon class="k-hd" points="' + (z[0] + ux * 14) + ',' + (z[1] + uy * 14) + ' ' + (z[0] - uy * 7) + ',' + (z[1] + ux * 7) + ' ' + (z[0] + uy * 7) + ',' + (z[1] - ux * 7) + '"/>' +
+          '<g class="k-cg"><rect class="k-cd" x="' + c[0] + '" y="' + c[1] + '" width="' + c[2] + '" height="' + c[3] + '"/>' +
+          '<text class="k-t0" x="' + (c[0] + 14) + '" y="' + (c[1] + 20) + '">' + p.t + '</text>' +
+          '<text class="k-t1 k-en-n" x="' + (c[0] + 14) + '" y="' + (c[1] + 39) + '"></text>' +
+          '<rect class="k-dot" x="' + (c[0] + 14) + '" y="' + (c[1] + 46) + '" width="6" height="6"/>' +
+          '<text class="k-t2 k-en-t" x="' + (c[0] + 26) + '" y="' + (c[1] + 53) + '"></text></g></g></g>';
+      });
+      h += '</g><text class="k-hint k-ui" x="' + (KW / 2) + '" y="34" text-anchor="middle">Bir parçaya dokun</text></svg>';
+      km.innerHTML = h;
+      km.className = 's-km' + (anim ? ' ka' : '');
+      if (anim) setTimeout(function () { km.classList.remove('ka'); }, 1900);
     }
-    kMeasure();
-    list = flist(); it = ffind(S.fsel); if (!it || it.eng !== S.eng) { it = list[0]; S.fsel = it.id; }
-    own = fown(it); eq = D.fx[S.eng] === it.id; cp = (cfind(D.eq) || COST[0]).p;
-    key = D.eq + '|' + it.id + '|' + (D.lv.itis | 0);
-    if (KV.key !== key) {                                        // mekik yalnızca kostüm / alev / seviye değişince yeniden çizilir
-      KV.key = key; KV.ss.innerHTML = ship(cp, 1, it, '0 0 40 74').replace('<svg class="s-sv"', '<svg class="s-sv" overflow="visible"'); KV.sv = KV.ss.firstChild;
-    }
-    PARTS.forEach(function (p) {
-      var e = KV.els[p.id], on = S.ksel === p.id;
-      e.g.classList.toggle('on', on); e.lb.classList.toggle('on', on); e.lb.setAttribute('aria-pressed', on ? 'true' : 'false');
-      e.l2.textContent = p.id === 'motor' ? engOf(S.eng).n : '';
-      if (on) KV.zp = p;
-    });
-    pn.classList.toggle('idle', !S.ksel);
-    /* panel: motor seçenekleri, alevler, geliştirme */
-    var pu = pfind('itis'), pl = lvl(pu), chips = '', th = '';
-    for (i = 0; i < ENG.length; i++) chips += '<button class="s-ch' + (ENG[i].id === S.eng ? ' on' : '') + '" data-e="' + ENG[i].id + '">' + ENG[i].n + (ENG[i].tag ? '<small>' + ENG[i].tag + '</small>' : '') + '</button>';
-    list.forEach(function (f) {
-      var o = fown(f);
-      th += '<button class="s-t s-ft' + (f.id === it.id ? ' sel' : '') + (o ? '' : ' lk') + '" data-fid="' + f.id + '" aria-label="' + f.n + '">' + ship(cp, 1, f, '0 24 40 50') + (D.fx[S.eng] === f.id ? '<i class="s-eqd"></i>' : o ? '' : LOCK) + '</button>';
-    });
-    h = '<div class="k-r1"><span class="k-ov"><i></i>Motor</span><div class="k-chs">' + chips + '</div></div>' +
-      '<div class="k-th">' + th + '</div>' +
-      '<div class="k-r3"><div><div class="k-fn">' + it.n + (it.tag ? '<small>' + it.tag + '</small>' : '') + '</div><div class="k-fs' + (eq ? ' eq' : '') + '">' + (eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price)) + '</div></div><button data-k="kact"></button></div>' +
-      '<div class="k-up"><div class="k-ui"><svg viewBox="0 0 24 24">' + pu.ic + '</svg></div><div class="k-ut"><div class="k-un">' + pu.n + '</div><div class="k-ue">' + boxes(pu, nw === pu.id) + '<span>' + fx(pu, pl) + '</span></div></div><button data-k="kup"></button></div>' +
-      '<p class="k-hn"></p>';
-    pn.querySelector('.k-in').innerHTML = h;
-    var ba = pn.querySelector('[data-k=kact]'), bu = pn.querySelector('[data-k=kup]');
-    if (eq) kAct(ba, 'off', 'Kuşanıldı'); else if (own) kAct(ba, '', 'Kuşan'); else kBuyAct(ba, it.price, 'Satın al');
-    if (pl >= pu.max) kAct(bu, 'off', 'Tamamlandı'); else kBuyAct(bu, cost(pu), pl ? 'Yükselt' : 'Satın al');
-    pn.querySelector('.k-hn').textContent = (!own && bal() < it.price) || (pl < pu.max && bal() < cost(pu)) ? HINT : '';
-    if (fresh) {
-      st.classList.remove('ka'); pn.classList.remove('ka'); void st.offsetWidth; st.classList.add('ka'); pn.classList.add('ka');
-      kGeom(0);
-      KV.timer = setTimeout(function () { if (S.tab === 'k' && S.ksel && KV.to !== 1) kGo(1); }, 1050);   // çubuk çizildikten sonra bölgeye yakınlaş
-      KV.done = setTimeout(function () { st.classList.remove('ka'); pn.classList.remove('ka'); }, 2000);
-    } else {
-      var to = S.ksel ? 1 : 0; if (KV.to !== to) { clearTimeout(KV.timer); kGo(to); } else kGeom(KV.t);
-    }
+    var nn = km.querySelector('.k-en-n'), nt = km.querySelector('.k-en-t');
+    if (nn) nn.textContent = e.n; if (nt) nt.textContent = e.tag || 'Kuşanıldı';
+    if (S.kp) km.classList.remove('ka');
+    km.classList.toggle('zm', !!S.kp);
+    kPanel(); kZoom();
   }
-  function kToggle(id) { S.ksel = S.ksel === id ? '' : id; paint(); }
-  function kPop(k) { var st = q('.k-stage'); st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop'); if (API.onBuy) API.onBuy(k); }
-  function kDoAct() {                                            // seçili alevi kuşan / satın al
-    var it = ffind(S.fsel), nw = false; if (!it || D.fx[it.eng] === it.id) return;
-    if (fown(it)) D.fx[it.eng] = it.id;
-    else if (bal() >= it.price) { if (!dev()) D.coins -= it.price; D.fxo[it.id] = 1; D.fx[it.eng] = it.id; nw = true; }
+  function kPanel() {                                           // yakınlaşınca açılan panel: motor seçenekleri
+    var pn = q('.k-pn'), p = kpart(S.kp), e, own, eq, a, h;
+    if (!p) return;                                             // kapanırken içerik yerinde kalır, panel aşağı kayar
+    e = efind(S.ke) || efind(D.en) || ENG[0]; S.ke = e.id; own = eown(e); eq = D.en === e.id;
+    h = '<div class="k-ph"><div><small>' + p.t + '</small><b>' + e.n + '</b></div><button class="k-x" data-k="kx" aria-label="Kapat"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div class="k-ls">';
+    ENG.forEach(function (g) {
+      var o = eown(g), on = D.en === g.id;
+      h += '<button class="k-en' + (g.id === e.id ? ' sel' : '') + '" data-eid="' + g.id + '"><i class="k-ck"></i><span class="k-ni"><span class="k-n">' + g.n + '</span>' + (g.tag ? '<span class="k-g">' + g.tag + '</span>' : '') + '</span>' +
+           '<span class="k-s' + (on ? ' eq' : '') + '">' + (on ? 'Kuşanıldı' : o ? 'Sahipsin' : STAR + fmt(g.price)) + '</span></button>';
+    });
+    pn.innerHTML = h + '</div><p class="k-ds">' + e.d + '</p><button class="s-ab" data-k="kact"></button>';
+    a = pn.querySelector('[data-k=kact]');
+    if (eq) setAct(a, 'off', 'Kuşanıldı'); else if (own) setAct(a, '', 'Kuşan'); else buyAct(a, '', e.price, 'Satın al');
+  }
+  function kZoom() {                                            // seçilen bölgeye yumuşakça yakınlaş; bölge panelin üstündeki boşluğun ortasına gelir
+    var km = q('.s-km'), w = km.querySelector('.k-w'), sv = km.querySelector('svg'), p = kpart(S.kp), r, kv, k, oy, cy;
+    if (!w) return;
+    if (!p) { w.style.transform = ''; return; }
+    r = sv.getBoundingClientRect(); kv = q('.s-kv').getBoundingClientRect(); if (!r.width) return;
+    k = Math.min(r.width / KW, r.height / KH); oy = (r.height - KH * k) / 2;
+    cy = Math.max(80, ((kv.bottom - q('.k-pn').offsetHeight) - r.top) / 2);
+    w.style.transform = 'translate(' + (KW / 2 - KZ * (p.fr[0] + p.fr[2] / 2)) + 'px,' + ((cy - oy) / k - KZ * (p.fr[1] + p.fr[3] / 2)).toFixed(1) + 'px) scale(' + KZ + ')';
+  }
+  function doEAct() {
+    var e = efind(S.ke), nw = false; if (!e || D.en === e.id) return;
+    if (eown(e)) D.en = e.id;
+    else if (bal() >= e.price) { if (!dev()) D.coins -= e.price; D.eo[e.id] = 1; D.en = e.id; nw = true; }
     else return;
-    save(); paint(); changed(); if (nw) kPop('c');
-  }
-  function kDoUp() {                                             // motor desteğini yükselt
-    var it = pfind('itis'), l = lvl(it), c = cost(it); if (l >= it.max || bal() < c) return;
-    if (!dev()) D.coins -= c; D.lv.itis = l + 1; save(); paint(it.id); changed(); kPop('p');
+    save(); paint(); changed(); if (nw && API.onBuy) API.onBuy('c');
   }
   function qf(x) { return root.querySelector('.s-fv ' + x); }
   function paintF() {
@@ -1256,14 +1193,14 @@
   function paint(nw) {
     q('.s-bal').innerHTML = STAR + fmt(bal());
     root.classList.toggle('pw', S.tab === 'p'); root.classList.toggle('fw', S.tab === 'f'); root.classList.toggle('kw', S.tab === 'k');
-    if (S.tab === 'p') paintP(nw); else if (S.tab === 'k') paintK(nw); else if (S.tab === 'f') paintF(); else paintC();
+    if (S.tab === 'p') paintP(nw); else if (S.tab === 'k') paintK(); else if (S.tab === 'f') paintF(); else paintC();
   }
   function tabBar() {
     var b = q('.s-tabs button.on'), u = q('.s-tabs b'); if (!b) return;
     u.style.width = b.offsetWidth + 'px'; u.style.transform = 'translateX(' + b.offsetLeft + 'px)';
   }
   function setTab(t) {
-    S.tab = t; S.open = ''; S.kdone = false; clearTimeout(KV.timer); clearTimeout(KV.done); q('.s-ih').classList.remove('on');
+    S.tab = t; S.open = ''; S.kdone = false; S.kp = ''; S.kshown = ''; q('.s-ih').classList.remove('on');
     var bs = root.querySelectorAll('.s-tabs button');
     for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-t') === t ? 'on' : '';
     tabBar();
@@ -1358,9 +1295,11 @@
       v.classList.remove('in'); void v.offsetWidth; v.classList.add('in');
       return;
     }
-    if ((b = t.closest('[data-part]'))) { kToggle(b.getAttribute('data-part')); return; }
-    if (t.closest('[data-k=kact]')) return kDoAct();
-    if (t.closest('[data-k=kup]')) return kDoUp();
+    if ((b = t.closest('.k-p'))) { S.kp = b.getAttribute('data-part'); S.ke = D.en; paint(); return; }
+    if (t.closest('[data-k=kx]')) { S.kp = ''; paint(); return; }
+    if ((b = t.closest('.k-en'))) { S.ke = b.getAttribute('data-eid'); paint(); return; }
+    if (t.closest('[data-k=kact]')) return doEAct();
+    if (S.tab === 'k' && S.kp && t.closest('.s-km')) { S.kp = ''; paint(); return; }   // yakınlaşmışken boş yere dokununca geri çekil
     if ((b = t.closest('.s-ft'))) { fpick(b.getAttribute('data-fid')); return; }
     if ((b = t.closest('.s-ch'))) { S.eng = b.getAttribute('data-e'); S.fshown = ''; paint(); return; }
     if (t.closest('[data-k=ftry]')) { if (API.onPreview) API.onPreview('fx:' + S.fsel); return; }
@@ -1392,15 +1331,16 @@
   var fx0 = null, fhero = q('.s-fhero');                    // efekt önizlemesinde sağa/sola kaydırarak geç
   fhero.addEventListener('touchstart', function (e) { fx0 = e.touches[0].clientX; }, { passive: true });
   fhero.addEventListener('touchend', function (e) { if (fx0 === null) return; var dx = e.changedTouches[0].clientX - fx0; fx0 = null; if (Math.abs(dx) > 40) fstep(dx < 0 ? 1 : -1); }, { passive: true });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('on')) { if (q('.s-ih').classList.contains('on')) infoOpen(false); else if (S.open) { S.open = ''; paint(); } } });
-  window.addEventListener('resize', tabBar);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('on')) { if (q('.s-ih').classList.contains('on')) infoOpen(false); else if (S.kp) { S.kp = ''; paint(); } else if (S.open) { S.open = ''; paint(); } } });
+  root.addEventListener('keydown', function (e) { var b = e.target.closest && e.target.closest('.k-p'); if (b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); b.dispatchEvent(new MouseEvent('click', { bubbles:true })); } });
+  window.addEventListener('resize', function () { tabBar(); if (S.tab === 'k' && S.kp) kZoom(); });
 
   /* ===== Dışa açılan arayüz ===== */
   var API = window.DDShop = {
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
     onChange: null,                            // kostüm / seviye değişince çağrılır
-    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 } }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
+    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
     pv: '',
     engine: ENGINE,
     look: function () { return (API.pv && cfind(API.pv)) ? API.pv : D.eq; },
@@ -1413,6 +1353,7 @@
       setTab(f ? 'f' : 'c'); paint(); q('.s-cv').classList.remove('in'); q('.s-fv').classList.remove('in'); q('.s-pv').classList.remove('in'); q('.s-kv').classList.remove('in'); root.classList.add('on'); tabBar(); },
     close: function () { S.open = ''; q('.s-ih').classList.remove('on'); root.classList.remove('on'); },
     costume: function () { return D.eq; },
+    motor: function () { return D.en; },
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
     name: function (id) { if (id && id.indexOf('fx:') === 0) { var f = ffind(id.slice(3)); return f ? f.n : ''; } var c = cfind(id); return c ? c.n : ''; },
     equip: function (id) { if (cfind(id) && D.owned[id]) { D.eq = id; save(); } },
