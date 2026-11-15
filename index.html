@@ -708,7 +708,7 @@
   #shop .k-ship .sh-c, #shop .k-ship .sh-w { transition:opacity .5s ease; }
   #shop .s-km.kx .k-ship .sh-a { transform:translate(-.22px,.04px); }
   #shop .s-km.kx .k-ship .sh-b { transform:translate(.22px,.04px); }
-  #shop .s-km.kx .k-ship .sh-n { transform:translate(0,.32px); }
+  #shop .s-km.kx .k-ship .sh-n { transform:none; }   /* motor gövdeye gömülü: ayrılmaz */
   #shop .s-km.kz-kanat .k-ship .sh-c, #shop .s-km.kz-kanat .k-ship .sh-w, #shop .s-km.kz-kanat .k-ship .sh-n { opacity:.35; }
   #shop .s-km.kz-motor .k-ship .sh-a, #shop .s-km.kz-motor .k-ship .sh-b, #shop .s-km.kz-motor .k-ship .sh-w { opacity:.35; }
   #shop .s-km.kz-motor .k-ship .sh-c { opacity:.5; }
@@ -1157,12 +1157,18 @@
   }
   function curW() { var it = (typeof D !== 'undefined' && D && D.wn) ? kfind(kpart('kanat'), D.wn) : null; return (it && it.sh) || WSTD; }
   /* Motor lüleleri: nz:'std' çan biçimli tek lüle, nz:'wide' yayvan çift lüleli blok (mekik birimleriyle; oyundaki canvas çizimi nozC ile aynı) */
-  function nozSvg(kind, c) {
-    if (kind === 'wide') return '<path d="M-.92 1.8Q-.92 1.72 -.84 1.72L.84 1.72Q.92 1.72 .92 1.8L.86 2.1Q.85 2.16 .78 2.16L-.78 2.16Q-.85 2.16 -.86 2.1Z" fill="' + c + '"/>' +
-      '<path d="M-.9 1.72L.9 1.72L.9 1.79L-.9 1.79Z" fill="#fff" fill-opacity=".14"/><path d="M-.05 1.72L.05 1.72L.05 2.16L-.05 2.16Z" fill="#000" fill-opacity=".35"/>' +
-      '<rect x="-.6" y="2.07" width=".5" height=".1" rx=".05" fill="#000" fill-opacity=".55"/><rect x=".1" y="2.07" width=".5" height=".1" rx=".05" fill="#000" fill-opacity=".55"/>';
-    return '<path d="M-.23 1.98L.23 1.98L.3 2.2Q0 2.27 -.3 2.2Z" fill="' + c + '"/><rect x="-.26" y="1.96" width=".52" height=".07" rx=".03" fill="#fff" fill-opacity=".16"/>' +
-      '<ellipse cx="0" cy="2.2" rx=".2" ry=".035" fill="#000" fill-opacity=".5"/>';
+  /* Motor gövdeye gömülüdür: std = kuyruğa açılmış GİRİNTİ (lüle çukurun içinde oturur), wide = gövdenin yanlara taşan ÇIKINTISI (kuyruk genişler, altında iki girinti havalandırma).
+     Gövde rengi kostümden (p.c), girinti rengi lüle renginden (p.n) gelir; Hayalet kostümünde yalnızca çizgi çizilir. */
+  var HULL = {
+    std:  'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L.21 2.05L.21 1.95Q0 1.9 -.21 1.95L-.21 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
+    wide: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.05C.44 1.5 .92 1.4 .94 1.85L.9 2.1Q.89 2.17 .82 2.17L-.82 2.17Q-.89 2.17 -.9 2.1L-.94 1.85C-.92 1.4 -.44 1.5 -.44 1.05L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z'
+  };
+  function hullD(kind) { return HULL[kind] || HULL.std; }
+  function nozSvg(kind, c, sk) {
+    var f = sk ? 'fill="none" stroke="' + sk + '" stroke-width=".06" stroke-linejoin="round"' : 'fill="' + c + '"';
+    if (kind === 'wide') return '<path d="M.11 2.17L.11 2.04Q.11 1.99 .16 1.99L.53 1.99Q.58 1.99 .58 2.04L.58 2.17Z" ' + f + '/><path d="M-.11 2.17L-.11 2.04Q-.11 1.99 -.16 1.99L-.53 1.99Q-.58 1.99 -.58 2.04L-.58 2.17Z" ' + f + '/>' +
+      (sk ? '' : '<path d="M0 1.55L0 2.17" stroke="#000" stroke-opacity=".16" stroke-width=".04" fill="none"/><path d="M.44 1.2C.46 1.45 .8 1.5 .86 1.8M-.44 1.2C-.46 1.45 -.8 1.5 -.86 1.8" stroke="#000" stroke-opacity=".12" stroke-width=".035" fill="none"/>');
+    return '<path d="M-.21 1.95Q0 1.9 .21 1.95L.24 2.1Q0 2.16 -.24 2.1Z" ' + f + '/>' + (sk ? '' : '<ellipse cx="0" cy="2.08" rx=".17" ry=".03" fill="#000" fill-opacity=".5"/>');
   }
   function nzKind() {
     var id = (typeof S !== 'undefined' && S && S.tab === 'f' && root.classList.contains('on')) ? S.eng : (typeof D !== 'undefined' && D ? D.en : 'jet'), e = efind(id);
@@ -1182,9 +1188,9 @@
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flameSet(fx, nzKind()) : '') +
       '<path class="sh-a" d="' + wsvg(curW(), -1) + '" fill="' + p.a + '"' + st + '/>' +
       '<path class="sh-b" d="' + wsvg(curW(), 1) + '" fill="' + p.b + '"' + st + '/>' +
-      '<path class="sh-c" d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z" fill="' + p.c + '"' + st + '/>' +
+      '<path class="sh-c" d="' + hullD(nzKind()) + '" fill="' + p.c + '"' + st + '/>' +
       '<path class="sh-w" d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
-      '<g class="sh-n" data-c="' + p.n + '">' + nozSvg(nzKind(), p.n) + '</g>' +
+      '<g class="sh-n" data-c="' + p.n + '" data-s="' + (p.s || '') + '">' + nozSvg(nzKind(), p.n, p.s) + '</g>' +
       (big || nf ? '' : smallFl(nzKind(), p.f)) +
       '</g></svg>';
   }
@@ -1338,14 +1344,15 @@
     it = S.kp === 'motor' ? (kfind(p, S.ke) || kcur(p)) : kcur(p);
     had = n.getAttribute('data-nv'); if (had === it.id) return;
     n.setAttribute('data-nv', it.id);
-    n.innerHTML = nozSvg(it.nz || 'std', n.getAttribute('data-c') || '#4b4a47');
+    n.innerHTML = nozSvg(it.nz || 'std', n.getAttribute('data-c') || '#4b4a47', n.getAttribute('data-s') || '');
+    var hc = km.querySelector('.sh-c'); if (hc) hc.setAttribute('d', hullD(it.nz || 'std'));
     if (had) { n.style.animation = 'none'; void n.getBBox(); n.style.animation = 'k-sw .45s cubic-bezier(.2,.7,.2,1)'; }
   }
-  function kIco(p, g) {                                         // seçenek kartındaki küçük mekik: kanatta o kanat, motorda lüle ve alev vurgulanır
-    var bd = '<path class="bd" d="M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z"/>', sh = g.sh || WSTD;
-    return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true"><path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/>' + bd +
-      (g.nz === 'wide' ? '<path class="nz" d="M-.92 1.8Q-.92 1.72 -.84 1.72L.84 1.72Q.92 1.72 .92 1.8L.86 2.1Q.85 2.16 .78 2.16L-.78 2.16Q-.85 2.16 -.86 2.1Z"/><path class="fl" transform="translate(-.34 .1) scale(.62 1)" d="M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z"/><path class="fl" transform="translate(.34 .1) scale(.62 1)" d="M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z"/>'
-        : '<path class="nz" d="M-.23 1.98L.23 1.98L.3 2.2Q0 2.27 -.3 2.2Z"/><path class="fl" d="M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z"/>') + '</svg>';
+  function kIco(p, g) {                                         // seçenek kartındaki küçük mekik: kanatta o kanat, motorda gövde girintisi/çıkıntısı ve alev vurgulanır
+    var sh = g.sh || WSTD, k = g.nz || 'std', fl = 'M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z';
+    return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true"><path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/><path class="bd" d="' + hullD(k) + '"/>' +
+      nozSvg(k, '#4b4a47').replace(/<path /g, '<path class="nz" ').replace(/ fill="[^"]*"/g, '').replace(/<ellipse[^>]*>/g, '') +
+      (k === 'wide' ? '<path class="fl" transform="translate(-.34 -.1) scale(.62 1)" d="' + fl + '"/><path class="fl" transform="translate(.34 -.1) scale(.62 1)" d="' + fl + '"/>' : '<path class="fl" transform="translate(0 -.1)" d="' + fl + '"/>') + '</svg>';
   }
   var KIH = 64, KSTEP = KIH + 10, kRaf = 0;
   function kfmt(v) { return v ? (v > 0 ? '+' : '−') + Math.abs(v) + '%' : '—'; }
@@ -4050,10 +4057,16 @@
     /* --- çizim --- */
     function hr(a, b, k) { var n = Math.sin(a * 127.1 + b * 311.7 + k * 74.7) * 43758.5453; return n - Math.floor(n); }
     function rr(a, b, w, h, r) { cx.beginPath(); if (cx.roundRect) cx.roundRect(a, b, w, h, r); else cx.rect(a, b, w, h); }
-    function hullP() {
-      cx.beginPath(); cx.moveTo(0, -2.45); cx.bezierCurveTo(.2, -2.2, .42, -1.4, .44, -.6); cx.lineTo(.44, 1.7);
-      cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(-.26, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
-      cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
+    function hullP() {                                          // gövde: motorun girintisi (std) ya da çıkıntısı (wide) silüetin parçasıdır
+      cx.beginPath(); cx.moveTo(0, -2.45); cx.bezierCurveTo(.2, -2.2, .42, -1.4, .44, -.6);
+      if (engK() === 'wide') {
+        cx.lineTo(.44, 1.05); cx.bezierCurveTo(.44, 1.5, .92, 1.4, .94, 1.85); cx.lineTo(.9, 2.1); cx.quadraticCurveTo(.89, 2.17, .82, 2.17);
+        cx.lineTo(-.82, 2.17); cx.quadraticCurveTo(-.89, 2.17, -.9, 2.1); cx.lineTo(-.94, 1.85); cx.bezierCurveTo(-.92, 1.4, -.44, 1.5, -.44, 1.05);
+      } else {
+        cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.21, 2.05); cx.lineTo(.21, 1.95); cx.quadraticCurveTo(0, 1.9, -.21, 1.95);
+        cx.lineTo(-.21, 2.05); cx.lineTo(-.26, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
+      }
+      cx.lineTo(-.44, engK() === 'wide' ? 1.05 : 1.7); cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
     }
     function wingP(s) {
       var cm = (window.DDShop && DDShop.wing && DDShop.wing()) || [['M', .4, -1.3], ['L', .7, -.45], ['L', 1.25, 1.72], ['Q', 1.3, 1.95, 1.18, 1.95], ['L', .4, 1.95]], i, c;
@@ -4141,20 +4154,19 @@
       cx.globalCompositeOperation = 'source-over';
       if (ign > 0) { cx.fillStyle = 'rgba(' + pal.ig.join(',') + ',' + (.55 * ign).toFixed(3) + ')'; cx.beginPath(); cx.arc(0, y0 + .15, .25 + .55 * (1 - ign), 0, 6.2832); cx.fill(); }   // ateşleme parlaması
     }
-    function nozC(kind, hh, NT) {                               // lüle: dükkandaki nozSvg ile aynı şekil; fillStyle (ısıya göre gövde rengi) dışarıdan gelir
-      var gl = 'rgba(' + NT.join(',') + ',' + (.25 + .6 * hh) + ')';
+    function nozC(kind, hh, NT, gh) {                           // girinti içi: kostümün lüle rengi (ısıya göre), Hayalet'te yalnızca çizgi
+      var gl = 'rgba(' + NT.join(',') + ',' + (.25 + .6 * hh) + ')', base = cx.fillStyle;
+      function vent(sx) { rr(sx > 0 ? .11 : -.58, 1.99, .47, .18, .05); }
       if (kind === 'wide') {
-        cx.beginPath(); cx.moveTo(-.92, 1.8); cx.quadraticCurveTo(-.92, 1.72, -.84, 1.72); cx.lineTo(.84, 1.72); cx.quadraticCurveTo(.92, 1.72, .92, 1.8);
-        cx.lineTo(.86, 2.1); cx.quadraticCurveTo(.85, 2.16, .78, 2.16); cx.lineTo(-.78, 2.16); cx.quadraticCurveTo(-.85, 2.16, -.86, 2.1); cx.closePath(); cx.fill();
-        cx.fillStyle = 'rgba(255,255,255,.14)'; cx.fillRect(-.9, 1.72, 1.8, .07);
-        cx.fillStyle = 'rgba(0,0,0,.35)'; cx.fillRect(-.05, 1.72, .1, .44);
-        cx.fillStyle = 'rgba(0,0,0,.55)'; rr(-.6, 2.07, .5, .1, .05); cx.fill(); rr(.1, 2.07, .5, .1, .05); cx.fill();
-        if (hh > .02) { cx.fillStyle = gl; rr(-.56, 2.09, .42, .06, .03); cx.fill(); rr(.14, 2.09, .42, .06, .03); cx.fill(); }
+        if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; vent(1); cx.stroke(); vent(-1); cx.stroke(); return; }
+        cx.fillStyle = 'rgba(0,0,0,.14)'; cx.fillRect(-.02, 1.55, .04, .62);
+        cx.fillStyle = base; vent(1); cx.fill(); vent(-1); cx.fill();
+        if (hh > .02) { cx.fillStyle = gl; rr(.15, 2.07, .39, .06, .03); cx.fill(); rr(-.54, 2.07, .39, .06, .03); cx.fill(); }
       } else {
-        cx.beginPath(); cx.moveTo(-.23, 1.98); cx.lineTo(.23, 1.98); cx.lineTo(.3, 2.2); cx.quadraticCurveTo(0, 2.27, -.3, 2.2); cx.closePath(); cx.fill();
-        cx.fillStyle = 'rgba(255,255,255,.16)'; rr(-.26, 1.96, .52, .07, .03); cx.fill();
-        cx.fillStyle = 'rgba(0,0,0,.5)'; cx.beginPath(); cx.ellipse(0, 2.2, .2, .035, 0, 0, 6.2832); cx.fill();
-        if (hh > .02) { cx.fillStyle = gl; cx.beginPath(); cx.ellipse(0, 2.2, .15, .022, 0, 0, 6.2832); cx.fill(); }
+        cx.beginPath(); cx.moveTo(-.21, 1.95); cx.quadraticCurveTo(0, 1.9, .21, 1.95); cx.lineTo(.24, 2.1); cx.quadraticCurveTo(0, 2.16, -.24, 2.1); cx.closePath();
+        if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
+        cx.fill(); cx.fillStyle = 'rgba(0,0,0,.5)'; cx.beginPath(); cx.ellipse(0, 2.08, .17, .03, 0, 0, 6.2832); cx.fill();
+        if (hh > .02) { cx.fillStyle = gl; cx.beginPath(); cx.ellipse(0, 2.08, .12, .018, 0, 0, 6.2832); cx.fill(); }
       }
     }
     function ship(sx, sy, ts) {
@@ -4224,6 +4236,7 @@
       cx.save(); hullP(); cx.clip(); cx.fillStyle = 'rgba(0,0,0,.07)';   // gövde gölgesi (ikondaki aynı şekil)
       cx.beginPath(); cx.moveTo(.14, -2.2); cx.bezierCurveTo(.3, -1.9, .44, -1.3, .44, -.6); cx.lineTo(.44, 1.7);
       cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.14, 2.05); cx.closePath(); cx.fill();
+      if (engK() === 'wide') cx.fillRect(.44, 1, .6, 1.3);
       if (heat > .02) {                                         // motor ısınınca kuyruk hafif ısınır
         var HT = (FXd && FXd.ht) || [255, 160, 90]; g = cx.createLinearGradient(0, y0, 0, 1.1); g.addColorStop(0, 'rgba(' + HT.join(',') + ',' + .3 * heat + ')'); g.addColorStop(1, 'rgba(' + HT.join(',') + ',0)');
         cx.fillStyle = g; cx.fillRect(-1, 1.1, 2, 1.2);
@@ -4232,7 +4245,7 @@
       cx.fillStyle = 'rgba(120,114,95,.22)'; rr(-.24, -.55, .48, 2, .1); cx.fill();     // kargo bölümü
       cx.fillStyle = gh ? CR : '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
       var hh = Math.min(1, Math.max(heat * .85, odK));                                                  // nozul: soğukken koyu gri, yanarken turuncuya
-      var NT = (FXd && FXd.ht) || [255, 150, 90]; cx.fillStyle = 'rgb(' + (75 + (NT[0] - 75) * hh | 0) + ',' + (74 + (NT[1] - 74) * hh | 0) + ',' + (71 + (NT[2] - 71) * hh | 0) + ')'; nozC(engK(), hh, NT);
+      var NT = (FXd && FXd.ht) || [255, 150, 90]; cx.fillStyle = 'rgb(' + (75 + (NT[0] - 75) * hh | 0) + ',' + (74 + (NT[1] - 74) * hh | 0) + ',' + (71 + (NT[2] - 71) * hh | 0) + ')'; nozC(engK(), hh, NT, gh);
       if (cpK > .03) {                                           // çarpışma önleyici: çarpacak taraftaki küçük itiş motoru (daha görünür)
         var cpi = cpPort(), cpa = cpi * Math.PI / 4, Lf = (.42 + 1.05 * cpK) * (1 + .12 * Math.sin(t * 90)), wf = .1 + .08 * cpK;
         cx.save(); cx.translate(CPP[cpi][0], CPP[cpi][1]); cx.rotate(cpa); cx.globalCompositeOperation = 'lighter';
