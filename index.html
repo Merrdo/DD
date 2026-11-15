@@ -670,38 +670,71 @@
   #shop .s-is.eq { color:var(--blue); }
   #shop .s-id { margin-top:16px; font-size:15px; line-height:1.6; }
   #shop .s-ih { z-index:3; }
-  /* parçalar: mekik ortada, parçalar etrafında, oklarla yerleri gösterilir */
-  #shop .s-km { flex:1; min-height:0; margin:1vh 10px 0; padding-bottom:calc(env(safe-area-inset-bottom,0px) + 8px); display:flex; }
-  #shop .s-km > svg { width:100%; height:100%; overflow:visible; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent; }
-  #shop .k-sh { animation:k-fl 6s ease-in-out infinite; }
-  @keyframes k-fl { 50% { transform:translateY(-4px); } }
-  #shop .k-p { cursor:pointer; color:rgba(244,242,238,.55); transition:opacity .3s ease; outline:none; }
-  #shop .k-p.on { color:#8cc2ff; }
-  #shop .s-km.op .k-p:not(.on) { opacity:.35; }
-  #shop .k-ln { fill:none; stroke:currentColor; stroke-width:1.2; stroke-linecap:round; pointer-events:none; }
-  #shop .k-ar { fill:currentColor; pointer-events:none; }
-  #shop .k-dt { fill:currentColor; pointer-events:none; }
-  #shop .k-rg { fill:none; stroke:currentColor; stroke-width:1; pointer-events:none; transform-box:fill-box; transform-origin:center; animation:k-pu 2.6s ease-out infinite; }
-  @keyframes k-pu { 0% { transform:scale(.5); opacity:.9; } 100% { transform:scale(2.1); opacity:0; } }
-  #shop .k-bg { fill:rgba(244,242,238,.04); stroke:rgba(244,242,238,.2); stroke-width:1; transition:fill .2s ease, stroke .2s ease; }
-  #shop .k-p:active .k-bg { fill:rgba(244,242,238,.13); }
-  #shop .k-p.on .k-bg { stroke:#8cc2ff; fill:rgba(140,194,255,.08); }
-  #shop .k-c { color:var(--fg); }
-  #shop .k-ico { fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
-  #shop .k-ib { fill:none; stroke:rgba(244,242,238,.35); stroke-width:1; }
-  #shop .k-t1 { fill:#f4f2ee; font-size:11.5px; font-weight:300; letter-spacing:.04em; }
-  #shop .k-t2 { fill:rgba(244,242,238,.46); font-size:10px; font-weight:300; letter-spacing:.04em; }
-  #shop .k-bx { fill:none; stroke:rgba(244,242,238,.4); stroke-width:1; }
-  #shop .k-bx.f { fill:#f4f2ee; stroke:#f4f2ee; }
-  #shop .k-bx.m { fill:#8cc2ff; stroke:#8cc2ff; }
-  #shop .k-hint { fill:rgba(244,242,238,.4); font-size:9.5px; letter-spacing:.24em; text-transform:uppercase; }
-  #shop .s-km.ka .k-c { animation:k-up .5s cubic-bezier(.2,.7,.2,1) both; animation-delay:calc(var(--i) * .1s + .1s); }
-  #shop .s-km.ka .k-ln { stroke-dasharray:1; stroke-dashoffset:1; animation:k-dr .7s cubic-bezier(.3,.6,.3,1) forwards; animation-delay:calc(var(--i) * .1s + .3s); }
-  #shop .s-km.ka .k-ar, #shop .s-km.ka .k-dt, #shop .s-km.ka .k-rg { animation-name:k-fi; animation-duration:.4s; animation-fill-mode:both; animation-delay:calc(var(--i) * .1s + .85s); }
-  #shop .s-km.ka .k-rg { animation:k-fi .4s ease both calc(var(--i) * .1s + .85s), k-pu 2.6s ease-out calc(var(--i) * .1s + 1.3s) infinite; }
-  @keyframes k-up { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  /* parçalar: mekik ortada. Düz köşeli, opak bir çubuk bir kez bükülüp bölgeyi gösterir; seçilen bölgeye sahne hafifçe yakınlaşır */
+  #shop .s-kv { padding:0 14px calc(env(safe-area-inset-bottom,0px) + 12px); }
+  #shop .k-stage { position:relative; flex:1; min-height:0; margin-top:1vh; }
+  #shop .k-svg { position:absolute; inset:0; width:100%; height:100%; display:block; overflow:hidden; -webkit-user-select:none; user-select:none; -webkit-tap-highlight-color:transparent;
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 calc(var(--kt,0) * 10%)); mask-image:linear-gradient(to bottom, transparent 0, #000 calc(var(--kt,0) * 10%)); }
+  #shop .k-pt { --kc:#7d7b76; cursor:pointer; outline:none; }
+  #shop .k-pt.on { --kc:#8cc2ff; }
+  #shop .k-ln { fill:none; stroke:var(--kc); stroke-width:4; stroke-linejoin:miter; stroke-linecap:butt; stroke-miterlimit:10; pointer-events:none; transition:stroke .3s ease; }
+  #shop .k-fr { fill:none; stroke:var(--kc); stroke-width:2; stroke-linejoin:miter; stroke-linecap:butt; pointer-events:none; transition:stroke .3s ease; }
+  #shop .k-pip { fill:var(--kc); pointer-events:none; transition:fill .3s ease; }
+  #shop .k-hit { fill:#000; fill-opacity:0; }
+  #shop .k-lb { --kc:#7d7b76; position:absolute; left:0; top:0; width:124px; height:52px; padding:0 14px; display:flex; flex-direction:column; justify-content:center; gap:5px; background:#0a0a0a; border:2px solid var(--kc); border-radius:0; color:var(--fg); text-align:left; will-change:transform; transition:border-color .3s ease; }
+  #shop .k-lb.on { --kc:#8cc2ff; }
+  #shop .k-l1 { font-size:9.5px; letter-spacing:.3em; text-transform:uppercase; color:var(--dim); line-height:1; }
+  #shop .k-l2 { font-size:14.5px; font-weight:300; letter-spacing:.03em; line-height:1; white-space:nowrap; }
+  #shop .k-pn { position:relative; flex:none; margin-top:8px; background:#0c0c0c; border:1px solid #2b2b29; border-radius:22px; transition:background .3s ease, border-color .3s ease; }
+  #shop .k-in { padding:14px 16px 10px; transition:opacity .3s ease; }
+  #shop .k-pn.idle { background:transparent; border-color:transparent; }
+  #shop .k-pn.idle .k-in { opacity:0; visibility:hidden; }
+  #shop .k-idle { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:10px; letter-spacing:.3em; text-indent:.3em; text-transform:uppercase; color:var(--dim); opacity:0; pointer-events:none; transition:opacity .3s ease; }
+  #shop .k-pn.idle .k-idle { opacity:1; }
+  #shop .k-r1 { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  #shop .k-ov { display:flex; align-items:center; gap:9px; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:var(--soft); }
+  #shop .k-ov i { display:block; width:16px; height:4px; background:var(--blue); }
+  #shop .k-chs { display:flex; gap:6px; }
+  #shop .k-chs .s-ch { padding:6px 12px; display:flex; align-items:center; gap:8px; }
+  #shop .k-chs .s-ch small { font-size:9px; letter-spacing:.16em; text-transform:uppercase; color:var(--blue); }
+  #shop .k-th { display:flex; gap:10px; overflow-x:auto; scrollbar-width:none; padding:12px 2px 2px; touch-action:pan-x; }
+  #shop .k-th::-webkit-scrollbar { display:none; }
+  #shop .k-th > :first-child { margin-left:auto; }
+  #shop .k-th > :last-child { margin-right:auto; }
+  #shop .k-th .s-t { width:62px; height:68px; border-radius:16px; }
+  #shop .k-th .s-t svg.s-sv { height:50px; }
+  #shop .k-r3 { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:12px; }
+  #shop .k-fn { font-size:17px; font-weight:200; letter-spacing:.04em; }
+  #shop .k-fn small { font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-left:6px; vertical-align:middle; }
+  #shop .k-fs { margin-top:5px; min-height:16px; display:flex; align-items:center; gap:5px; font-size:12px; letter-spacing:.08em; color:var(--dim); font-variant-numeric:tabular-nums; }
+  #shop .k-fs.eq { color:var(--blue); }
+  #shop .k-btn { flex:none; min-width:116px; height:42px; padding:0 12px; border:1px solid #4a4946; border-radius:14px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; white-space:nowrap; transition:background .2s ease, opacity .2s ease; }
+  #shop .k-btn:active { background:#262624; }
+  #shop .k-btn.buy { background:var(--fg); border-color:var(--fg); color:#000; }
+  #shop .k-btn.buy:active { opacity:.75; background:var(--fg); }
+  #shop .k-btn.no { border-color:#8a4a32; color:var(--warm); }
+  #shop .k-btn.off { opacity:.4; pointer-events:none; }
+  #shop .k-up { display:flex; align-items:center; gap:12px; margin-top:12px; padding-top:12px; border-top:1px solid #262624; }
+  #shop .k-ui { width:38px; height:38px; flex:none; border:1.3px solid #5a5853; border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--soft); }
+  #shop .k-ui svg { width:19px; height:19px; fill:none; stroke:currentColor; stroke-width:1.3; stroke-linecap:round; stroke-linejoin:round; }
+  #shop .k-ut { flex:1; min-width:0; overflow:hidden; }
+  #shop .k-un { font-size:14px; font-weight:300; letter-spacing:.03em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #shop .k-ue { margin-top:6px; display:flex; align-items:center; gap:9px; font-size:11px; letter-spacing:.05em; color:var(--dim); white-space:nowrap; min-width:0; }
+  #shop .k-ue > span:last-child { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+  #shop .k-ue .s-bx { gap:4px; flex:none; }
+  #shop .k-ue .s-bx i { width:10px; height:10px; border-radius:2px; }
+  #shop .k-hn { min-height:14px; margin-top:8px; font-size:11px; letter-spacing:.04em; text-align:center; color:var(--dim); }
+  #shop .k-stage.ka .k-ss { animation:k-fi .6s ease both; }
+  #shop .k-stage.ka .k-ln { stroke-dasharray:1; stroke-dashoffset:1; animation:k-dr .6s cubic-bezier(.3,.6,.3,1) .35s forwards; }
+  #shop .k-stage.ka .k-fr, #shop .k-stage.ka .k-pip { animation:k-fi .35s ease both .85s; }
+  #shop .k-stage.ka .k-lb { animation:k-fi .4s ease both .25s; }
+  #shop .k-pn.ka { animation:k-up .5s cubic-bezier(.2,.7,.2,1) both .5s; }
+  #shop .k-stage.pop .k-fr { animation:k-pop .55s ease-out; }
+  @keyframes k-up { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
   @keyframes k-dr { to { stroke-dashoffset:0; } }
   @keyframes k-fi { from { opacity:0; } to { opacity:1; } }
+  @keyframes k-pop { 0% { stroke-width:2; } 35% { stroke-width:6; } 100% { stroke-width:2; } }
+  @media (max-height:700px) { #shop .k-th .s-t { width:56px; height:60px; } #shop .k-th .s-t svg.s-sv { height:44px; } #shop .k-ue .s-bx ~ span { display:none; } #shop .k-in { padding:12px 16px 8px; } #shop .k-hn { display:none; } #shop .k-r3, #shop .k-up { margin-top:9px; } #shop .k-up { padding-top:9px; } }
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
@@ -790,7 +823,7 @@
     <div class="s-th"></div>
     <div class="s-bt"><button class="s-ab s-try" data-k="ftry">Dene</button><button class="s-ab" data-k="fact"></button></div>
   </section>
-  <section class="s-v s-kv"><div class="s-km"></div></section>
+  <section class="s-v s-kv"><div class="k-stage"><svg class="k-svg" role="group" aria-label="Mekik parçaları"></svg></div><div class="k-pn idle"><div class="k-in"></div><div class="k-idle">Bir parçaya dokun</div></div></section>
   <section class="s-v s-pv"><div class="s-list"></div></section>
   <div class="s-sh s-ih"><div class="s-sc" data-k="ix"></div><div class="s-sp" role="dialog" aria-modal="true">
     <button class="s-gr" data-k="ix" aria-label="Kapat"></button>
@@ -844,7 +877,7 @@
      dy: şekil dinamiği (L: boy, w: genişlik, m/c: orta/çekirdek boyu, cw: çekirdek eni, am: SVG dalgalanma, tm: SVG hız çarpanı, fa/f: titreme, s/sa: ucun savrulması)
      k: özel katman (vd: spiral iplikçik + yörünge kıvılcımları, au: akan şeritler, io: şok elmasları + yıldırım) */
   var ENGINE = 'jet';
-  var ENG = [ { id:'jet', n:'Standart Jet' } ];
+  var ENG = [ { id:'jet', n:'Standart Jet', tag:'Orijinal' } ];
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
       dy:{ L:1, w:1, m:1, c:1, cw:1, am:1, tm:1, fa:1, f:[57,91,33], s:[19,43], sa:1 },
@@ -1067,41 +1100,132 @@
     }
     q('.s-sh:not(.s-ih)').classList.toggle('on', !!o);
   }
-  var KPART = [
-    { id:'onl',   x:6,   y:72,  s:[118,104], c:[159,104], e:[159,138], e2:[201,138] },
-    { id:'depo',  x:238, y:72,  s:[238,104], c:[200,104], e:[200,181] },
-    { id:'itis',  x:6,   y:298, s:[64,298],  c:[64,252],  e:[127,252], e2:[233,252] },
-    { id:'motor', x:238, y:298, s:[296,298], c:[296,262], e:[194,262] }
+  /* ===== Parçalar =====
+     Mekik ortada durur. Her parça için düz köşeli, opak bir çubuk bir kez bükülüp mekiğin üzerinde o bölgeyi gösterir;
+     parça seçilince sahne hafifçe o bölgeye yakınlaşır. Şimdilik yalnızca Motor var.
+     Yeni parça eklemek: PARTS'a bir satır ekle (rg: mekik üzerindeki bölge [x1,y1,x2,y2], mekik birimleriyle, çizim alanı 40×74;
+     sd: etiketin tarafı 1 sağ / -1 sol; dr: etiket çubuğun altında 1 / üstünde -1) ve paintK'daki panel içeriğini o parçaya göre çiz. */
+  var PARTS = [
+    { id:'motor', n:'Motor', rg:[14.5, 40.5, 25.5, 49.5], sd:1, dr:1 }
   ];
-  var MOTOR_IC = '<path d="M9 3.5h6v5l3.2 6.5H5.8L9 8.5zM8 19c1 1.3 2.4 2 4 2s3-.7 4-2"/>';
-  function paintK(nw) {
-    var cp = (cfind(D.eq) || COST[0]).p, fo = curFx(), ks = !S.kdone, h = '', km = q('.s-km');
-    S.kdone = true;
-    h += '<svg viewBox="0 0 360 440" role="group" aria-label="Mekik parçaları"><g class="k-sh">' +
-      ship(cp, 1, fo, '0 0 40 74').replace('<svg class="s-sv"', '<svg class="s-sv" x="80" y="36" width="200" height="370" overflow="visible"') + '</g>';
-    KPART.forEach(function (p, idx) {
-      var it = p.id === 'motor' ? null : pfind(p.id), nm = it ? it.n : 'Motor', ic = it ? it.ic : MOTOR_IC, sp = nm.indexOf(' '),
-          l1 = it ? (sp > 0 ? nm.slice(0, sp) : nm) : 'Motor', l2 = it ? (sp > 0 ? nm.slice(sp + 1) : '') : (ENG[0] ? ENG[0].n : 'Jet'),
-          dx = p.e[0] - p.c[0], dy = p.e[1] - p.c[1], dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl,
-          bx = p.e[0] - ux * 7, by = p.e[1] - uy * 7, px = -uy * 3.2, py = ux * 3.2, row = '', i, l, mx;
-      if (it) {
-        l = lvl(it); mx = l >= it.max;
-        for (i = 0; i < it.max; i++) row += '<rect class="k-bx' + (i < l ? (mx ? ' m' : ' f') : '') + '" x="' + (42 + i * 12.5) + '" y="46" width="9" height="9" rx="2.5"/>';
-      } else {
-        row = '<circle cx="45" cy="50.5" r="3.2" fill="rgb(' + fo.rgb + ')"/><text class="k-t2" x="53" y="54">' + fo.n + '</text>';
-      }
-      h += '<g class="k-p' + (S.open === p.id ? ' on' : '') + '" data-part="' + p.id + '" style="--i:' + idx + '" role="button" tabindex="0" aria-label="' + nm + '">' +
-        '<path class="k-ln" pathLength="1" d="M' + p.s[0] + ' ' + p.s[1] + 'Q' + p.c[0] + ' ' + p.c[1] + ' ' + bx.toFixed(1) + ' ' + by.toFixed(1) + '"/>' +
-        '<path class="k-ar" d="M' + p.e[0] + ' ' + p.e[1] + 'L' + (bx + px).toFixed(1) + ' ' + (by + py).toFixed(1) + 'L' + (bx - px).toFixed(1) + ' ' + (by - py).toFixed(1) + 'Z"/>' +
-        '<circle class="k-rg" cx="' + p.e[0] + '" cy="' + p.e[1] + '" r="5"/>' +
-        (p.e2 ? '<circle class="k-dt" cx="' + p.e2[0] + '" cy="' + p.e2[1] + '" r="2.2"/><circle class="k-rg" cx="' + p.e2[0] + '" cy="' + p.e2[1] + '" r="5"/>' : '') +
-        '<g transform="translate(' + p.x + ' ' + p.y + ')"><g class="k-c"><rect class="k-bg" width="116" height="64" rx="18"/>' +
-        '<circle class="k-ib" cx="22" cy="32" r="14"/><svg x="10" y="20" width="24" height="24" viewBox="0 0 24 24" class="k-ico">' + ic + '</svg>' +
-        '<text class="k-t1" x="42" y="' + (l2 ? 25 : 31) + '">' + l1 + '</text>' + (l2 ? '<text class="k-t' + (it ? '1' : '2') + '" x="42" y="38">' + l2 + '</text>' : '') + row + '</g></g></g>';
+  var KV = { W:0, H:0, t:0, to:0, raf:0, timer:0, done:0, built:false, els:{}, key:'', zp:PARTS[0], sv:null };
+  var LW = 124, LH = 52;
+  function engOf(id) { for (var i = 0; i < ENG.length; i++) if (ENG[i].id === id) return ENG[i]; return ENG[0]; }
+  function kBuild() {
+    var st = q('.k-stage'), svg = q('.k-svg'), h = '<g class="k-sg"><g class="k-ss"></g></g>', lb = '';
+    PARTS.forEach(function (p) {
+      h += '<g class="k-pt" data-part="' + p.id + '"><path class="k-ln" pathLength="1"/><path class="k-fr"/><rect class="k-pip" width="9" height="9"/><rect class="k-hit" data-part="' + p.id + '"/></g>';
+      lb += '<button class="k-lb" data-part="' + p.id + '" aria-pressed="false"><span class="k-l1">' + p.n + '</span><span class="k-l2"></span></button>';
     });
-    h += '<text class="k-hint" x="180" y="432" text-anchor="middle">Bir parçaya dokun</text></svg>';
-    km.className = 's-km' + (ks ? ' ka' : '') + (S.open ? ' op' : ''); km.innerHTML = h;
-    paintSheet(nw);
+    svg.innerHTML = h; st.insertAdjacentHTML('beforeend', lb);
+    KV.svg = svg; KV.sg = svg.querySelector('.k-sg'); KV.ss = svg.querySelector('.k-ss');
+    PARTS.forEach(function (p) {
+      var g = svg.querySelector('.k-pt[data-part="' + p.id + '"]'), l = st.querySelector('.k-lb[data-part="' + p.id + '"]');
+      KV.els[p.id] = { g:g, ln:g.querySelector('.k-ln'), fr:g.querySelector('.k-fr'), pip:g.querySelector('.k-pip'), hit:g.querySelector('.k-hit'), lb:l, l2:l.querySelector('.k-l2') };
+    });
+    if (window.ResizeObserver) new ResizeObserver(function () { kMeasure(); kGeom(KV.t); }).observe(st); else window.addEventListener('resize', function () { kMeasure(); kGeom(KV.t); });
+    KV.built = true;
+  }
+  function kMeasure() { var st = q('.k-stage'); KV.W = st.clientWidth; KV.H = st.clientHeight; }
+  function kn(v) { return v.toFixed(1); }
+  /* t: 0 = bütün mekik, 1 = seçili bölgeye yakın. Çubuk ve çerçeve ekran koordinatında hesaplanır; yakınlaşırken bölgeyi izler. */
+  function kGeom(t) {
+    var W = KV.W, H = KV.H; if (!W || !H || !KV.built) return;
+    var u = Math.min(H * .9 / 74, W * .5 / 40), ox = W / 2 - 20 * u, oy = (H - 74 * u) / 2,
+        rg = KV.zp.rg, ex = (rg[0] + rg[2]) / 2, ey = (rg[1] + rg[3]) / 2, ax = ox + ex * u, ay = oy + ey * u,
+        zm = 1.25, fx = W / 2, fy = Math.min(ay, H * .97 - (76 - ey) * u * zm),     // yerinde hafifçe büyür; alev altta taşmasın diye gerekirse biraz yukarı kayar
+        zt = 1 + (zm - 1) * t, cx = ax + (fx - ax) * t, cy = ay + (fy - ay) * t, tx = cx - ax * zt, ty = cy - ay * zt;
+    KV.sg.setAttribute('transform', 'translate(' + tx.toFixed(2) + ' ' + ty.toFixed(2) + ') scale(' + zt.toFixed(4) + ')');
+    KV.svg.style.setProperty('--kt', t.toFixed(3));
+    if (KV.sv) { KV.sv.setAttribute('x', ox.toFixed(2)); KV.sv.setAttribute('y', oy.toFixed(2)); KV.sv.setAttribute('width', (40 * u).toFixed(2)); KV.sv.setAttribute('height', (74 * u).toFixed(2)); }
+    PARTS.forEach(function (p) {
+      var e = KV.els[p.id], r = p.rg, s = p.sd, d = p.dr,
+          x1 = tx + (ox + r[0] * u) * zt, y1 = ty + (oy + r[1] * u) * zt, x2 = tx + (ox + r[2] * u) * zt, y2 = ty + (oy + r[3] * u) * zt,
+          by = (y1 + y2) / 2, l = Math.min(x2 - x1, y2 - y1) * .26, ex1 = s > 0 ? x2 : x1,
+          lx = s > 0 ? W - LW - 6 : 6, ly = Math.max(2, Math.min(H - LH - 2, d > 0 ? by + 30 : by - 30 - LH)),
+          bx = s > 0 ? lx + 20 : lx + LW - 20, sy = d > 0 ? ly + 1 : ly + LH - 1;
+      e.ln.setAttribute('d', 'M' + kn(bx) + ' ' + kn(sy) + 'V' + kn(by) + 'H' + kn(ex1));
+      e.fr.setAttribute('d', 'M' + kn(x1) + ' ' + kn(y1 + l) + 'V' + kn(y1) + 'H' + kn(x1 + l) + 'M' + kn(x2 - l) + ' ' + kn(y1) + 'H' + kn(x2) + 'V' + kn(y1 + l) +
+        'M' + kn(x2) + ' ' + kn(y2 - l) + 'V' + kn(y2) + 'H' + kn(x2 - l) + 'M' + kn(x1 + l) + ' ' + kn(y2) + 'H' + kn(x1) + 'V' + kn(y2 - l));
+      e.pip.setAttribute('x', kn(ex1 - 4.5)); e.pip.setAttribute('y', kn(by - 4.5));
+      e.hit.setAttribute('x', kn(x1)); e.hit.setAttribute('y', kn(y1)); e.hit.setAttribute('width', kn(x2 - x1)); e.hit.setAttribute('height', kn(y2 - y1));
+      e.lb.style.transform = 'translate(' + kn(lx) + 'px,' + kn(ly) + 'px)';
+    });
+  }
+  function kGo(to, instant) {
+    cancelAnimationFrame(KV.raf); KV.to = to;
+    var from = KV.t, t0 = 0, dur = 850;
+    if (instant || from === to || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { KV.t = to; kGeom(to); return; }
+    function step(now) {
+      if (!t0) t0 = now;
+      var p = Math.min(1, (now - t0) / dur), e = p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      KV.t = from + (to - from) * e; kGeom(KV.t);
+      if (p < 1) KV.raf = requestAnimationFrame(step);
+    }
+    KV.raf = requestAnimationFrame(step);
+  }
+  function kAct(b, st, html) { b.className = 'k-btn' + (st ? ' ' + st : ''); b.innerHTML = html; }
+  function kBuyAct(b, price, label) { if (bal() >= price) kAct(b, 'buy', label + ' ' + STAR + fmt(price)); else kAct(b, 'no', label + ' ' + STAR + fmt(price)); }
+  function paintK(nw) {
+    if (!KV.built) kBuild();
+    var st = q('.k-stage'), pn = q('.k-pn'), fresh = !S.kdone, list, it, own, eq, cp, key, h, i, cur;
+    S.kdone = true;
+    if (fresh) {                                                 // sekmeye girişte: Motor seçili, orijinal motor ve kuşanılan alev açık
+      S.ksel = PARTS[0].id; S.eng = ENGINE; cur = ffind(D.fx[ENGINE]); if (cur) S.fsel = cur.id; S.fshown = '';
+      cancelAnimationFrame(KV.raf); clearTimeout(KV.timer); clearTimeout(KV.done); KV.t = 0; KV.to = 0;
+    }
+    kMeasure();
+    list = flist(); it = ffind(S.fsel); if (!it || it.eng !== S.eng) { it = list[0]; S.fsel = it.id; }
+    own = fown(it); eq = D.fx[S.eng] === it.id; cp = (cfind(D.eq) || COST[0]).p;
+    key = D.eq + '|' + it.id + '|' + (D.lv.itis | 0);
+    if (KV.key !== key) {                                        // mekik yalnızca kostüm / alev / seviye değişince yeniden çizilir
+      KV.key = key; KV.ss.innerHTML = ship(cp, 1, it, '0 0 40 74').replace('<svg class="s-sv"', '<svg class="s-sv" overflow="visible"'); KV.sv = KV.ss.firstChild;
+    }
+    PARTS.forEach(function (p) {
+      var e = KV.els[p.id], on = S.ksel === p.id;
+      e.g.classList.toggle('on', on); e.lb.classList.toggle('on', on); e.lb.setAttribute('aria-pressed', on ? 'true' : 'false');
+      e.l2.textContent = p.id === 'motor' ? engOf(S.eng).n : '';
+      if (on) KV.zp = p;
+    });
+    pn.classList.toggle('idle', !S.ksel);
+    /* panel: motor seçenekleri, alevler, geliştirme */
+    var pu = pfind('itis'), pl = lvl(pu), chips = '', th = '';
+    for (i = 0; i < ENG.length; i++) chips += '<button class="s-ch' + (ENG[i].id === S.eng ? ' on' : '') + '" data-e="' + ENG[i].id + '">' + ENG[i].n + (ENG[i].tag ? '<small>' + ENG[i].tag + '</small>' : '') + '</button>';
+    list.forEach(function (f) {
+      var o = fown(f);
+      th += '<button class="s-t s-ft' + (f.id === it.id ? ' sel' : '') + (o ? '' : ' lk') + '" data-fid="' + f.id + '" aria-label="' + f.n + '">' + ship(cp, 1, f, '0 24 40 50') + (D.fx[S.eng] === f.id ? '<i class="s-eqd"></i>' : o ? '' : LOCK) + '</button>';
+    });
+    h = '<div class="k-r1"><span class="k-ov"><i></i>Motor</span><div class="k-chs">' + chips + '</div></div>' +
+      '<div class="k-th">' + th + '</div>' +
+      '<div class="k-r3"><div><div class="k-fn">' + it.n + (it.tag ? '<small>' + it.tag + '</small>' : '') + '</div><div class="k-fs' + (eq ? ' eq' : '') + '">' + (eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price)) + '</div></div><button data-k="kact"></button></div>' +
+      '<div class="k-up"><div class="k-ui"><svg viewBox="0 0 24 24">' + pu.ic + '</svg></div><div class="k-ut"><div class="k-un">' + pu.n + '</div><div class="k-ue">' + boxes(pu, nw === pu.id) + '<span>' + fx(pu, pl) + '</span></div></div><button data-k="kup"></button></div>' +
+      '<p class="k-hn"></p>';
+    pn.querySelector('.k-in').innerHTML = h;
+    var ba = pn.querySelector('[data-k=kact]'), bu = pn.querySelector('[data-k=kup]');
+    if (eq) kAct(ba, 'off', 'Kuşanıldı'); else if (own) kAct(ba, '', 'Kuşan'); else kBuyAct(ba, it.price, 'Satın al');
+    if (pl >= pu.max) kAct(bu, 'off', 'Tamamlandı'); else kBuyAct(bu, cost(pu), pl ? 'Yükselt' : 'Satın al');
+    pn.querySelector('.k-hn').textContent = (!own && bal() < it.price) || (pl < pu.max && bal() < cost(pu)) ? HINT : '';
+    if (fresh) {
+      st.classList.remove('ka'); pn.classList.remove('ka'); void st.offsetWidth; st.classList.add('ka'); pn.classList.add('ka');
+      kGeom(0);
+      KV.timer = setTimeout(function () { if (S.tab === 'k' && S.ksel && KV.to !== 1) kGo(1); }, 1050);   // çubuk çizildikten sonra bölgeye yakınlaş
+      KV.done = setTimeout(function () { st.classList.remove('ka'); pn.classList.remove('ka'); }, 2000);
+    } else {
+      var to = S.ksel ? 1 : 0; if (KV.to !== to) { clearTimeout(KV.timer); kGo(to); } else kGeom(KV.t);
+    }
+  }
+  function kToggle(id) { S.ksel = S.ksel === id ? '' : id; paint(); }
+  function kPop(k) { var st = q('.k-stage'); st.classList.remove('pop'); void st.offsetWidth; st.classList.add('pop'); if (API.onBuy) API.onBuy(k); }
+  function kDoAct() {                                            // seçili alevi kuşan / satın al
+    var it = ffind(S.fsel), nw = false; if (!it || D.fx[it.eng] === it.id) return;
+    if (fown(it)) D.fx[it.eng] = it.id;
+    else if (bal() >= it.price) { if (!dev()) D.coins -= it.price; D.fxo[it.id] = 1; D.fx[it.eng] = it.id; nw = true; }
+    else return;
+    save(); paint(); changed(); if (nw) kPop('c');
+  }
+  function kDoUp() {                                             // motor desteğini yükselt
+    var it = pfind('itis'), l = lvl(it), c = cost(it); if (l >= it.max || bal() < c) return;
+    if (!dev()) D.coins -= c; D.lv.itis = l + 1; save(); paint(it.id); changed(); kPop('p');
   }
   function qf(x) { return root.querySelector('.s-fv ' + x); }
   function paintF() {
@@ -1139,7 +1263,7 @@
     u.style.width = b.offsetWidth + 'px'; u.style.transform = 'translateX(' + b.offsetLeft + 'px)';
   }
   function setTab(t) {
-    S.tab = t; S.open = ''; S.kdone = false; q('.s-ih').classList.remove('on');
+    S.tab = t; S.open = ''; S.kdone = false; clearTimeout(KV.timer); clearTimeout(KV.done); q('.s-ih').classList.remove('on');
     var bs = root.querySelectorAll('.s-tabs button');
     for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-t') === t ? 'on' : '';
     tabBar();
@@ -1234,7 +1358,9 @@
       v.classList.remove('in'); void v.offsetWidth; v.classList.add('in');
       return;
     }
-    if ((b = t.closest('.k-p'))) { var kid = b.getAttribute('data-part'); if (kid === 'motor') q('.s-tabs button[data-t=f]').click(); else { S.open = kid; paint(); } return; }
+    if ((b = t.closest('[data-part]'))) { kToggle(b.getAttribute('data-part')); return; }
+    if (t.closest('[data-k=kact]')) return kDoAct();
+    if (t.closest('[data-k=kup]')) return kDoUp();
     if ((b = t.closest('.s-ft'))) { fpick(b.getAttribute('data-fid')); return; }
     if ((b = t.closest('.s-ch'))) { S.eng = b.getAttribute('data-e'); S.fshown = ''; paint(); return; }
     if (t.closest('[data-k=ftry]')) { if (API.onPreview) API.onPreview('fx:' + S.fsel); return; }
