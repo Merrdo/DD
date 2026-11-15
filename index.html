@@ -695,7 +695,7 @@
   ];
   var POW = [
     { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
-    { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:9, f:'+#% yardım gücü', d:'Motora kısa süreli yardım: ilk kalkışta ve hızlıyken ters yöne itişle yapılan ani frenlerde devreye girer. Hız oturunca ya da normal uçuşta çalışmaz. O anlarda alev de büyür, yakıt biraz fazla yanar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' },
+    { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:9, f:'+#% yardım gücü', d:'Motora kısa süreli yardım: ilk kalkışta ve hızlıyken ters yöne itişle yapılan ani frenlerde devreye girer. Hız oturunca ya da normal uçuşta çalışmaz. O anlarda alev de büyür, ama yakıt ekstra harcanmaz.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' },
     // (ayrıntılı açıklama) Otomatik çalışır. Gittiğin yolda bir engele çarpacağını fark ettiğinde yan iticiler kendiliğinden basınçlı gaz püskürtür, hızını keser ve seni engelin önünde durdurur; devredeyken üstte önleyici simgesi yanar. Süzülen ve salınan kayalardan ise yan iticilerle yoldan kaçmaya çalışır; kayanın hızı ve mesafesi yetmezse kurtulamayabilirsin. Seviye arttıkça itiş gücü artar. Jet açıkken, kara deliğe, dönen çubuğa ve lazere karşı çalışmaz; çok hızlıyken ve engeli geç fark edersen yine çarparsın.
     { id:'onl', n:'Çarpışma önleyici', base:250, max:5, s:33, f:'+#% fren gücü', d:'Otomatik çalışır. Bir engele çarpmak üzereyken çarpacağın taraftaki küçük yan iticiler kendiliğinden basınçlı gaz püskürtür ve o yöndeki hızını keser. Süzülen kayalara karşı yan iticilerle yoldan çekilmeye çalışır. Yeterince erken fark edersen çarpışmayı önler.', ic:'<circle cx="16" cy="13" r="4.4"/><path d="M5 21C2.5 15 4.5 8.5 10.5 4.5"/><path d="M6.6 4.6l4.2-.4-.8 4.2"/>' }
   ];
@@ -2706,7 +2706,7 @@
       // enerji: yalnızca jet harcar (basılı kaldıkça artan hızda); joystick yardımı sınırsız; dinlenince dolar
       if (th > 0.05) burn += dt; else burn = Math.max(0, burn - dt * 2);
       var using = th > 0.05;
-      var drain = th * 0.17 * (1 + .25 * (tfk - 1)) * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
+      var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
       if (using) { idleT = 0; en -= drain * dt; } else { idleT += dt; if (idleT > 0.7) en = Math.min(1, en + 0.08 * dt); }
       if (en <= 0) { en = 0; if (!lock) { lock = true; if (typeof playNope === 'function') playNope(); } }
       if (lock && en > 0.25) lock = false;
