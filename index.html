@@ -519,7 +519,7 @@
   #shop .s-nm { font-size:26px; font-weight:200; letter-spacing:.04em; }
   #shop .s-stt { margin-top:8px; min-height:18px; display:flex; align-items:center; justify-content:center; gap:5px; font-size:13px; letter-spacing:.08em; color:var(--dim); font-variant-numeric:tabular-nums; }
   #shop .s-stt.eq { color:var(--blue); }
-  #shop .s-ds { margin:10px auto 0; max-width:30ch; min-height:42px; font-size:14px; line-height:1.5; color:var(--soft); }
+  #shop .s-ds { display:none; margin:10px auto 0; max-width:30ch; min-height:42px; font-size:14px; line-height:1.5; color:var(--soft); }
   #shop .s-hn { min-height:16px; margin-top:6px; font-size:12px; letter-spacing:.04em; text-align:center; color:var(--dim); }
   #shop .s-th { display:flex; gap:12px; overflow-x:auto; scrollbar-width:none; padding:12px 2px 4px; touch-action:pan-x; }
   #shop .s-th::-webkit-scrollbar { display:none; }
@@ -566,12 +566,6 @@
   #shop .s-fhero .s-ship { top:2%; bottom:0; }
   #shop .s-fship.s-fxin svg { animation:s-fxin .38s ease both; }
   @keyframes s-fxin { from { opacity:0; } to { opacity:1; } }
-  #shop .s-pw { transform-box:fill-box; transform-origin:50% 0; transition:transform .5s cubic-bezier(.22,.61,.36,1); }
-  #shop .s-fship[data-pw="0"] .s-pw { transform:scale(.66,.45); }
-  #shop .s-fship[data-pw="2"] .s-pw { transform:scale(1.1,1.16); }
-  #shop .s-pwr { position:absolute; z-index:2; right:0; top:2%; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
-  #shop .s-pwr button { padding:7px 12px; border:1px solid transparent; border-radius:14px; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--dim); transition:color .2s ease, background .2s ease, border-color .2s ease; }
-  #shop .s-pwr button.on { color:var(--fg); border-color:var(--line); background:rgba(244,242,238,.06); }
   #shop .s-fv .s-nm small { font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--dim); margin-left:6px; vertical-align:middle; }
   #shop .s-fv .s-ds { min-height:63px; max-width:34ch; }
   @media (max-height:700px) { #shop .s-fv .s-ds { min-height:54px; font-size:13px; line-height:1.4; } #shop .s-fv .s-t { height:72px; } #shop .s-fv .s-t svg.s-sv { height:52px; } #shop .s-fv .s-nm { font-size:23px; } #shop .s-fv .s-hn { margin-top:2px; } }
@@ -613,6 +607,14 @@
   #shop .s-fx small { display:block; font-size:11px; letter-spacing:.06em; color:var(--dim); }
   #shop .s-fx b { display:block; margin-top:5px; font-size:15px; font-weight:300; }
   #shop .s-sh .s-ab { margin-top:16px; }
+  #shop .s-nmr { display:flex; align-items:center; justify-content:center; gap:10px; }
+  #shop .s-i { width:24px; height:24px; flex:none; border:1px solid rgba(244,242,238,.3); border-radius:50%; font:italic 300 13px/22px Georgia,serif; color:var(--soft); text-align:center; transition:background .2s ease; }
+  #shop .s-i:active { background:rgba(244,242,238,.14); }
+  #shop .s-in { font-size:22px; font-weight:300; letter-spacing:.03em; margin-top:4px; }
+  #shop .s-is { margin-top:8px; font-size:12px; letter-spacing:.08em; color:var(--dim); }
+  #shop .s-is.eq { color:var(--blue); }
+  #shop .s-id { margin-top:16px; font-size:15px; line-height:1.6; }
+  #shop .s-ih { z-index:3; }
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
 </style>
@@ -687,7 +689,7 @@
   <nav class="s-tabs"><button class="on" data-t="c">Kostümler</button><button data-t="f">Efektler</button><button data-t="p">Güçlendirmeler</button><b></b></nav>
   <section class="s-v s-cv">
     <div class="s-hero"><div class="s-ship"></div></div>
-    <div class="s-info"><div class="s-nm"></div><div class="s-stt"></div><p class="s-ds"></p></div>
+    <div class="s-info"><div class="s-nmr"><div class="s-nm"></div><button class="s-i" data-k="info" aria-label="Açıklama">i</button></div><div class="s-stt"></div><p class="s-ds"></p></div>
     <p class="s-hn"></p>
     <div class="s-th"></div>
     <div class="s-bt"><button class="s-ab s-try" data-k="try">Dene</button><button class="s-ab" data-k="act"></button></div>
@@ -695,14 +697,17 @@
   <section class="s-v s-fv">
     <div class="s-hero s-fhero"><i class="s-fgl"></i><div class="s-ship s-fship"></div>
       <div class="s-eg"><span>Motor</span><div class="s-ec"></div></div>
-      <div class="s-pwr"><button data-p="0">Rölanti</button><button data-p="1" class="on">Seyir</button><button data-p="2">Tam güç</button></div>
     </div>
-    <div class="s-info"><div class="s-nm"></div><div class="s-stt"></div><p class="s-ds"></p></div>
+    <div class="s-info"><div class="s-nmr"><div class="s-nm"></div><button class="s-i" data-k="info" aria-label="Açıklama">i</button></div><div class="s-stt"></div><p class="s-ds"></p></div>
     <p class="s-hn"></p>
     <div class="s-th"></div>
     <div class="s-bt"><button class="s-ab s-try" data-k="ftry">Dene</button><button class="s-ab" data-k="fact"></button></div>
   </section>
   <section class="s-v s-pv"><div class="s-list"></div></section>
+  <div class="s-sh s-ih"><div class="s-sc" data-k="ix"></div><div class="s-sp" role="dialog" aria-modal="true">
+    <button class="s-gr" data-k="ix" aria-label="Kapat"></button>
+    <div class="s-in"></div><div class="s-is"></div><p class="s-sd s-id"></p>
+  </div></div>
   <div class="s-sh"><div class="s-sc" data-k="x"></div><div class="s-sp" role="dialog" aria-modal="true">
     <button class="s-gr" data-k="x" aria-label="Kapat"></button>
     <div class="s-tp"><div class="s-ic"></div><div><div class="s-sn"></div><div class="s-sl"></div></div></div>
@@ -755,7 +760,7 @@
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
       dy:{ L:1, w:1, m:1, c:1, cw:1, am:1, tm:1, fa:1, f:[57,91,33], s:[19,43], sa:1 },
-      sk:[[255,235,205],[255,150,80]],
+      sk:[[255,235,205],[255,150,80]], ht:[255,150,90],
       d:'Mekiğin ilk günden beri yanan alevi: turuncu kor, sarı gövde, beyaz çekirdek.' },
     { id:'karanlik', eng:'jet', n:'Karanlık Madde', price:0, rgb:'170,100,255', k:'vd',
       dy:{ L:1.02, w:1.12, m:1, c:.95, cw:1, am:.9, tm:1.6, fa:.7, f:[21,37,13], s:[7,15], sa:1.1 },
@@ -765,7 +770,7 @@
             m:[[0,246,222,255,.7,.98],[.45,212,125,255,.45,.72],[1,150,60,230,0,0]],
             c:[[0,255,255,255,1,1],[.5,238,218,255,.6,.85],[1,205,175,255,0,0]],
             tc:[215,185,255], bo:[[225,190,255],[160,110,255]], ig:[255,235,255] },
-      sk:[[240,208,255],[150,72,232]],
+      sk:[[240,208,255],[150,72,232]], ht:[200,120,255],
       d:'Işığı yutan mor plazma. İçinde iplikçikler döner, çevresinde kıvılcımlar yörüngeye kapılır.' },
     { id:'kuzey', eng:'jet', n:'Kuzey Işığı', price:0, rgb:'90,255,170', k:'au',
       dy:{ L:1.14, w:1.22, m:1.04, c:.9, cw:1.15, am:.8, tm:2, fa:.5, f:[13,23,9], s:[5,11], sa:1.7 },
@@ -774,7 +779,7 @@
             m:[[0,236,255,218,.7,.98],[.45,165,255,150,.45,.72],[1,55,225,145,0,0]],
             c:[[0,255,255,255,1,1],[.5,218,255,236,.6,.85],[1,165,255,222,0,0]],
             tc:[190,255,225], bo:[[200,255,230],[120,255,200]], ig:[235,255,240] },
-      sk:[[215,255,225],[40,200,150]],
+      sk:[[215,255,225],[40,200,150]], ht:[110,255,180],
       d:'Yanmaz, akar: zümrüt şeritler birbirine dolanır, kuyruğunda nane yeşili ışıltılar süzülür.' },
     { id:'ion', eng:'jet', n:'İyon Fırtınası', price:0, rgb:'90,160,255', k:'io',
       dy:{ L:1.1, w:.8, m:1.1, c:1.25, cw:.85, am:1.1, tm:.45, fa:1.2, f:[83,131,61], s:[41,97], sa:.5 },
@@ -783,7 +788,7 @@
             m:[[0,228,246,255,.72,.98],[.45,122,202,255,.5,.76],[1,60,130,255,0,0]],
             c:[[0,255,255,255,1,1],[.5,232,246,255,.65,.88],[1,190,225,255,0,0]],
             tc:[190,225,255], bo:[[225,242,255],[150,200,255]], ig:[240,250,255] },
-      sk:[[235,248,255],[70,150,255]],
+      sk:[[235,248,255],[70,150,255]], ht:[110,180,255],
       d:'İnce ve uzun bir plazma ışını. Çekirdekte şok elmasları dizilir, yanlardan yıldırım çatırdar.' }
   ];
 
@@ -841,14 +846,14 @@
     } else if (k === 'io') {
       for (i = 0; i < 4; i++) {                                     // şok elmasları
         var cy = y0 + Lm * (.2 + .2 * i), hl = .2 * (1 - .16 * i), hw = wm * .95 * (1 - .13 * i);
-        h += '<path d="M0 ' + f(cy - hl) + 'L' + f(hw) + ' ' + f(cy) + 'L0 ' + f(cy + hl) + 'L' + f(-hw) + ' ' + f(cy) + 'Z" fill="rgb(236,248,255)" opacity=".7"><animate attributeName="opacity" dur="' + (.15 + .035 * i).toFixed(3) + 's" repeatCount="indefinite" values=".85;.3;.75;.45;.85"/></path>';
+        h += '<path d="M0 ' + f(cy - hl) + 'L' + f(hw) + ' ' + f(cy) + 'L0 ' + f(cy + hl) + 'L' + f(-hw) + ' ' + f(cy) + 'Z" fill="rgb(236,248,255)" opacity=".5"><animate attributeName="opacity" dur="' + (.15 + .035 * i).toFixed(3) + 's" repeatCount="indefinite" values=".6;.2;.55;.3;.6"/></path>';
       }
       for (i = 0; i < 3; i++) {                                     // çatırdayan yıldırımlar
         q = i % 2 ? 1 : -1; vs = [];
-        for (j = 0; j < 4; j++) { d = 'M' + f(q * .1) + ' ' + f(y0 + .1); for (u = 1; u <= 5; u++) d += 'L' + f(q * (.1 + u * .17 + (hh(i * 7 + j, u) - .5) * .18)) + ' ' + f(y0 + .1 + u * .12 + (hh(i * 7 + j, u + 9) - .5) * .16); vs.push(d); }
+        for (j = 0; j < 4; j++) { d = 'M' + f(q * .1) + ' ' + f(y0 + .1); for (u = 1; u <= 5; u++) d += 'L' + f(q * (.1 + u * .11 + (hh(i * 7 + j, u) - .5) * .12)) + ' ' + f(y0 + .1 + u * .12 + (hh(i * 7 + j, u + 9) - .5) * .16); vs.push(d); }
         d = (.8 + i * .17).toFixed(2); ph = '-' + (i * .31).toFixed(2) + 's';
-        h += '<path d="' + vs[0] + '" fill="none" stroke="rgb(205,236,255)" stroke-width=".035" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="d" dur="' + d + 's" begin="' + ph + '" repeatCount="indefinite" calcMode="discrete" values="' + vs.join(';') + '"/>' +
-             '<animate attributeName="opacity" dur="' + d + 's" begin="' + ph + '" repeatCount="indefinite" calcMode="discrete" values="0;.95;0;.8;0;0;.9;0"/></path>';
+        h += '<path d="' + vs[0] + '" fill="none" stroke="rgb(205,236,255)" stroke-width=".022" stroke-linecap="round" stroke-linejoin="round" opacity="0"><animate attributeName="d" dur="' + d + 's" begin="' + ph + '" repeatCount="indefinite" calcMode="discrete" values="' + vs.join(';') + '"/>' +
+             '<animate attributeName="opacity" dur="' + d + 's" begin="' + ph + '" repeatCount="indefinite" calcMode="discrete" values="0;.55;0;.4;0;0;0;0;.5;0;0;0"/></path>';
       }
     }
     return h;
@@ -969,7 +974,7 @@
       buyAct(q('[data-k=sact]'), l >= o.max ? 'max' : '', cost(o), l ? 'Yükselt' : 'Satın al');
       q('.s-hp').textContent = l < o.max && bal() < cost(o) ? HINT : '';
     }
-    q('.s-sh').classList.toggle('on', !!o);
+    q('.s-sh:not(.s-ih)').classList.toggle('on', !!o);
   }
   function qf(x) { return root.querySelector('.s-fv ' + x); }
   function paintF() {
@@ -985,8 +990,6 @@
       fs.classList.remove('s-fxin'); void fs.offsetWidth; fs.classList.add('s-fxin');
       qf('.s-fhero').style.setProperty('--fc', it.rgb);
     }
-    fs.setAttribute('data-pw', S.pw);
-    var pb = root.querySelectorAll('.s-pwr button'); for (i = 0; i < pb.length; i++) pb[i].className = +pb[i].getAttribute('data-p') === S.pw ? 'on' : '';
     qf('.s-nm').innerHTML = it.n + (it.tag ? '<small>' + it.tag + '</small>' : ''); qf('.s-ds').textContent = it.d;
     st.className = 's-stt' + (eq ? ' eq' : ''); st.innerHTML = eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price);
     list.forEach(function (f) {
@@ -1009,7 +1012,7 @@
     u.style.width = b.offsetWidth + 'px'; u.style.transform = 'translateX(' + b.offsetLeft + 'px)';
   }
   function setTab(t) {
-    S.tab = t; S.open = '';
+    S.tab = t; S.open = ''; q('.s-ih').classList.remove('on');
     var bs = root.querySelectorAll('.s-tabs button');
     for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute('data-t') === t ? 'on' : '';
     tabBar();
@@ -1081,9 +1084,20 @@
   }
   function swipe(d) { var n = COST.length; if (n > 1) pick(COST[(cidx() + d + n) % n].id, d); else pick(S.sel, 0); }
 
+  function infoOpen(on) {
+    var ih = q('.s-ih'), f = S.tab === 'f', it = f ? ffind(S.fsel) : cfind(S.sel), own, eq;
+    if (on && it) {
+      own = f ? fown(it) : D.owned[it.id]; eq = f ? D.fx[S.eng] === it.id : D.eq === it.id;
+      q('.s-in').textContent = it.n; q('.s-id').textContent = it.d;
+      var st = q('.s-is'); st.className = 's-is' + (eq ? ' eq' : ''); st.innerHTML = eq ? 'Kuşanıldı' : own ? 'Sahipsin' : STAR + fmt(it.price);
+    }
+    ih.classList.toggle('on', !!on && !!it);
+  }
   root.addEventListener('click', function (e) {
     var t = e.target, b;
     if (t.closest('[data-k=back]')) return API.onBack();
+    if (t.closest('[data-k=info]')) return infoOpen(true);
+    if (t.closest('[data-k=ix]')) return infoOpen(false);
     if ((b = t.closest('.s-tabs button'))) {
       if (b.getAttribute('data-t') === S.tab) return;
       var nt = b.getAttribute('data-t'), ord = { c:0, f:1, p:2 }, pt = S.tab;
@@ -1095,7 +1109,6 @@
     }
     if ((b = t.closest('.s-ft'))) { fpick(b.getAttribute('data-fid')); return; }
     if ((b = t.closest('.s-ch'))) { S.eng = b.getAttribute('data-e'); S.fshown = ''; paint(); return; }
-    if ((b = t.closest('.s-pwr button'))) { S.pw = +b.getAttribute('data-p'); paint(); return; }
     if (t.closest('[data-k=ftry]')) { if (API.onPreview) API.onPreview('fx:' + S.fsel); return; }
     if (t.closest('[data-k=fact]')) return doFAct();
     if ((b = t.closest('.s-t'))) { var tid = b.getAttribute('data-id'), ti = 0; COST.forEach(function (c, k) { if (c.id === tid) ti = k; }); pick(tid, ti >= cidx() ? 1 : -1); return; }
@@ -1125,7 +1138,7 @@
   var fx0 = null, fhero = q('.s-fhero');                    // efekt önizlemesinde sağa/sola kaydırarak geç
   fhero.addEventListener('touchstart', function (e) { fx0 = e.touches[0].clientX; }, { passive: true });
   fhero.addEventListener('touchend', function (e) { if (fx0 === null) return; var dx = e.changedTouches[0].clientX - fx0; fx0 = null; if (Math.abs(dx) > 40) fstep(dx < 0 ? 1 : -1); }, { passive: true });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && S.open && root.classList.contains('on')) { S.open = ''; paint(); } });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('on')) { if (q('.s-ih').classList.contains('on')) infoOpen(false); else if (S.open) { S.open = ''; paint(); } } });
   window.addEventListener('resize', tabBar);
 
   /* ===== Dışa açılan arayüz ===== */
@@ -1144,7 +1157,7 @@
       S.sel = (!isf && id && cfind(id)) ? id : D.eq; S.shown = ''; S.fshown = '';
       if (f) { S.fsel = f.id; S.eng = f.eng; }
       setTab(f ? 'f' : 'c'); paint(); q('.s-cv').classList.remove('in'); q('.s-fv').classList.remove('in'); q('.s-pv').classList.remove('in'); root.classList.add('on'); tabBar(); },
-    close: function () { S.open = ''; root.classList.remove('on'); },
+    close: function () { S.open = ''; q('.s-ih').classList.remove('on'); root.classList.remove('on'); },
     costume: function () { return D.eq; },
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
     name: function (id) { if (id && id.indexOf('fx:') === 0) { var f = ffind(id.slice(3)); return f ? f.n : ''; } var c = cfind(id); return c ? c.n : ''; },
@@ -3593,14 +3606,14 @@
       cx.beginPath(); cx.moveTo(.14, -2.2); cx.bezierCurveTo(.3, -1.9, .44, -1.3, .44, -.6); cx.lineTo(.44, 1.7);
       cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.14, 2.05); cx.closePath(); cx.fill();
       if (heat > .02) {                                         // motor ısınınca kuyruk hafif ısınır
-        g = cx.createLinearGradient(0, y0, 0, 1.1); g.addColorStop(0, 'rgba(255,160,90,' + .3 * heat + ')'); g.addColorStop(1, 'rgba(255,160,90,0)');
+        var HT = (FXd && FXd.ht) || [255, 160, 90]; g = cx.createLinearGradient(0, y0, 0, 1.1); g.addColorStop(0, 'rgba(' + HT.join(',') + ',' + .3 * heat + ')'); g.addColorStop(1, 'rgba(' + HT.join(',') + ',0)');
         cx.fillStyle = g; cx.fillRect(-1, 1.1, 2, 1.2);
       }
       cx.restore();
       cx.fillStyle = 'rgba(120,114,95,.22)'; rr(-.24, -.55, .48, 2, .1); cx.fill();     // kargo bölümü
       cx.fillStyle = gh ? CR : '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
       var hh = Math.min(1, heat * .85);                                                  // nozul: soğukken koyu gri, yanarken turuncuya
-      cx.fillStyle = 'rgb(' + (75 + 180 * hh | 0) + ',' + (74 + 76 * hh | 0) + ',' + (71 + 19 * hh | 0) + ')'; rr(-.22, 1.98, .44, .2, .08); cx.fill();
+      var NT = (FXd && FXd.ht) || [255, 150, 90]; cx.fillStyle = 'rgb(' + (75 + (NT[0] - 75) * hh | 0) + ',' + (74 + (NT[1] - 74) * hh | 0) + ',' + (71 + (NT[2] - 71) * hh | 0) + ')'; rr(-.22, 1.98, .44, .2, .08); cx.fill();
       if (cpK > .03) {                                           // çarpışma önleyici: çarpacak taraftaki küçük itiş motoru (daha görünür)
         var cpi = cpPort(), cpa = cpi * Math.PI / 4, Lf = (.42 + 1.05 * cpK) * (1 + .12 * Math.sin(t * 90)), wf = .1 + .08 * cpK;
         cx.save(); cx.translate(CPP[cpi][0], CPP[cpi][1]); cx.rotate(cpa); cx.globalCompositeOperation = 'lighter';
