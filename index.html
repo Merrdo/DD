@@ -691,7 +691,7 @@
   var POW = [
     { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
     { id:'itis', n:'İniş-kalkış desteği', base:200, max:5, s:9, f:'+#% yardım gücü', d:'Motora kısa süreli yardım: ilk kalkışta ve hızlıyken ters yöne itişle yapılan ani frenlerde devreye girer. Hız oturunca ya da normal uçuşta çalışmaz. O anlarda alev de büyür, yakıt biraz fazla yanar.', ic:'<path d="M12 3v12M7 8l5-5 5 5M6 20h12"/>' },
-    { id:'Otomatik çalışır. Gittiğin yolda bir engele çarpacağını fark ettiğinde yan motorlar kendiliğinden ateşlenir, hızını keser ve seni engelin önünde durdurur; devredeyken üstte Önleyici devrede yazar. Seviye arttıkça fren gücü artar. Çok hızlıyken ve engeli geç fark edersen yine de çarpabilirsin.', n:'Çarpışma önleyici', base:250, max:5, s:50, f:'+#% fren gücü', d:'Otomatik çalışır. Bir engele çarpmak üzereyken çarpacağın taraftaki küçük yan motorlar kendiliğinden ateşlenir ve o yöndeki hızını keser. Yeterince erken fark edersen çarpışmayı önler.', ic:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M12 8v5"/>' }
+    { id:'Otomatik çalışır. Gittiğin yolda bir engele çarpacağını fark ettiğinde yan motorlar kendiliğinden ateşlenir, hızını keser ve seni engelin önünde durdurur; devredeyken üstte Önleyici devrede yazar. Seviye arttıkça fren gücü artar. Jet açıkken, süzülen kayalara, kara deliğe ve lazere karşı çalışmaz; çok hızlıyken ve engeli geç fark edersen yine çarparsın.', n:'Çarpışma önleyici', base:250, max:5, s:33, f:'+#% fren gücü', d:'Otomatik çalışır. Bir engele çarpmak üzereyken çarpacağın taraftaki küçük yan motorlar kendiliğinden ateşlenir ve o yöndeki hızını keser. Yeterince erken fark edersen çarpışmayı önler.', ic:'<path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/><path d="M12 8v5"/>' }
   ];
 
   /* ===== Kalıcı veri ===== */
@@ -2730,6 +2730,13 @@
       if (o.t === 'hole') return Math.hypot(o.x - x, o.y - y) - o.R * .85;
       return 1e9;
     }
+    var cpNx = 0, cpNy = -1;
+    function cpNorm(o, x, y) {                                    // (x,y)'den engelin en yakın noktasına birim yön = çarpışma normali
+      var qx = o.x, qy = o.y, dx, dy, l;
+      if (o.t === 'wall') { qx = Math.max(o.x0, Math.min(x, o.x1)); qy = Math.max(o.y - o.h / 2, Math.min(y, o.y + o.h / 2)); }
+      dx = qx - x; dy = qy - y; l = Math.hypot(dx, dy);
+      if (l > 1e-3) { cpNx = dx / l; cpNy = dy / l; }
+    }
     function cpScan(o, ux, uy, spd, smax, Rs) {                   // hız doğrultusunda çarpışmaya olan mesafe (yoksa -1); süzülen kayanın hızı da hesaba katılır
       var v = o.t === 'rock' ? rv(o) : null, st = S * .02, mg = S * .012 + Rs, d0 = cpDist(o, P.x, P.y), s, lo, hi, i;
       function hit(q) {                                           // q mesafe ilerlenirse çarpışma payının içine girilir mi
@@ -2742,6 +2749,7 @@
         if (hit(s)) {
           lo = s - st; hi = s;                                    // ilk çarpışma noktasını ikiye bölerek bul (kaba adım yüzünden yakın mesafeyi büyük hesaplamasın)
           for (i = 0; i < 7; i++) { var mid = (lo + hi) / 2; if (hit(mid)) hi = mid; else lo = mid; }
+          cpNorm(o, P.x + ux * hi, P.y + uy * hi);
           return hi;
         }
       }
@@ -2977,9 +2985,10 @@
       // engeller
       var nearBest = 0, lvC = window.DDShop ? DDShop.lv('onl') : 0, cpT = 0, cnx = 0, cny = 0;
       var cpSpd = Math.hypot(P.vx, P.vy), cpUx = cpSpd ? P.vx / cpSpd : 0, cpUy = cpSpd ? P.vy / cpSpd : 0,
-          cpCap = S * (.09 + .045 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .135S … seviye 5 = .315S
+          cpCap = S * (.06 + .03 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .09S … seviye 5 = .21S
           cpMaxS = Math.min(S * 1.5, cpSpd * cpSpd / (2 * cpCap) * 1.5 + S * .15),   // ne kadar ileriye bakılacağı
-          cpOn = lvC > 0 && !dead && cpSpd > 1e-3, cpNeed = 0, cpEmer = false;
+          cpJet = (jetId !== null || keys[' ']) && !lock && en > 0,                          // jet basılıysa sürücü bilerek itiyor: önleyici devre dışı
+          cpOn = lvC > 0 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0;
       for (i = 0; i < obs.length; i++) {
         o = obs[i];
         if (Math.abs(o.y - P.y) > S * 1.6) continue;
@@ -3016,18 +3025,14 @@
           if (hgd < o.G) { var hgu = 1 - hgd / o.G, hga = S * (.9 * hgu * hgu + .12 * hgu) * dt; P.vx += hgx / hgd * hga; P.vy += hgy / hgd * hga; if (hgu > .35) shake = Math.max(shake, (hgu - .35) * .35); }
           clr = hgd - o.R * .85 - Rs; anx = hgx; any_ = hgy;
         }
-        if (lvC > 0 && !dead && clr > 0 && clr < S * .006 && o.t !== 'beam') {   // son emniyet: engele iyice yaklaşıldıysa (gaz basılı tutulsa bile) yan motorlar gemiyi güvenli mesafede tutar
-          var hl = Math.hypot(anx, any_);
-          if (hl > 1e-3) {
-            var hnx = anx / hl, hny = any_ / hl, hvn = P.vx * hnx + P.vy * hny, hp = S * .006 - clr;
-            P.x -= hnx * hp; P.y -= hny * hp;
-            if (hvn > 0) { P.vx -= hnx * hvn; P.vy -= hny * hvn; }
-            cpEmer = true;
-          }
-        }
-        if (cpOn && clr > 0 && o.t !== 'beam') {                      // Çarpışma önleyici: yolun üstündeki engeller için, önünde durmak için gereken freni hesapla
+        if (cpOn && clr > 0 && (o.t === 'wall' || (o.t === 'rock' && !o.dv && !o.amp))) {   // yalnızca durağan engeller: kara delik, süzülen/salınan kaya, dönen çubuk, lazer önleyiciye tabi değil                      // Çarpışma önleyici: yolun üstündeki engeller için, önünde durmak için gereken freni hesapla
           var sH = cpScan(o, cpUx, cpUy, cpSpd, cpMaxS, Rs);
-          if (sH >= 0) { var rq = cpSpd * cpSpd / (2 * Math.max(sH, S * .004)) * 1.35; if (rq > cpNeed) cpNeed = rq; if (sH < S * .05) cpEmer = true; }   // 1.35: pay; çarpmaya çok yakınsa acil fren
+          if (sH >= 0) {
+            // yalnızca ENGELE DOĞRU olan hız bileşeni kesilir: tam dik geliyorsan durursun, eğik geliyorsan yan hızın korunur ve engelin yanından süzülürsün
+            var cs = Math.max(0, cpUx * cpNx + cpUy * cpNy), rq = cpSpd * cpSpd * cs / (2 * Math.max(sH, S * .004)) * 1.35;   // 1.35: pay
+            rq = sH < S * .05 ? cpCap * 1.5 : Math.min(cpCap, rq);                                                           // çarpmaya çok yakınsa tam güç
+            if (rq > cpNeed) { cpNeed = rq; cnx = cpNx; cny = cpNy; }
+          }
         }
         if (clr < 0 && o.t !== 'beam' && graceT <= 0) { if (o.t === 'spin') lzArmSpin(o); if (o.t === 'hole') hd = 1; kill(1); return; }
         if (!o.near && !o.fix && clr > 0 && clr < S * .032 && sp > S * .14 && !(o.t === 'beam')) {
@@ -3038,13 +3043,13 @@
         }
       }
       // Çarpışma önleyici: yoldaki engelin önünde durmaya yetecek kadar fren uygulanır (kapasiteyi aşmaz); çarpacağın taraftaki yan motorlar ateşlenir
-      var cpD = cpEmer ? cpCap * 1.5 : (cpOn && cpNeed > cpCap * .2) ? Math.min(cpCap, cpNeed) : 0;   // acil: tam güç; küçük ihtiyaçta (kapasitenin %20'si altı) karışma
+      var cpD = (cpOn && cpNeed > cpCap * .2) ? cpNeed : 0;                           // küçük ihtiyaçta (kapasitenin %20'si altı) karışma
       cpT = Math.min(1, cpD / cpCap);
       cpK += (cpT - cpK) * (1 - Math.exp(-dt / (cpT > cpK ? .06 : .22)));              // yalnızca görsel/ses şiddeti için
       if (cpD > 0) {
-        cpx = cpUx; cpy = cpUy;
-        var dvc = Math.min(cpD * dt, cpSpd);                                            // hızı yalnızca düşürür, geri itmez
-        P.vx -= cpUx * dvc; P.vy -= cpUy * dvc;
+        cpx = cnx; cpy = cny;
+        var vnn = P.vx * cnx + P.vy * cny, dvc = Math.min(cpD * dt, Math.max(0, vnn));   // yalnızca engele doğru bileşeni azaltır; yan hıza dokunmaz, geri itmez
+        P.vx -= cnx * dvc; P.vy -= cny * dvc;
       }
       if (lvC > 0 && cpK > .01) {
         cpAcc += dt * 34 * cpK;
