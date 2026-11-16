@@ -2820,7 +2820,7 @@
     /* kaçış parkuru durumu */
     var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
         best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
-    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogVis = 1, fogTh = 0, fogCv = null, fogCx = null, fogSp = null;
+    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogVis = 1, fogTh = 0, fogShipCv = null, fogCv = null, fogCx = null, fogSp = null;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     /* ASTRO'ya özel ses ayarı (SNDA): genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ayar geri yüklenir */
@@ -5821,7 +5821,14 @@
       }
       if (race && !devOn) lensPass(CY, ts / 1000);                               // kara delik bükülmesi (gemi ve dünya çizildikten sonra, arayüzden önce)
       if (race) { fogDraw(CY, ts / 1000);
-        if (!devOn && !dead && fogK > .01 && dashPh === 0) { cx.save(); cx.globalAlpha = Math.min(1, fogK * 2) * fogVis; ship(ax, ay, ts); cx.restore(); }   // gemi (ve kırmızı ışıkları) sisin üstünde net görünür
+        if (!devOn && !dead && fogK > .01 && dashPh === 0) {   // gemi tek parça olarak ayrı tuvalde çizilir (üst üste binen parçalar çift koyulaşmasın), sonra sisin içinde hafif soluk basılır
+          var fsc = (cx.getTransform ? cx.getTransform().a : 1) || 1, fR = S * .026 * 6.5, fpx = Math.ceil(fR * 2 * fsc), fcx, fsv = cx;
+          if (!fogShipCv) fogShipCv = document.createElement('canvas');
+          if (fogShipCv.width !== fpx) fogShipCv.width = fogShipCv.height = fpx;
+          fcx = fogShipCv.getContext('2d'); fcx.setTransform(fsc, 0, 0, fsc, 0, 0); fcx.clearRect(0, 0, fR * 2, fR * 2);
+          cx = fcx; try { ship(fR, fR, ts); } catch (er) {} cx = fsv;
+          cx.save(); cx.globalAlpha = Math.min(1, fogK * 2) * fogVis * .85; cx.drawImage(fogShipCv, ax - fR, ay - fR, fR * 2, fR * 2); cx.restore();
+        }   // gemi (ve kırmızı ışıkları) sisin üstünde net görünür
         fogSound(fogK > .02 && mode === 1 && !dead, ts / 1000); }
       if (race) drawOverlay(CY, ts / 1000);
       if (race) dither();                                                        // gradyan bantlaşmasını (piksel piksel renk basamakları) dağıtır
