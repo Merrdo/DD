@@ -2820,7 +2820,7 @@
     /* kaçış parkuru durumu */
     var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
         best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
-    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogVis = 1, fogCv = null, fogCx = null, fogSp = null;
+    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogVis = 1, fogTh = 0, fogCv = null, fogCx = null, fogSp = null;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     /* ASTRO'ya özel ses ayarı (SNDA): genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ayar geri yüklenir */
@@ -4791,11 +4791,12 @@
       wtx *= .93; wty -= .06;
       function navPulse(q, c) { var z = (q - c) / .06; return Math.exp(-z * z); }
       for (k = -1; k <= 1; k += 2) {
-        var nq = (t + (k > 0 ? .9 : 0)) % 1.8, na = Math.min(1, .1 + navPulse(nq, .15) + .85 * navPulse(nq, .42));
+        var nq = (t + (k > 0 ? .9 : 0)) % 1.8, na = Math.min(1, .2 + navPulse(nq, .15) + .8 * navPulse(nq, .42));
         cx.save(); cx.translate(k * wtx, wty); cx.globalCompositeOperation = 'lighter';
-        g = cx.createRadialGradient(0, 0, 0, 0, 0, .6); g.addColorStop(0, 'rgba(255,60,50,' + (.5 * na).toFixed(3) + ')'); g.addColorStop(.4, 'rgba(255,40,40,' + (.14 * na).toFixed(3) + ')'); g.addColorStop(1, 'rgba(255,30,30,0)');
-        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, .6, 0, 6.2832); cx.fill();
-        cx.globalCompositeOperation = 'source-over'; cx.fillStyle = 'rgba(255,' + (70 + 120 * na * na | 0) + ',' + (60 + 100 * na * na | 0) + ',' + (.55 + .45 * na).toFixed(3) + ')'; cx.beginPath(); cx.arc(0, 0, .075, 0, 6.2832); cx.fill();
+        g = cx.createRadialGradient(0, 0, 0, 0, 0, 2.6);                                   // geniş, sisin içinde dağılan kırmızı hale
+        g.addColorStop(0, 'rgba(255,50,40,' + (.55 * na).toFixed(3) + ')'); g.addColorStop(.18, 'rgba(255,40,35,' + (.34 * na).toFixed(3) + ')'); g.addColorStop(.5, 'rgba(235,30,30,' + (.1 * na).toFixed(3) + ')'); g.addColorStop(1, 'rgba(220,20,20,0)');
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, 2.6, 0, 6.2832); cx.fill();
+        cx.globalCompositeOperation = 'source-over'; cx.fillStyle = 'rgba(255,' + (60 + 150 * na * na | 0) + ',' + (50 + 130 * na * na | 0) + ',' + (.7 + .3 * na).toFixed(3) + ')'; cx.beginPath(); cx.arc(0, 0, .14, 0, 6.2832); cx.fill();   // parlak çekirdek
         cx.restore();
       }
       cx.restore();
@@ -5586,8 +5587,11 @@
       if (wy < H) { g = c.createLinearGradient(0, wy * k, 0, (wy + S * .5) * k); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)'); c.fillStyle = g; c.fillRect(0, Math.max(0, wy * k), w, h); }
       if (!fogSpr) fogMakeCone();
       hx = Math.cos(P.h); hy = Math.sin(P.h);
-      R = S * .105 * k; c.save(); c.translate((sx + hx * S * .012) * k, (sy + hy * S * .012) * k); c.rotate(P.h); c.scale(1, .72);   // gövde: tamamen görünür, çevresinde küçük yumuşak boşluk
-      g = c.createRadialGradient(0, 0, 0, 0, 0, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.5, 'rgba(0,0,0,.92)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(-R, -R, R * 2, R * 2); c.restore();
+      fogTh += (Math.min(1.2, th * tfk) - fogTh) * (1 - Math.exp(-dt2 / .18));          // itiş alevi: yavaş yumuşatılır, ani parlama yapmaz
+      if (fogTh > .02 && !dead) {                                                       // alevin sise düşürdüğü çok hafif ışık (geminin kendisi sisin üstünde çizilir)
+        R = S * (.1 + .09 * fogTh) * k; c.save(); c.translate((sx - hx * S * (.1 + .05 * fogTh)) * k, (sy - hy * S * (.1 + .05 * fogTh)) * k);
+        g = c.createRadialGradient(0, 0, 0, 0, 0, R); g.addColorStop(0, 'rgba(0,0,0,' + (.3 * Math.min(1, fogTh)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(-R, -R, R * 2, R * 2); c.restore();
+      }
       nx = Math.cos(fogHa); ny = Math.sin(fogHa); BL = S * 1.02; ox = sx + hx * S * .062; oy = sy + hy * S * .062;   // ışık tam burundan çıkar; sabit, düz kenarlı yumuşak koni
       c.save(); c.translate(ox * k, oy * k); c.rotate(fogHa); c.imageSmoothingEnabled = true; c.globalAlpha = fa; c.scale(BL * k / FOGCL, BL * k / FOGCL); c.drawImage(fogSpr[0], 0, -FOGCH / 2); c.restore();
       c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
@@ -5602,6 +5606,11 @@
           wx = T(wy) + (h2 - .5) * cw * 2.1 + Math.sin(t * .3 + n + j * 2) * S * .12; rr = S * (.45 + .35 * hh);
           cx.globalAlpha = fogVis * ef * (.09 + .05 * h2); cx.drawImage(fogSp, W / 2 + wx - cam.x - rr, CY + wy - cam.y - rr, rr * 2, rr * 2);
         }
+      }
+      if (fogTh > .02 && !dead) {
+        var fr = S * (.11 + .1 * fogTh), fx0 = sx - hx * S * (.1 + .05 * fogTh), fy0 = sy - hy * S * (.1 + .05 * fogTh);
+        g = cx.createRadialGradient(fx0, fy0, 0, fx0, fy0, fr); g.addColorStop(0, 'rgba(255,150,80,' + (.075 * Math.min(1, fogTh)).toFixed(3) + ')'); g.addColorStop(1, 'rgba(255,120,60,0)');
+        cx.globalCompositeOperation = 'lighter'; cx.globalAlpha = fogVis; cx.fillStyle = g; cx.beginPath(); cx.arc(fx0, fy0, fr, 0, 6.2832); cx.fill(); cx.globalCompositeOperation = 'source-over';
       }
       // 4) ışığın kendisi: yumuşak, soluk bir parıltı (sisin içinde ışın aydınlık görünür); burunda fener merceği
       if (fogK > .01) {
@@ -5821,7 +5830,9 @@
         cx.restore(); W = W0; H = H0; CY = H * 0.46;
       }
       if (race && !devOn) lensPass(CY, ts / 1000);                               // kara delik bükülmesi (gemi ve dünya çizildikten sonra, arayüzden önce)
-      if (race) { fogDraw(CY, ts / 1000); fogSound(fogK > .02 && mode === 1 && !dead, ts / 1000); }
+      if (race) { fogDraw(CY, ts / 1000);
+        if (!devOn && !dead && fogK > .01 && dashPh === 0) { cx.save(); cx.globalAlpha = Math.min(1, fogK * 2) * fogVis; ship(ax, ay, ts); cx.restore(); }   // gemi (ve kırmızı ışıkları) sisin üstünde net görünür
+        fogSound(fogK > .02 && mode === 1 && !dead, ts / 1000); }
       if (race) drawOverlay(CY, ts / 1000);
       if (race) dither();                                                        // gradyan bantlaşmasını (piksel piksel renk basamakları) dağıtır
       // joystick (dokunulan yerde belirir)
