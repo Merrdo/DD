@@ -1201,7 +1201,7 @@
      Gövde rengi kostümden (p.c), girinti rengi lüle renginden (p.n) gelir; Hayalet kostümünde yalnızca çizgi çizilir. */
   var HULL = {
     std:  'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L.21 2.05L.21 1.95Q0 1.9 -.21 1.95L-.21 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
-    dash: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.55L.56 1.9L.54 2.3Q.54 2.4 .46 2.4L-.46 2.4Q-.54 2.4 -.54 2.3L-.56 1.9L-.44 1.55L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
+    dash: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.8L.5 2.2Q.5 2.3 .42 2.3L-.42 2.3Q-.5 2.3 -.5 2.2L-.44 1.8L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
     wide: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.05C.44 1.5 .92 1.4 .94 1.85L.9 2.1Q.89 2.17 .82 2.17L-.82 2.17Q-.89 2.17 -.9 2.1L-.94 1.85C-.92 1.4 -.44 1.5 -.44 1.05L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z'
   };
   function hullD(kind) { return HULL[kind] || HULL.std; }
@@ -1209,8 +1209,8 @@
     var f = sk ? 'fill="none" stroke="' + sk + '" stroke-width=".06" stroke-linejoin="round"' : 'fill="' + c + '"';
     if (kind === 'wide') return '<path d="M.11 2.17L.11 2.04Q.11 1.99 .16 1.99L.53 1.99Q.58 1.99 .58 2.04L.58 2.17Z" ' + f + '/><path d="M-.11 2.17L-.11 2.04Q-.11 1.99 -.16 1.99L-.53 1.99Q-.58 1.99 -.58 2.04L-.58 2.17Z" ' + f + '/>' +
       (sk ? '' : '<path d="M0 1.55L0 2.17" stroke="#000" stroke-opacity=".16" stroke-width=".04" fill="none"/><path d="M.44 1.2C.46 1.45 .8 1.5 .86 1.8M-.44 1.2C-.46 1.45 -.8 1.5 -.86 1.8" stroke="#000" stroke-opacity=".12" stroke-width=".035" fill="none"/>');
-    if (kind === 'dash') return '<path d="M-.34 2.26Q-.34 2.22 -.3 2.22L.3 2.22Q.34 2.22 .34 2.26L.34 2.4L-.34 2.4Z" ' + f + '/>' +
-      (sk ? '' : '<path d="M-.44 1.55L.44 1.55M-.56 1.9L.56 1.9" stroke="#000" stroke-opacity=".13" stroke-width=".03" fill="none"/><path d="M-.3 2.24L.3 2.24" stroke="#7fd4ff" stroke-opacity=".3" stroke-width=".1" stroke-linecap="round" fill="none"/><path d="M-.3 2.24L.3 2.24" stroke="#aee6ff" stroke-width=".035" stroke-linecap="round" fill="none"/><path d="M-.5 1.98L-.5 2.28M.5 1.98L.5 2.28" stroke="#9fe0ff" stroke-width=".03" stroke-linecap="round" fill="none"/>');
+    if (kind === 'dash') return '<path d="M-.3 2.3L-.3 2.16Q-.3 2.12 -.26 2.12L.26 2.12Q.3 2.12 .3 2.16L.3 2.3Z" ' + f + '/>' +
+      (sk ? '' : '<path d="M-.24 2.27L.24 2.27" stroke="#aee6ff" stroke-width=".035" stroke-linecap="round" fill="none"/>');
     return '<path d="M-.21 1.95Q0 1.9 .21 1.95L.24 2.1Q0 2.16 -.24 2.1Z" ' + f + '/>' + (sk ? '' : '<ellipse cx="0" cy="2.08" rx=".17" ry=".03" fill="#000" fill-opacity=".5"/>');
   }
   function nzKind() {
@@ -1218,7 +1218,7 @@
     return (e && e.nz) || 'std';
   }
   function flameSet(fx, ek) {
-    if (ek === 'dash') return '<g transform="translate(0 .3)">' + flame(.85, fx) + '</g>';
+    if (ek === 'dash') return '<g transform="translate(0 .22)">' + flame(.85, fx) + '</g>';
     if (ek !== 'wide') return flame(.85, fx);
     return '<g transform="translate(-.34 0) scale(.62 1)">' + flame(.85, fx) + '</g><g transform="translate(.34 0) scale(.62 1)">' + flame(.85, fx) + '</g>';
   }
@@ -1397,7 +1397,7 @@
     var sh = g.sh || WSTD, k = g.nz || 'std', fl = 'M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z';
     return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true"><path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/><path class="bd" d="' + hullD(k) + '"/>' +
       nozSvg(k, '#4b4a47').replace(/<path /g, '<path class="nz" ').replace(/ fill="[^"]*"/g, '').replace(/<ellipse[^>]*>/g, '') +
-      (k === 'wide' ? '<path class="fl" transform="translate(-.34 -.1) scale(.62 1)" d="' + fl + '"/><path class="fl" transform="translate(.34 -.1) scale(.62 1)" d="' + fl + '"/>' : '<path class="fl" transform="translate(0 ' + (k === 'dash' ? '.2' : '-.1') + ')" d="' + fl + '"/>') + '</svg>';
+      (k === 'wide' ? '<path class="fl" transform="translate(-.34 -.1) scale(.62 1)" d="' + fl + '"/><path class="fl" transform="translate(.34 -.1) scale(.62 1)" d="' + fl + '"/>' : '<path class="fl" transform="translate(0 ' + (k === 'dash' ? '.1' : '-.1') + ')" d="' + fl + '"/>') + '</svg>';
   }
   var KIH = 64, KSTEP = KIH + 10, kRaf = 0;
   function kfmt(v) { return v ? (v > 0 ? '+' : '−') + Math.abs(v) + '%' : '—'; }
@@ -2625,6 +2625,13 @@
     breath(0.55, 0.1, 500, 6000, 0.02);
     bell(semi(24), 0.05, 0, 0.3, 0.9);
   }
+  function sfxDash() { try { sfxDash_(); } catch (e) {} }          // sıçrama: kısa, keskin 'cıv' (hızlı düşen ton + parlak hava)
+  function sfxDash_() {
+    if (!AC) return;
+    tSweep('sine', 1500, 420, 0.11, 0.13, 0, 4200);
+    tSweep('triangle', 260, 1100, 0.07, 0.05, 0.01, 3000);
+    breath(0.1, 0.05, 6500, 1500, 0);
+  }
   function sfxTurboFail() { try { sfxTurboFail_(); } catch (e) {} }   // turbo boş: marş basıp tutmayan motor (tıkırtı + öksürme)
   function sfxTurboFail_() {
     if (!AC) return;
@@ -2785,7 +2792,7 @@
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
-    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFx = [], DASH_CD = 2.2, DASH_T1 = .24, DASH_T2 = .38, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
+    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFailAt = 0, dashFx = [], DASH_CD = 2.2, DASH_T1 = .05, DASH_T2 = .1, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var frameErr = 0;
@@ -3645,13 +3652,21 @@
       return -1;
     }
     function dashTry() {
-      if (dead || devOn || dashCd > 0 || dashPh || (race && pre)) return;
+      if (dead || devOn || dashPh || (race && pre)) return;
+      if (dashCd > 0) {                                          // şarj bekleniyor: benzini bitmiş motor gibi tıkırtı + öksürme sesi
+        var nw = performance.now();
+        if (nw - dashFailAt > 450) {
+          dashFailAt = nw; sfxTurboFail(); vib([25, 35, 25]); pop('ŞARJ YOK', P.x, P.y - S * .1, false);
+          var nic = elEn.querySelector('s'); if (nic) { nic.classList.remove('no'); void nic.offsetWidth; nic.classList.add('no'); }
+        }
+        return;
+      }
       var hx = Math.cos(P.h), hy = Math.sin(P.h), d = dashFind(hx, hy);
-      if (d < 0) { dashCd = .5; sfxTurboFail(); vib([25, 35, 25]); pop('ENGEL ÇOK BÜYÜK', P.x, P.y - S * .1, false); return; }
+      if (d < 0) { dashCd = .25; sfxTurboFail(); vib([25, 35, 25]); pop('ENGEL ÇOK BÜYÜK', P.x, P.y - S * .1, false); return; }
       dashHx = hx; dashHy = hy; dashD = d; dashPh = 1; dashT = 0;      // 1: mekik kendi içine katlanır → ışınlan → 2: varışta açılır; hız ve ivme hiç kesilmez
-      dashCd = DASH_CD; graceT = Math.max(graceT, DASH_T1 + DASH_T2 + .1);
+      dashCd = DASH_CD; graceT = Math.max(graceT, DASH_T1 + DASH_T2 + .08);
       dashFx.push({ x: P.x, y: P.y, t0: performance.now(), k: 0, h: P.h });
-      sfxTurbo(); vib([10, 16, 10]);
+      sfxDash(); vib([10, 16, 10]);
     }
     function dashStep(dt) {
       if (!dashPh) return;
@@ -3662,7 +3677,7 @@
         if (d >= 0) {
           P.x += dashHx * d; P.y += dashHy * d; trail.length = 0; trail.push({ x: P.x, y: P.y });   // hız ve yönelim aynen korunur
           dashFx.push({ x: P.x, y: P.y, t0: performance.now(), k: 1, h: P.h });
-          dashCamT = .9;                                        // kamera yumuşakça yetişir
+          dashCamT = .45;                                        // kamera yumuşakça yetişir
           var bs = Math.hypot(P.vx, P.vy), mxs = S * .9 * wingStats().hiz * (1 + .45 * odC);   // ışınlanma biraz ek ivme verir: hız yönünde (yavaşsa burun yönünde) yumuşak itiş
           boostRem = S * .16; boostCap = Math.min(mxs, bs + S * .2);
         }
@@ -4323,12 +4338,12 @@
         cx.lineTo(.44, 1.05); cx.bezierCurveTo(.44, 1.5, .92, 1.4, .94, 1.85); cx.lineTo(.9, 2.1); cx.quadraticCurveTo(.89, 2.17, .82, 2.17);
         cx.lineTo(-.82, 2.17); cx.quadraticCurveTo(-.89, 2.17, -.9, 2.1); cx.lineTo(-.94, 1.85); cx.bezierCurveTo(-.92, 1.4, -.44, 1.5, -.44, 1.05);
       } else if (engK() === 'dash') {                              // Sıçrama Motoru: derin, köşeli girinti
-        cx.lineTo(.44, 1.55); cx.lineTo(.56, 1.9); cx.lineTo(.54, 2.3); cx.quadraticCurveTo(.54, 2.4, .46, 2.4); cx.lineTo(-.46, 2.4); cx.quadraticCurveTo(-.54, 2.4, -.54, 2.3); cx.lineTo(-.56, 1.9); cx.lineTo(-.44, 1.55);
+        cx.lineTo(.44, 1.8); cx.lineTo(.5, 2.2); cx.quadraticCurveTo(.5, 2.3, .42, 2.3); cx.lineTo(-.42, 2.3); cx.quadraticCurveTo(-.5, 2.3, -.5, 2.2); cx.lineTo(-.44, 1.8);
       } else {
         cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.21, 2.05); cx.lineTo(.21, 1.95); cx.quadraticCurveTo(0, 1.9, -.21, 1.95);
         cx.lineTo(-.21, 2.05); cx.lineTo(-.26, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
       }
-      cx.lineTo(-.44, engK() === 'wide' ? 1.05 : engK() === 'dash' ? 1.55 : 1.7); cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
+      cx.lineTo(-.44, engK() === 'wide' ? 1.05 : engK() === 'dash' ? 1.8 : 1.7); cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
     }
     function wingP(s) {
       var cm = (window.DDShop && DDShop.wing && DDShop.wing()) || [['M', .4, -1.3], ['L', .7, -.45], ['L', 1.25, 1.72], ['Q', 1.3, 1.95, 1.18, 1.95], ['L', .4, 1.95]], i, c;
@@ -4424,17 +4439,15 @@
         cx.fillStyle = 'rgba(0,0,0,.14)'; cx.fillRect(-.02, 1.55, .04, .62);
         cx.fillStyle = base; vent(1); cx.fill(); vent(-1); cx.fill();
         if (hh > .02) { cx.fillStyle = gl; rr(.15, 2.07, .39, .06, .03); cx.fill(); rr(-.54, 2.07, .39, .06, .03); cx.fill(); }
-      } else if (kind === 'dash') {
-        cx.beginPath(); cx.moveTo(-.34, 2.26); cx.quadraticCurveTo(-.34, 2.22, -.3, 2.22); cx.lineTo(.3, 2.22); cx.quadraticCurveTo(.34, 2.22, .34, 2.26); cx.lineTo(.34, 2.4); cx.lineTo(-.34, 2.4); cx.closePath();
+      } else if (kind === 'dash') {                              // Sıçrama Motoru: sade tek yuva + ince mavi enerji çizgisi (hazırken parlar)
+        rr(-.3, 2.12, .6, .18, .04);
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
         cx.fill();
-        cx.lineJoin = 'round'; cx.lineCap = 'round'; cx.strokeStyle = 'rgba(0,0,0,.13)'; cx.lineWidth = .03;
-        cx.beginPath(); cx.moveTo(-.44, 1.55); cx.lineTo(.44, 1.55); cx.moveTo(-.56, 1.9); cx.lineTo(.56, 1.9); cx.stroke();   // panel çizgileri
-        var dr = 1 - dashCd / DASH_CD, da = dr >= 1 ? .8 + .2 * Math.sin(performance.now() / 160) : .15 + .3 * dr;           // mavi enerji çizgileri: hazırken parlar, bekleme sırasında söner
-        cx.beginPath(); cx.moveTo(-.3, 2.24); cx.lineTo(.3, 2.24); cx.strokeStyle = 'rgba(127,212,255,' + (.3 * da).toFixed(3) + ')'; cx.lineWidth = .1; cx.stroke();
+        var dr = 1 - dashCd / DASH_CD, da = dr >= 1 ? .85 + .15 * Math.sin(performance.now() / 160) : .12 + .3 * dr;
+        cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(-.24, 2.27); cx.lineTo(.24, 2.27);
+        cx.strokeStyle = 'rgba(127,212,255,' + (.28 * da).toFixed(3) + ')'; cx.lineWidth = .09; cx.stroke();
         cx.strokeStyle = 'rgba(174,230,255,' + da.toFixed(3) + ')'; cx.lineWidth = .035; cx.stroke();
-        cx.beginPath(); cx.moveTo(-.5, 1.98); cx.lineTo(-.5, 2.28); cx.moveTo(.5, 1.98); cx.lineTo(.5, 2.28); cx.strokeStyle = 'rgba(159,224,255,' + (.8 * da).toFixed(3) + ')'; cx.lineWidth = .03; cx.stroke();
-        if (hh > .02) { cx.fillStyle = gl; cx.fillRect(-.28, 2.3, .56, .05); }
+        if (hh > .02) { cx.fillStyle = gl; cx.fillRect(-.22, 2.3, .44, .04); }
       } else {
         cx.beginPath(); cx.moveTo(-.21, 1.95); cx.quadraticCurveTo(0, 1.9, .21, 1.95); cx.lineTo(.24, 2.1); cx.quadraticCurveTo(0, 2.16, -.24, 2.1); cx.closePath();
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
@@ -4452,7 +4465,7 @@
       function pf(c) { if (gh) { cx.lineWidth = .09; cx.lineJoin = 'round'; cx.strokeStyle = CR; cx.stroke(); } else { cx.fillStyle = c; cx.fill(); } }
       cx.save(); cx.translate(sx, sy); cx.rotate(P.h + Math.PI / 2); cx.scale(u, u);
       cx.translate(Math.sin(t * 83) * .025 * th * tfk, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th * tfk);   // süzülme + yüksek itişte hafif titreşim
-      var y0 = engK() === 'dash' ? 2.38 : 2.08;                       // Sıçrama Motoru: alev bloğun alt kenarından çıkar
+      var y0 = engK() === 'dash' ? 2.3 : 2.08;                       // Sıçrama Motoru: alev bloğun alt kenarından çıkar
       for (var fi = 0, FO = engK() === 'wide' ? [-.34, .34] : [0]; fi < FO.length; fi++) if (th > 0.03) {   // geniş motorda iki lüle: alev iki kez, daralmış çizilir
         cx.save(); cx.translate(FO[fi], 0); if (FO.length > 1) cx.scale(.62, 1);
         // ana motor: dükkandaki alevle aynı üç katman; itiş arttıkça uzar, genişler, ısınır (turuncu → sarı-beyaz) ve titreşimi artar
@@ -4515,7 +4528,7 @@
       cx.beginPath(); cx.moveTo(.14, -2.2); cx.bezierCurveTo(.3, -1.9, .44, -1.3, .44, -.6); cx.lineTo(.44, 1.7);
       cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.14, 2.05); cx.closePath(); cx.fill();
       if (engK() === 'wide') cx.fillRect(.44, 1, .6, 1.3);
-      if (engK() === 'dash') cx.fillRect(.14, 1.55, .5, .9);
+      if (engK() === 'dash') cx.fillRect(.14, 1.8, .5, .6);
       if (heat > .02) {                                         // motor ısınınca kuyruk hafif ısınır
         var HT = (FXd && FXd.ht) || [255, 160, 90]; g = cx.createLinearGradient(0, y0, 0, 1.1); g.addColorStop(0, 'rgba(' + HT.join(',') + ',' + .3 * heat + ')'); g.addColorStop(1, 'rgba(' + HT.join(',') + ',0)');
         cx.fillStyle = g; cx.fillRect(-1, 1.1, 2, 1.2);
@@ -5272,8 +5285,8 @@
       }
       cx.globalAlpha = 1; if (dead === 1 && lz && lz.cv) lzDraw(ax, ay); else if (!dead || (dead === 2 && boomT < 0)) {
         var dA = 1, dSx = 1, dSy = 1, dGl = 0;                                   // dash: kendi içine katlanır (incelir, uzar, parlar) → varışta ince bir çizgiden açılır
-        if (!dead && dashPh === 1) { var dq = Math.min(1, dashT / DASH_T1), dqe = dq * dq; dA = 1 - dq * dq * dq; dSx = 1 - .9 * dqe; dSy = 1 + .3 * dqe; dGl = dq; }
-        else if (!dead && dashPh === 2) { var dq2 = Math.min(1, dashT / DASH_T2), c1 = 1.70158, c3 = c1 + 1, de2 = 1 + c3 * Math.pow(dq2 - 1, 3) + c1 * Math.pow(dq2 - 1, 2); dA = Math.min(1, dq2 * 3); dSx = Math.max(.02, de2); dSy = 1.3 - .3 * (1 - Math.pow(1 - dq2, 3)); dGl = 1 - dq2; }
+        if (!dead && dashPh === 1) { var dq = Math.min(1, dashT / DASH_T1); dA = 1 - dq; dSx = 1 - .85 * dq; dSy = 1 + .15 * dq; dGl = dq * .8; }
+        else if (!dead && dashPh === 2) { var dq2 = Math.min(1, dashT / DASH_T2), de2 = 1 - Math.pow(1 - dq2, 3); dA = Math.min(1, dq2 * 2.5); dSx = Math.max(.15, .15 + .85 * de2); dSy = 1.15 - .15 * de2; dGl = (1 - dq2) * .8; }
         if (dA < 1 || dSx !== 1 || dSy !== 1) {
           var dhh = P.h + Math.PI / 2;
           cx.save(); cx.globalAlpha = Math.max(0, dA); cx.translate(ax, ay); cx.rotate(dhh); cx.scale(dSx, dSy); cx.rotate(-dhh); cx.translate(-ax, -ay); ship(ax, ay, ts); cx.restore();
@@ -5286,35 +5299,16 @@
         else ship(ax, ay, ts);
       }
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
-      if (dashFx.length) {                                                        // dash efekti: faz katlanması (kendi içine çöken halkalar ve baklava) → açılan halka, baklava ve ışınlar; yolda iz yok
-        cx.save(); cx.globalCompositeOperation = 'lighter'; cx.lineCap = 'round'; cx.lineJoin = 'round';
-        var dnow = performance.now(), dsr = S * .026;
-        function dDia(x, y, r, a) { cx.save(); cx.translate(x, y); cx.rotate(a); cx.beginPath(); cx.moveTo(0, -r); cx.lineTo(r * .62, 0); cx.lineTo(0, r); cx.lineTo(-r * .62, 0); cx.closePath(); cx.stroke(); cx.restore(); }
+      if (dashFx.length) {                                                        // dash efekti: çıkış ve varışta tek ince halka + kısa parıltı (0.28 sn)
+        cx.save(); cx.globalCompositeOperation = 'lighter'; var dnow = performance.now(), dsr = S * .026;
         for (i = dashFx.length - 1; i >= 0; i--) {
-          var dfx = dashFx[i], dT = (dnow - dfx.t0) / 1000, dx0 = W / 2 + dfx.x - cam.x, dy0 = CY + dfx.y - cam.y, dh = dfx.h + Math.PI / 2, dr, du, de, j, ka;
-          if (dT >= .7) { dashFx.splice(i, 1); continue; }
-          if (!dfx.k) {                                                           // çıkış: üç halka ve baklava içe çöker, sonda parlak bir nokta
-            for (j = 0; j < 3; j++) {
-              du = Math.max(0, Math.min(1, (dT - j * .05) / DASH_T1)); de = du * du;
-              cx.strokeStyle = 'rgb(140,210,255)'; cx.lineWidth = 1.3; cx.globalAlpha = .6 * Math.sin(du * 3.1416) * (1 - j * .2);
-              cx.beginPath(); cx.arc(dx0, dy0, dsr * (.35 + 4.4 * (1 - de)), 0, 6.2832); cx.stroke();
-            }
-            du = Math.min(1, dT / DASH_T1);
-            cx.strokeStyle = 'rgb(200,235,255)'; cx.lineWidth = 1.4; cx.globalAlpha = .7 * (1 - du * du * du); dDia(dx0, dy0, dsr * (3.2 * (1 - du * du) + .3), dh);
-            if (dT > DASH_T1 * .7) { du = Math.min(1, (dT - DASH_T1 * .7) / .22); cx.globalAlpha = .9 * (1 - du); cx.fillStyle = 'rgb(220,244,255)'; cx.beginPath(); cx.arc(dx0, dy0, dsr * (.5 + 1.2 * du), 0, 6.2832); cx.fill(); }
-          } else {                                                                // varış: halkalar, baklava ve altı ışın açılır
-            du = Math.min(1, dT / .5); de = 1 - Math.pow(1 - du, 3);
-            cx.fillStyle = 'rgb(190,230,255)'; cx.globalAlpha = .38 * Math.pow(1 - du, 2); cx.beginPath(); cx.arc(dx0, dy0, dsr * 3.2 * (.6 + .4 * de), 0, 6.2832); cx.fill();
-            cx.strokeStyle = 'rgb(150,220,255)'; cx.lineWidth = 1.6 * (1 - du) + .4; cx.globalAlpha = .7 * (1 - du);
-            cx.beginPath(); cx.arc(dx0, dy0, dsr * (.6 + 4.6 * de), 0, 6.2832); cx.stroke();
-            dr = Math.max(0, Math.min(1, (dT - .08) / .5)); cx.globalAlpha = .5 * (1 - dr); cx.beginPath(); cx.arc(dx0, dy0, dsr * (.5 + 2.8 * (1 - Math.pow(1 - dr, 3))), 0, 6.2832); cx.stroke();
-            cx.strokeStyle = 'rgb(210,240,255)'; cx.lineWidth = 1.3; cx.globalAlpha = .65 * (1 - du); dDia(dx0, dy0, dsr * (.5 + 3.4 * de), dh);
-            for (j = 0; j < 6; j++) {
-              ka = dh + j * 1.0472 + .5236; var r0 = dsr * (1.4 + 2.6 * de), r1 = r0 + dsr * 1.1 * (1 - du);
-              cx.globalAlpha = .75 * (1 - du); cx.lineWidth = 1.5 * (1 - du) + .3;
-              cx.beginPath(); cx.moveTo(dx0 + Math.cos(ka) * r0, dy0 + Math.sin(ka) * r0); cx.lineTo(dx0 + Math.cos(ka) * r1, dy0 + Math.sin(ka) * r1); cx.stroke();
-            }
-          }
+          var dfx = dashFx[i], dT = (dnow - dfx.t0) / 1000, dx0 = W / 2 + dfx.x - cam.x, dy0 = CY + dfx.y - cam.y, du, de;
+          if (dT >= .28) { dashFx.splice(i, 1); continue; }
+          du = dT / .28; de = dfx.k ? 1 - Math.pow(1 - du, 3) : 1 - du * du;
+          cx.strokeStyle = 'rgb(165,225,255)'; cx.lineWidth = 1.6 * (1 - du) + .4; cx.globalAlpha = .75 * (1 - du);
+          cx.beginPath(); cx.arc(dx0, dy0, dsr * (.6 + 3.2 * de), 0, 6.2832); cx.stroke();
+          cx.fillStyle = 'rgb(220,244,255)'; cx.globalAlpha = .35 * Math.pow(1 - du, 2);
+          cx.beginPath(); cx.arc(dx0, dy0, dsr * 1.8, 0, 6.2832); cx.fill();
         }
         cx.restore();
       }
