@@ -2806,6 +2806,7 @@
     /* kaçış parkuru durumu */
     var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
         best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
+    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogCv = null, fogCx = null, fogSp = null;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     /* ASTRO'ya özel ses ayarı (SNDA): genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ayar geri yüklenir */
@@ -3064,7 +3065,7 @@
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0;
-      pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
+      fogStop(); fogK = 0; fogZ = []; pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
@@ -3085,7 +3086,16 @@
     /* --- kıvrımlı koridor: merkez çizgisi parçalardan (düz, yumuşak viraj, keskin viraj, şimşek) üretilir ---
        Genişlik sabit kalır: yatay yarı genişlik = cw * sqrt(1 + eğim²) (yani yola dik genişlik hep cw). */
     var tk = [], tkY = 0, tkX = 0, tkDir = 1;
-    function trackInit(y0) { tk = []; tkY = y0 - S * 3.5; tkX = 0; tkDir = Math.random() < .5 ? -1 : 1; }
+    function trackInit(y0) { tk = []; tkY = y0 - S * 3.5; tkX = 0; tkDir = Math.random() < .5 ? -1 : 1; fogZ = []; fogNextY = y0 - S * rnd(16, 26); }
+    /* --- SİS: şansa bağlı, 75-100 m (7.5-10 S) süren bölge. Yalnızca durağan engel; yol düz/yumuşak virajlı; istasyondan uzak --- */
+    function fogAt(y) { for (var i = 0; i < fogZ.length; i++) if (y <= fogZ[i].y0 && y > fogZ[i].y1) return fogZ[i]; return null; }
+    function fogClash(y0, y1) { if (!bOn) return false; for (var k = 0; k < 4; k++) { var ys = stNextY - k * S * ST_GAP; if (ys + S * 3.2 > y1 && ys - S * 3.2 < y0) return true; } return false; }
+    function fogPlan() {
+      if (tkY > fogNextY) return;
+      var L = S * rnd(7.5, 10);
+      if ((oy - tkY) / (S * .1) < 150 || Math.random() < .45 || fogClash(tkY, tkY - L)) { fogNextY = tkY - S * rnd(8, 14); return; }
+      fogZ.push({ y0: tkY, y1: tkY - L, ph: Math.random() * 6.28, on: false }); fogNextY = tkY - L - S * rnd(16, 30);
+    }
     function tkSeg(L, dx, a) { tk.push({ y0: tkY, y1: tkY - L, x0: tkX, x1: tkX + dx, a: a }); tkY -= L; tkX += dx; }
     function tkAdd() {
       if (bOn && tkY <= stNextY + S * ST_LEN / 2) {                 // istasyon sırası geldi: düz bir koridor parçası ekle, istasyonu ortasına koy
@@ -3100,6 +3110,8 @@
         if (tkX > XM * .55) tkDir = -1; else if (tkX < -XM * .55) tkDir = 1;
         return tkDir;
       }
+      fogPlan();
+      if (fogAt(tkY)) { tkSeg(S * rnd(3.4, 4.6), turn() * S * rnd(.35, .75) * amp, .5); return; }   // sis içinde şimşek/keskin viraj yok
       if (sec < 1.2) r = r < .3 ? 0 : .35;                          // başlangıçta yalnızca yumuşak virajlar
       else if (sec < 3) r = r < .22 ? 0 : r < .75 ? .35 : .8;
       if (r < .2) { tkSeg(S * rnd(1.2, 2.4), 0, .5); return; }       // düz
@@ -3264,10 +3276,10 @@
     // desenler: her biri uzunluk (px) döndürür. d = zorluk (0..)
     var PAT = {
       field: function (y0, d) {
-        var L = S * (1.0 + Math.min(.6, d * .05)), n = 3 + Math.min(7, d + ((Math.random() * 2) | 0));
+        var L = S * (1.0 + Math.min(.6, d * .05)), n = 3 + Math.min(7, d + ((Math.random() * 2) | 0)) + (fogP ? 1 : 0);
         var drs = [];
         for (var i = 0; i < n; i++) {
-          var r = S * rnd(.045, .085), isA = d >= 3 && Math.random() < Math.min(.5, .22 + d * .03), isD = !isA && d >= 2 && Math.random() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
+          var r = S * rnd(.045, .085), isA = !fogP && d >= 3 && Math.random() < Math.min(.5, .22 + d * .03), isD = !isA && !fogP && d >= 2 && Math.random() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
           for (var tr = 0; tr < 12; tr++) {
             var ry = y0 - rnd(.08, .92) * L, rx = rnd(-cw * .9, cw * .9) + T(ry);
             if (!rockFree(rx, ry, r, am)) continue;
@@ -3288,7 +3300,7 @@
         return sp * (n + .4);
       },
       gate: function (y0, d) {
-        var gw = S * Math.max(.24, .46 - d * .02), h = S * .07, y = y0 - S * .35, t = T(y), gl = rnd(-cw * .6, cw * .6), gx = gl + t,
+        var gw = S * Math.max(fogP ? .4 : .24, .46 - d * .02), h = S * .07, y = y0 - S * .35, t = T(y), gl = rnd(-cw * .6, cw * .6), gx = gl + t,
             E = (bAct ? bLim + S * .215 : cw + W) * Lw(y);
         obs.push({ t: 'wall', x0: t - E, x1: gx - gw / 2, y: y, h: h, near: false });
         obs.push({ t: 'wall', x0: gx + gw / 2, x1: t + E, y: y, h: h, near: false });
@@ -3488,6 +3500,7 @@
     function pickPat(d) {                                          // zorluğa göre açılan desenler; ağırlıklı rastgele, art arda aynısı yok
       var w = { field: 3, slalom: 2 };
       if (forkCool > 0) forkCool--;
+      if (fogP) { var rf = Math.random() * 7; return rf < 3 ? 'field' : rf < 5 ? 'slalom' : 'gate'; }
       if (d >= 1) w.gate = 2;
       if (d >= 2) w.laser = 2;
       if (d >= 3) { w.pendulum = 2; }
@@ -3509,6 +3522,7 @@
         var d = Math.floor(-(genY - oy) / (S * .1) / 50), y0 = genY;
         var cwS = cw;
         if (bOn && y0 < bStartY + S * 1.8) { bAct = true; bLim = cw - S * .215; cw = cw - S * .26; }   // sınır kayaları var: engeller daha dar alanda kurulur
+        fogP = !!fogAt(y0);
         var nm = pickPat(d), n0 = obs.length, pk0 = pick.length, L = PAT[nm](y0, d); lastPat = nm;
         if (stns.length && stZone(y0, y0 - L)) { obs.length = n0; pick.length = pk0; cw = cwS; bAct = false; genY = y0 - S * .4; continue; }   // istasyonun önü/arkası boş kalır
         if (bAct) for (var kk = n0; kk < obs.length; kk++) {          // kayalar sınır kuşağının içine taşmasın
@@ -3544,7 +3558,7 @@
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
     function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); gainApply(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); sndCur = SNDG; sndApply(); }
+    function close() { fogStop(); pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); sndCur = SNDG; sndApply(); }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -3627,7 +3641,7 @@
     function spawn(k) {
       k = k || 1;
       var dx = Math.cos(P.h), dy = Math.sin(P.h), nx = -dy, ny = dx, u = S * 0.026,
-          sp = S * (.5 + Math.random() * .22) * (.6 + .4 * k), j = (Math.random() - .5) * S * .022;
+          sp = S * (.5 + Math.random() * .22) * (.6 + .4 * k) * (1 - .5 * fogK), j = (Math.random() - .5) * S * .022;
       parts.push({ x: P.x - dx * u * 2.2 + nx * j * .25, y: P.y - dy * u * 2.2 + ny * j * .25,
         vx: P.vx - dx * sp + nx * j, vy: P.vy - dy * sp + ny * j,
         l: 1, d: .26 + Math.random() * .26, r: u * (.06 + Math.random() * .08), c: 0 });
@@ -3688,6 +3702,7 @@
     }
     function dashTry() {
       if (dead || devOn || dashPh || (race && pre)) return;
+      if (fogK > .45) { fogBlock(); return; }
       if (dashCd > 0) {                                          // şarj bekleniyor: benzini bitmiş motor gibi tıkırtı + öksürme sesi
         var nw = performance.now();
         if (nw - dashFailAt > 450) {
@@ -3736,6 +3751,10 @@
           vx = jv.x, vy = jv.y, m = Math.hypot(vx, vy);
       if (kx || ky) { var l = Math.hypot(kx, ky); vx = kx / l; vy = ky / l; m = 1; }
       var WS = wingStats();
+      { var fz = (race && !dead && !pre) ? fogAt(P.y) : null, ft = 0;
+        if (fz) { ft = Math.max(0, Math.min(1, Math.min(fz.y0 - P.y, P.y - fz.y1) / (S * 1.1))); ft = ft * ft * (3 - 2 * ft); if (!fz.on && ft > .08) { fz.on = true; banner = 'SİS'; bannerT = 2.4; try { bell(semi(-19), .06, 0, 0, .6); } catch (e) {} } }
+        fogK += (ft - fogK) * (1 - Math.exp(-dt / .35)); if (fogK < .002 && !fz) fogK = 0;
+        while (fogZ.length && fogZ[0].y0 > P.y + H * 2.2) fogZ.shift(); }
       // dönüş: açısal ivme + atalet. RCS torku sınırlı; hız ve jet itişi arttıkça gövde ağırlaşır, tork zorlaşır
       var spd0 = Math.hypot(P.vx, P.vy), auth = (1 / (1 + 1.6 * Math.min(1, spd0 / (S * 0.6)))) * (1 - 0.2 * th),
           aMax = 8 * auth * WS.man, wMax = 3.4 * (0.45 + 0.55 * auth) * (0.5 + 0.5 * Math.min(1, m)) * WS.man, alpha = 0;
@@ -3777,6 +3796,7 @@
       } else if (!race) spinAcc = 0;
       var jetting = jetId !== null || keys[' '];
       if (!jetting || engK() !== 'wide') tOn = false;
+      else if (fogK > .45) { tOn = false; if (tReq) fogBlock(); }
       else if (tReq && !tOn) {
         if (tb > .02) { tOn = true; pop('TURBO', P.x, P.y - S * .1, true); sfxTurbo(); vib([12, 18, 12]); }
         else {                                                  // turbo boş: marş basıyor ama tutmuyor
@@ -3796,7 +3816,7 @@
       heat += (th - heat) * (1 - Math.exp(-dt / (th > heat ? 0.15 : 0.9)));
       // İniş-kalkış desteği: yalnızca (1) ilk kalkışta, (2) hızlıyken ters yöne itişle frenlerken kısa süreli yardım; yumuşak girip çıkar
       var lvI = window.DDShop ? DDShop.lv('itis') : 0, asT = 0;
-      if (lvI > 0 && th > .05) {
+      if (lvI > 0 && th > .05 && fogK < .45) {
         var sp0 = Math.hypot(P.vx, P.vy), hx0 = Math.cos(P.h), hy0 = Math.sin(P.h),
             tkK = Math.max(0, 1 - sp0 / (S * .30)), bkK = 0;
         if (sp0 > S * .12) bkK = Math.max(0, Math.min(1, (-(hx0 * P.vx + hy0 * P.vy) / sp0 - .25) / .5)) * Math.min(1, (sp0 - S * .12) / (S * .18));
@@ -3804,10 +3824,10 @@
       }
       asK += (asT - asK) * (1 - Math.exp(-dt / (asT > asK ? .12 : .35)));
       tfk = 1 + .09 * lvI * asK;
-      var A = S * 0.11 * th * tfk * WS.ivme * (1 + 1.2 * odK) * jetTaper(spd0, WS.hiz * (1 + .45 * odC)), dm = Math.exp(-dt * 0.05);
+      var A = S * 0.11 * th * tfk * WS.ivme * (1 + 1.2 * odK) * jetTaper(spd0, WS.hiz * (1 + .45 * odC)), dm = Math.exp(-dt * (0.05 + .25 * fogK));
       // HIZLANMA güçlendirmesi: ani fırlatma yok. Kalan itiş (boostRem) ~0.6 sn'de yumuşakça eklenir, gemi bu sırada yönlendirilebilir.
       // İtiş yönü: burun ileri bakıyorsa burun, değilse gidiş yönü. Hız boostCap'i aşmaz (yüksek hızda güçlendirme neredeyse etkisizdir).
-      if (boostRem > 0.5) {
+      if (boostRem > 0.5 && fogK < .45) {
         var bsp = Math.hypot(P.vx, P.vy), bhx = Math.cos(P.h), bhy = Math.sin(P.h),
             bux = bsp > S * .08 ? P.vx / bsp : bhx, buy = bsp > S * .08 ? P.vy / bsp : bhy,
             bal = Math.max(0, Math.min(1, (bhx * bux + bhy * buy + .2) / .9)),
@@ -3832,7 +3852,7 @@
       var fk = 1 - Math.exp(-dt / 0.12); flapL += (tL - flapL) * fk; flapR += (tR - flapR) * fk;
       if (Math.abs(hv) > 0.7) { rrot += dt * 12 * Math.min(1, Math.abs(hv) / 4); while (rrot >= 1) { rrot--; rcsYaw(hv > 0 ? 1 : -1); } }
       P.vx = tx * dm; P.vy = ty * dm;
-      var sp = Math.hypot(P.vx, P.vy), mx = S * 0.9 * WS.hiz * (1 + .45 * odC);
+      var sp = Math.hypot(P.vx, P.vy), mx = S * 0.9 * WS.hiz * (1 + .45 * odC) * (1 - .65 * fogK);
       if (sp > mx) { P.vx *= mx / sp; P.vy *= mx / sp; sp = mx; }
       var px0 = P.x, py0 = P.y;
       P.x += P.vx * dt; P.y += P.vy * dt;
@@ -3841,7 +3861,7 @@
       var k = 1 - Math.exp(-dt / (0.35 - .2 * dcK)); cam.x += (P.x - cam.x) * k; cam.y += (P.y - cam.y) * k;
       var ox = P.x - cam.x, oy = P.y - cam.y, lim = S * (0.28 + .3 * dcK), ol = Math.hypot(ox, oy);
       if (ol > lim) { cam.x = P.x - ox / ol * lim; cam.y = P.y - oy / ol * lim; }
-      if (th > 0.15) { var tfp = 1 + .5 * (tfk - 1); emit += dt * 46 * th * tfp; while (emit >= 1) { emit--; spawn(th * tfp); } }
+      if (th > 0.15) { var tfp = 1 + .5 * (tfk - 1); emit += dt * 46 * th * tfp * (1 - .4 * fogK); while (emit >= 1) { emit--; spawn(th * tfp); } }
       for (var i = parts.length - 1; i >= 0; i--) {
         var q = parts[i]; q.x += q.vx * dt; q.y += q.vy * dt; q.l -= dt / q.d;
         if (q.l <= 0) parts.splice(i, 1);
@@ -4303,9 +4323,9 @@
         var nearSt = false, ni; for (ni = 0; ni < stns.length; ni++) if (Math.abs(P.y - stns[ni].y) < S * 2.6) { nearSt = true; break; }
         if (nearSt) wv *= .5;                                          // istasyona yaklaşırken yavaşlamak kazandığın farkı yemesin
         else if (gap > H * 1.6) wv = Math.max(wv, (gap - H * 1.4) * .2);   // yetişme kuralı yalnızca çok büyük farkta, daha yumuşak
-        waveY -= wv * dt; gap = waveY - P.y;
+        wv *= 1 - .65 * fogK; waveY -= wv * dt; gap = waveY - P.y;
       }
-      fireStep(dt, wv);
+      fireStep(dt * (1 - .45 * fogK), wv);
       if (gap < H * .5 && !inS) {
         lastWarn -= dt; if (lastWarn <= 0) { lastWarn = Math.max(.35, gap / H); sfxWarn(); vib(8); }
       }
@@ -4327,8 +4347,8 @@
           cpCap = S * (.06 + .03 * lvC),                           // fren kapasitesi (px/sn²): seviye 1 = .09S … seviye 5 = .21S
           cpMaxS = Math.min(S * 1.5, cpSpd * cpSpd / (2 * cpCap) * 1.5 + S * .15),   // ne kadar ileriye bakılacağı
           cpJet = (jetId !== null || keys[' ']) && ((!lock && en > 0) || (tOn && tb > 0)),                          // jet basılıysa sürücü bilerek itiyor: önleyici devre dışı
-          cpOn = lvC > 0 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0,
-          cpOnE = lvC > 0 && !dead && !cpJet, eNeed = 0, edx = 0, edy = 0, cpEc = cpCap * 1.5;   // yanal gaz iticileri fren motorlarından güçlü   // süzülen kayalar için kaçınma: gemi dururken bile çalışır (kaya gelir)
+          cpOn = lvC > 0 && fogK < .45 && !dead && !cpJet && cpSpd > 1e-3, cpNeed = 0,
+          cpOnE = lvC > 0 && fogK < .45 && !dead && !cpJet, eNeed = 0, edx = 0, edy = 0, cpEc = cpCap * 1.5;   // yanal gaz iticileri fren motorlarından güçlü   // süzülen kayalar için kaçınma: gemi dururken bile çalışır (kaya gelir)
       for (i = 0; i < obs.length; i++) {
         o = obs[i];
         if (Math.abs(o.y - P.y) > S * 1.6) continue;
@@ -5410,6 +5430,74 @@
       if ('letterSpacing' in cx) { cx.letterSpacing = (ls || 0) + 'px'; cx.fillText(s, x + (ls || 0) / 2, y); } else cx.fillText(s, x, y);
       cx.restore();
     }
+
+    function fogBlock() { var n = performance.now(); if (n - fogMsgT < 1400) return; fogMsgT = n; pop('SİSTE ÇALIŞMAZ', P.x, P.y - S * .1, false); try { sfxTurboFail(); } catch (e) {} vib([20, 30, 20]); }
+    /* ambiyans: alçak, hafif uyumsuz iki ton + yavaş rüzgâr; ara sıra uzakta uyumsuz çan. Yalnızca sisteyken çalışır. */
+    function fogStop() { if (!fogSnd) return; try { fogSnd.o1.stop(); fogSnd.o2.stop(); fogSnd.lf.stop(); fogSnd.ns.stop(); fogSnd.g.disconnect(); } catch (e) {} fogSnd = null; fogLv = -1; }
+    function fogSound(on, t) {
+      if (!AC || !bus) return;
+      try {
+        if (on && !fogSnd) {
+          var g = AC.createGain(), o1 = AC.createOscillator(), o2 = AC.createOscillator(), lf = AC.createOscillator(), lg = AC.createGain(), lp = AC.createBiquadFilter(),
+              ns = AC.createBufferSource(), nb = AC.createBuffer(1, AC.sampleRate * 2, AC.sampleRate), d = nb.getChannelData(0), bp = AC.createBiquadFilter(), ng = AC.createGain(), i;
+          for (i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+          g.gain.value = 0; o1.type = 'sine'; o1.frequency.value = 43; o2.type = 'triangle'; o2.frequency.value = 45.1; lp.type = 'lowpass'; lp.frequency.value = 180;
+          lf.frequency.value = .13; lg.gain.value = 90; ns.buffer = nb; ns.loop = true; bp.type = 'bandpass'; bp.frequency.value = 320; bp.Q.value = 3.5; ng.gain.value = .5;
+          lf.connect(lg); lg.connect(bp.frequency); o1.connect(lp); o2.connect(lp); lp.connect(g); ns.connect(bp); bp.connect(ng); ng.connect(g); g.connect(bus);
+          o1.start(); o2.start(); lf.start(); ns.start(); fogSnd = { g: g, o1: o1, o2: o2, lf: lf, ns: ns }; fogLv = -1; fogCreak = t + rnd(3, 6);
+        }
+        if (!fogSnd) return;
+        var lv = on ? Math.round(fogK * 20) / 20 : 0;
+        if (lv !== fogLv) { fogLv = lv; fogSnd.g.gain.setTargetAtTime(.11 * lv, AC.currentTime, .5); }
+        if (!on && fogLv === 0) { var fs = fogSnd; setTimeout(function () { if (fogSnd === fs && fogLv === 0) fogStop(); }, 1800); }
+        if (on && fogK > .5 && t > fogCreak) { fogCreak = t + rnd(5, 11); var b = -26 + ((Math.random() * 3) | 0), pn = rnd(-.8, .8); bell(semi(b), .04, pn, 0, 3); bell(semi(b + 1), .03, pn, .05, 3); }
+      } catch (e) { fogStop(); }
+    }
+    function fogDraw(CY, t) {
+      if (devOn) return;
+      var i, j, e, ys, r, bx, by, a;
+      if (!fogSp) {
+        fogSp = document.createElement('canvas'); fogSp.width = fogSp.height = 96; var c0 = fogSp.getContext('2d'), g0 = c0.createRadialGradient(48, 48, 0, 48, 48, 48);
+        g0.addColorStop(0, 'rgba(176,196,204,.55)'); g0.addColorStop(.5, 'rgba(176,196,204,.2)'); g0.addColorStop(1, 'rgba(176,196,204,0)'); c0.fillStyle = g0; c0.fillRect(0, 0, 96, 96);
+        fogCv = document.createElement('canvas'); fogCx = fogCv.getContext('2d');
+      }
+      cx.save();
+      // yaklaşırken görünen sis duvarı (bölgenin giriş ve çıkış kenarı)
+      for (i = 0; i < fogZ.length; i++) for (e = 0; e < 2; e++) {
+        ys = CY + (e ? fogZ[i].y1 : fogZ[i].y0) - cam.y; if (ys < -S || ys > H + S) continue;
+        for (j = 0; j < 9; j++) {
+          r = S * (.34 + .16 * ((j * 7 + i) % 3)); bx = W / 2 + T(e ? fogZ[i].y1 : fogZ[i].y0) - cam.x + (j - 4) * cw * .26 + Math.sin(t * .35 + j * 1.7 + fogZ[i].ph) * S * .06;
+          by = ys + Math.sin(t * .27 + j * 2.3) * S * .05 + (j % 2 ? S * .08 : -S * .08);
+          cx.globalAlpha = (e ? .16 : .3) * (1 - .5 * fogK); cx.drawImage(fogSp, bx - r, by - r, r * 2, r * 2);
+        }
+      }
+      if (fogK > .004) {
+        var w = Math.max(24, Math.ceil(W / 6)), h = Math.max(24, Math.ceil(H / 6)), k = w / W, c = fogCx, sx = W / 2 + P.x - cam.x, sy = CY + P.y - cam.y, dt2 = Math.min(.05, Math.max(0, t - fogLt)), g, fl, R;
+        if (fogCv.width !== w || fogCv.height !== h) { fogCv.width = w; fogCv.height = h; }
+        fogLt = t; if (dead) fogK = Math.max(0, fogK - dt2 * 1.2); fogHa += wrap(P.h - fogHa) * (1 - Math.exp(-dt2 / .09));            // fener gövdeyi biraz geriden izler
+        if (t > fogFlN) { fogFlU = t + .16; fogFlN = t + rnd(4, 10); }
+        fl = (1 + .025 * Math.sin(t * 13.1) + .02 * Math.sin(t * 23.7) + .03 * Math.sin(t * 1.1)) * (t < fogFlU ? .55 + .2 * Math.sin(t * 90) : 1);   // titreme + ara sıra kesik
+        c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.fillStyle = 'rgb(15,21,24)'; c.fillRect(0, 0, w, h);
+        c.globalCompositeOperation = 'destination-out';
+        var wy = CY + waveY - cam.y - S * .55;                                          // arkadaki alevin parıltısı sisin içinden seçilir
+        if (wy < H) { g = c.createLinearGradient(0, wy * k, 0, (wy + S * .5) * k); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)'); c.fillStyle = g; c.fillRect(0, Math.max(0, wy * k), w, h); }
+        R = S * .15 * k * fl; g = c.createRadialGradient(sx * k, sy * k, 0, sx * k, sy * k, R);   // gemi çevresi
+        g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.5, 'rgba(0,0,0,.8)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(sx * k - R, sy * k - R, R * 2, R * 2);
+        R = S * .66 * k * fl; g = c.createRadialGradient(sx * k, sy * k, 0, sx * k, sy * k, R);   // ön fener konisi (iki geçiş: yumuşak kenar)
+        g.addColorStop(0, 'rgba(0,0,0,.95)'); g.addColorStop(.45, 'rgba(0,0,0,.7)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+        c.save(); c.translate(sx * k, sy * k); c.rotate(fogHa); c.fillStyle = g;
+        c.globalAlpha = .5; c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R * .9, -.68, .68); c.closePath(); c.fill();
+        c.globalAlpha = 1; c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, R, -.36, .36); c.closePath(); c.fill(); c.restore();
+        c.globalCompositeOperation = 'source-over';
+        cx.globalAlpha = Math.min(1, fogK) * .97; cx.imageSmoothingEnabled = true; cx.drawImage(fogCv, 0, 0, W, H);
+        for (i = 0; i < 8; i++) {                                                        // süzülen sis tutamları
+          r = S * (.5 + .12 * (i % 4)); bx = ((i * 211 + t * (7 + i * 1.9) - cam.x * .45) % (W + r * 2) + (W + r * 2)) % (W + r * 2) - r; by = ((i * 173 - t * (4 + i) * .6 - cam.y * .45) % (H + r * 2) + (H + r * 2)) % (H + r * 2) - r;
+          cx.globalAlpha = fogK * (.1 + .02 * (i % 3)); cx.drawImage(fogSp, bx - r, by - r, r * 2, r * 2);
+        }
+        a = fogK * (.7 + .3 * fl); cx.globalAlpha = a; cx.fillStyle = 'rgb(255,238,196)'; cx.beginPath(); cx.arc(sx + Math.cos(fogHa) * S * .045, sy + Math.sin(fogHa) * S * .045, 1.8, 0, 6.2832); cx.fill();   // fener merceği
+      }
+      cx.restore();
+    }
     function drawOverlay(CY, t) {
       var i, p;
       // geri sayım: ekranın tam ortasında, büyük; her sayı yumuşakça belirir, hafifçe küçülür ve söner
@@ -5618,6 +5706,7 @@
         cx.restore(); W = W0; H = H0; CY = H * 0.46;
       }
       if (race && !devOn) lensPass(CY, ts / 1000);                               // kara delik bükülmesi (gemi ve dünya çizildikten sonra, arayüzden önce)
+      if (race) { fogDraw(CY, ts / 1000); fogSound(fogK > .02 && mode === 1 && !dead, ts / 1000); }
       if (race) drawOverlay(CY, ts / 1000);
       if (race) dither();                                                        // gradyan bantlaşmasını (piksel piksel renk basamakları) dağıtır
       // joystick (dokunulan yerde belirir)
