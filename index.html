@@ -444,6 +444,32 @@
   @keyframes sptail { from { opacity: .9; transform: scaleY(1); } to { opacity: 0; transform: scaleY(.2); } }
   @keyframes spti { from { opacity: 0; filter: blur(8px); letter-spacing: .45em; text-indent: .45em; } to { opacity: 1; filter: blur(0); letter-spacing: .22em; text-indent: .22em; } }
   @keyframes spfade { from { opacity: 0; } to { opacity: 1; } }
+  /* ---------- Ses sayfası (genel + ASTRO): ses efektleri ve müzik için anahtar + seviye ---------- */
+  .sndpg { position: absolute; inset: 0; z-index: 3; background: #000; display: flex; flex-direction: column; align-items: center; padding: 17% 0 10%; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
+  .sndpg.on { opacity: 1; pointer-events: auto; }
+  .sndback { position: absolute; left: 5%; width: 36px; height: 36px; border: 1px solid rgba(244,242,238,.22); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--soft); transition: background .2s ease; }
+  #snd .sndback { top: 8.5%; }
+  #spsnd .sndback { top: calc(env(safe-area-inset-top, 0px) + 8.5%); }
+  .sndback i { display: block; width: 8px; height: 8px; margin-left: 3px; border-left: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); pointer-events: none; }
+  .sndback:active { background: rgba(244,242,238,.12); }
+  .sndt { font-size: clamp(38px, 10vmin, 60px); font-weight: 100; letter-spacing: .22em; text-indent: .22em; line-height: 1.05; text-align: center; }
+  .sndsub { margin-top: 12px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
+  .sndl { margin-top: 9vh; width: min(100%, 440px); padding: 0 22px; display: flex; flex-direction: column; }
+  .sndnote { margin-top: 14px; padding: 0 26px; font-size: 11px; line-height: 1.6; letter-spacing: .06em; color: var(--dim); text-align: center; width: min(100%, 440px); }
+  .swr { padding: 18px 4px 8px; border-bottom: 1px solid rgba(244,242,238,.14); }
+  .swh { display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer; font-size: 14px; font-weight: 300; letter-spacing: .1em; color: var(--fg); -webkit-tap-highlight-color: transparent; }
+  .swh small { display: block; margin-top: 6px; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+  .sw { position: relative; flex: none; width: 50px; height: 30px; border-radius: 15px; border: 1px solid rgba(244,242,238,.3); background: transparent; transition: background .22s ease, border-color .22s ease; }
+  .sw::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: rgba(244,242,238,.55); transition: transform .24s cubic-bezier(.3,.7,.3,1), background .22s ease; }
+  .sw.on { background: var(--fg); border-color: var(--fg); }
+  .sw.on::after { transform: translateX(20px); background: #000; }
+  .vr { display: flex; align-items: center; gap: 14px; margin-top: 2px; transition: opacity .25s ease; }
+  .vt { flex: 1; height: 34px; position: relative; touch-action: none; cursor: pointer; }
+  .vt::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 2px; border-radius: 2px; background: rgba(244,242,238,.16); }
+  .vt i { position: absolute; left: 0; top: 16px; height: 2px; border-radius: 2px; background: var(--fg); }
+  .vt b { position: absolute; top: 8px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 12px rgba(244,242,238,.25); }
+  .vp { flex: none; width: 42px; text-align: right; font-size: 11px; letter-spacing: .12em; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .swr.off .vr { opacity: .35; }
   /* ASTRO ayarları (yalnızca ASTRO'yu etkiler) */
   #spset { position: absolute; inset: 0; z-index: 4; background: #000; display: flex; flex-direction: column; align-items: center; padding: 17% 0 10%; opacity: 0; pointer-events: none; transition: opacity .35s ease; }
   #spset.on { opacity: 1; pointer-events: auto; }
@@ -467,13 +493,6 @@
   #spssub { margin-top: 12px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: var(--dim); text-align: center; }
   #spslist { margin-top: 9vh; width: min(100%, 440px); padding: 0 22px; display: flex; flex-direction: column; }
   #spsnote { margin-top: 14px; padding: 0 26px; font-size: 11px; line-height: 1.6; letter-spacing: .06em; color: var(--dim); text-align: center; width: min(100%, 440px); }
-  #spslist .si.vol { flex-wrap: wrap; cursor: default; }
-  #spslist .si.vol:active { opacity: 1; }
-  #spslist .si.vol.off > * { opacity: .35; }
-  #spvt { flex-basis: 100%; height: 34px; margin-top: 10px; position: relative; touch-action: none; cursor: pointer; }
-  #spvt::before { content: ''; position: absolute; left: 0; right: 0; top: 16px; height: 2px; border-radius: 2px; background: rgba(244,242,238,.16); }
-  #spvt i { position: absolute; left: 0; top: 16px; height: 2px; border-radius: 2px; background: var(--fg); }
-  #spvt b { position: absolute; top: 8px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); box-shadow: 0 0 12px rgba(244,242,238,.25); }
   #sppv { position: absolute; z-index: 2; left: 0; right: 0; top: calc(env(safe-area-inset-top, 0px) + 14px); display: none; flex-direction: column; align-items: center; gap: 10px; pointer-events: none; }
   #space.pv.play #sppv { display: flex; }
   #space.pv #spause { display: none !important; }
@@ -905,6 +924,7 @@
     <div id="stitle">Ayarlar</div><div id="ssub">tüm oyunlar için</div>
     <div id="slist"></div>
     <div id="snote">Bu ayarlar bütün oyunları etkiler.</div>
+    <div id="snd" class="sndpg"><div id="sndback" class="sndback" aria-label="Geri"><i></i></div><div class="sndt">Ses</div><div class="sndsub">tüm oyunlar için</div><div id="sndl" class="sndl"></div><div class="sndnote">Anahtarla aç ya da kapat, çubukla seviyeyi ayarla.</div></div>
   </div>
   <div id="conf"><div id="cpanel"><h3>İlerlemeler silinsin mi?</h3><p>Tüm oyunlardaki bölümler, rekorlar ve öğreticiler silinir. Her şey ilk kez yüklenmiş gibi baştan başlar. Bu işlem geri alınamaz.</p><div id="crow"><div id="cno">Vazgeç</div><div id="cyes">Sıfırla</div></div></div></div>
 
@@ -945,7 +965,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><u></u><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><u></u><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="spsnd" class="sndpg"><div id="spsndback" class="sndback" data-sa="sndback" aria-label="Geri"><i></i></div><div class="sndt">Ses</div><div class="sndsub">yalnızca ASTRO</div><div id="spsndl" class="sndl"></div><div class="sndnote">Anahtarla aç ya da kapat, çubukla seviyeyi ayarla.</div></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
 </div>
 
 <script>
@@ -1879,7 +1899,59 @@
      Yumuşak çan / kalimba tınıları, Re majör pentatonik, hafif oda yankısı.
      Her dokunuş: tahtanın doluluğuna göre perde, sütuna göre sağ-sol konum, hafif rastgele ince ayar. */
   var AC = null, bus = null, master = null;
-  var muted = false;
+  var mbus = null;      // müzik kanalı (bus = ses efektleri kanalı); ikisi de aynı yankı/sıkıştırıcı zincirine girer
+  /* Ses tercihleri: ses efekti ve müzik ayrı ayrı anahtar + seviye. Genel (SNDG) ve ASTRO (SNDA) için ayrı kaydedilir. */
+  function sndRead(pf, legOff, legVol) {
+    var lo = legOff(), lv = legVol();
+    function on(k, d) { var v = STORE.get(pf + k); return v == null ? d : v !== '0'; }
+    function vol(k, d) { var v = parseInt(STORE.get(pf + k), 10); return isNaN(v) ? d : Math.max(0, Math.min(100, v)); }
+    return { sfx: on('sfx', !lo), mus: on('mus', !lo), sfxV: vol('sfxv', lv), musV: vol('musv', lv) };
+  }
+  var SNDG = sndRead('dd_', function () { return STORE.get('dd_mute') === '1'; }, function () { return 100; });
+  var SNDA = sndRead('dd_astro_', function () { return STORE.get('dd_astro_snd') === '0'; }, function () { var v = parseInt(STORE.get('dd_astro_vol'), 10); return isNaN(v) ? 100 : Math.max(0, Math.min(100, v)); });
+  var sndCur = SNDG;                                           // etkin profil: ASTRO açıkken SNDA, aksi halde SNDG
+  function sndSave(p) {
+    var pf = p === SNDA ? 'dd_astro_' : 'dd_';
+    STORE.set(pf + 'sfx', p.sfx ? '1' : '0'); STORE.set(pf + 'sfxv', String(p.sfxV)); STORE.set(pf + 'mus', p.mus ? '1' : '0'); STORE.set(pf + 'musv', String(p.musV));
+  }
+  function sndApply() {
+    if (!AC || !bus || !mbus) return;
+    var t = AC.currentTime, p = sndCur;
+    bus.gain.setTargetAtTime(p.sfx ? p.sfxV / 100 : 0, t, 0.03);
+    mbus.gain.setTargetAtTime(p.mus ? p.musV / 100 : 0, t, 0.03);
+  }
+  function sndLabel(p) { return (p.sfx && p.mus) ? 'açık' : (!p.sfx && !p.mus) ? 'kapalı' : 'özel'; }
+  /* Ses sayfası bileşeni: iki satır (Ses efektleri, Müzik); başlığa dokununca anahtar, çubuğu sürükleyince seviye */
+  function sndMount(host, getP) {
+    var drag = null, dEl = null;
+    function row(k, t, sub) { return '<div class="swr" data-k="' + k + '"><div class="swh"><span>' + t + '<small>' + sub + '</small></span><i class="sw" role="switch"></i></div><div class="vr"><div class="vt"><i></i><b></b></div><span class="vp"></span></div></div>'; }
+    host.innerHTML = row('sfx', 'Ses efektleri', 'dokunuş, jet ve oyun sesleri') + row('mus', 'Müzik', 'arka plan müziği');
+    function paint() {
+      var p = getP(); ['sfx', 'mus'].forEach(function (k) {
+        var r = host.querySelector('[data-k="' + k + '"]'), v = p[k + 'V'], sw = r.querySelector('.sw');
+        r.classList.toggle('off', !p[k]); sw.classList.toggle('on', !!p[k]); sw.setAttribute('aria-checked', p[k] ? 'true' : 'false');
+        r.querySelector('.vt i').style.width = v + '%'; r.querySelector('.vt b').style.left = v + '%'; r.querySelector('.vp').textContent = v + '%';
+      });
+    }
+    function setV(e) {
+      var p = getP(), k = dEl.closest('.swr').getAttribute('data-k'), r = dEl.getBoundingClientRect();
+      p[k + 'V'] = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 20) * 5;   // %5 adımlarla
+      p[k] = true; paint(); sndApply();
+    }
+    function blip(k) { if (k === 'sfx' && getP().sfx) bell(semi(7), 0.14, 0, 0, 1.4); }
+    host.addEventListener('pointerdown', function (e) {
+      var t = e.target; if (!t || !t.closest) return;
+      var vt = t.closest('.vt'), hd = t.closest('.swh'); if (!vt && !hd) return;
+      e.preventDefault(); e.stopPropagation(); audioInit();
+      if (vt) { drag = e.pointerId; dEl = vt; try { vt.setPointerCapture(e.pointerId); } catch (_) {} setV(e); }
+      else { var k = hd.parentNode.getAttribute('data-k'), p = getP(); p[k] = !p[k]; sndSave(p); sndApply(); paint(); blip(k); }
+    });
+    host.addEventListener('pointermove', function (e) { if (e.pointerId === drag) { e.preventDefault(); setV(e); } });
+    function end(e) { if (e.pointerId !== drag) return; drag = null; var p = getP(); sndSave(p); sndApply(); blip(dEl.closest('.swr').getAttribute('data-k')); }
+    host.addEventListener('pointerup', end); host.addEventListener('pointercancel', end);
+    paint();
+    return { paint: paint };
+  }
   function makeImpulse(sec) {
     var rate = AC.sampleRate, len = Math.floor(rate * sec), b = AC.createBuffer(2, len, rate);
     for (var ch = 0; ch < 2; ch++) {
@@ -1894,14 +1966,15 @@
       AC = new (window.AudioContext || window.webkitAudioContext)();
       var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 4600; lp.Q.value = 0.3;
       var comp = AC.createDynamicsCompressor(); comp.threshold.value = -20; comp.ratio.value = 3; comp.attack.value = 0.01; comp.release.value = 0.3;
-      master = AC.createGain(); master.gain.value = muted ? 0 : 0.9;
-      bus = AC.createGain();
+      master = AC.createGain(); master.gain.value = 0.9;
+      var chain = AC.createGain(); bus = AC.createGain(); mbus = AC.createGain(); bus.connect(chain); mbus.connect(chain);
       var hp = AC.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 240;
       var conv = AC.createConvolver(); conv.buffer = makeImpulse(2.6);
       var wet = AC.createGain(); wet.gain.value = 0.42;
-      bus.connect(lp);
-      bus.connect(hp); hp.connect(conv); conv.connect(wet); wet.connect(lp);
+      chain.connect(lp);
+      chain.connect(hp); hp.connect(conv); conv.connect(wet); wet.connect(lp);
       lp.connect(comp); comp.connect(master); master.connect(AC.destination);
+      bus.gain.value = sndCur.sfx ? sndCur.sfxV / 100 : 0; mbus.gain.value = sndCur.mus ? sndCur.musV / 100 : 0;
     } catch (e) { AC = null; }
   }
   function vib(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
@@ -2122,7 +2195,6 @@
 
   /* ===== Ana menü ===== */
   var confirmNew = false, confirmTimer = 0, dec = [1, 0, 1, 0, 0, 1, 1, 1, 0];
-  muted = STORE.get('dd_mute') === '1';
 
   function syncChrome() {
     elHelp.classList.toggle('gone', G.menu && !G.sheet);
@@ -2138,7 +2210,7 @@
       h += '<div class="mi" data-act="how">Nasıl oynanır</div>';
     }
     h += '<div class="mi" data-act="sheet">Taktik</div>';
-    h += '<div class="mi" data-act="sound">Ses · ' + (muted ? 'kapalı' : 'açık') + '</div>';
+    h += '<div class="mi" data-act="sound">Ses · ' + ((SNDG.sfx || SNDG.mus) ? 'açık' : 'kapalı') + '</div>';
     elMlist.innerHTML = h;
   }
   function setMenu(on) {
@@ -2175,21 +2247,22 @@
     } else if (act === 'sheet') {
       openSheet(true);
     } else if (act === 'sound') {
-      muted = !muted; STORE.set('dd_mute', muted ? '1' : '0');
-      if (master) master.gain.value = muted ? 0 : 0.9;
+      var on0 = SNDG.sfx || SNDG.mus; SNDG.sfx = SNDG.mus = !on0; sndSave(SNDG); sndApply();
       refreshMenu();
-      if (!muted) bell(semi(7), 0.14, 0, 0, 1.4);
+      if (!on0) bell(semi(7), 0.14, 0, 0, 1.4);
     }
   }
   /* ===== Genel ayarlar (tüm oyunlar) ===== */
   var elSet = $('set'), elSlist = $('slist'), elConf = $('conf'), resetting = false;
   function buildSet() {
-    elSlist.innerHTML = '<div class="si" data-set="sound">Ses<small>' + (muted ? 'kapalı' : 'açık') + '</small></div>' +
+    elSlist.innerHTML = '<div class="si" data-set="sound">Ses<small>' + sndLabel(SNDG) + '</small></div>' +
       '<div class="si" data-set="dev">Geliştirici modu<small>' + (STORE.get('dd_dev') === '1' ? 'açık' : 'kapalı') + '</small></div>' +
       '<div class="si warn" data-set="reset">İlerlemeleri sıfırla<small>⟶</small></div>';
   }
+  var elSnd = $('snd'), sndG = sndMount($('sndl'), function () { return SNDG; });
+  function setSnd(on) { elSnd.classList.toggle('on', on); if (on) sndG.paint(); else buildSet(); }
   function setSettings(on) {
-    G.set = on; if (on) buildSet();
+    G.set = on; if (on) buildSet(); else elSnd.classList.remove('on');
     elSet.classList.toggle('on', on);
     if (!on) elConf.classList.remove('on');
   }
@@ -2198,7 +2271,7 @@
     // Tüm oyun ilerlemesi, rekorlar ve öğreticiler (dd_ ön ekli her kayıt). Ses, ASTRO ses ve geliştirici modu tercihleri korunur.
     try {
       var ks = [];
-      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute' && k !== 'dd_dev' && k !== 'dd_astro_snd' && k !== 'dd_astro_vol') ks.push(k); }
+      for (var i = 0; i < localStorage.length; i++) { var k = localStorage.key(i); if (k && k.indexOf('dd_') === 0 && k !== 'dd_mute' && k !== 'dd_dev' && k !== 'dd_astro_snd' && k !== 'dd_astro_vol' && !/^dd_(astro_)?(sfx|mus)v?$/.test(k)) ks.push(k); }
       for (var j = 0; j < ks.length; j++) localStorage.removeItem(ks[j]);
     } catch (e) {}
     elConf.classList.remove('on');
@@ -2211,13 +2284,13 @@
       else if (tgt.closest('#cno') || tgt.id === 'conf') elConf.classList.remove('on');
       return;
     }
+    if (tgt.closest('#sndback')) { setSnd(false); return; }
+    if (elSnd.classList.contains('on')) return;
     if (tgt.closest('#sback')) { setSettings(false); return; }
     var it = tgt.closest('[data-set]'); if (!it) return;
     var a = it.getAttribute('data-set');
     if (a === 'sound') {
-      muted = !muted; STORE.set('dd_mute', muted ? '1' : '0');
-      if (master) master.gain.value = muted ? 0 : 0.9;
-      buildSet(); if (!muted) bell(semi(7), 0.14, 0, 0, 1.4);
+      setSnd(true);
     } else if (a === 'dev') {
       STORE.set('dd_dev', STORE.get('dd_dev') === '1' ? '0' : '1'); buildSet();
     } else if (a === 'reset') elConf.classList.add('on');
@@ -2586,9 +2659,9 @@
       if (up || !AC) return; up = true;
       mb = AC.createGain(); mb.gain.value = 0; duck = AC.createGain();
       mlp = AC.createBiquadFilter(); mlp.type = 'lowpass'; mlp.frequency.value = 6000; mlp.Q.value = 0.2;
-      mb.connect(duck); duck.connect(mlp); mlp.connect(bus);
+      mb.connect(duck); duck.connect(mlp); mlp.connect(mbus);
       var cv = AC.createConvolver(); cv.buffer = makeImpulse(5.5);
-      var w = AC.createGain(); w.gain.value = 0.55; mlp.connect(cv); cv.connect(w); w.connect(bus);
+      var w = AC.createGain(); w.gain.value = 0.55; mlp.connect(cv); cv.connect(w); w.connect(mbus);
       padF = AC.createBiquadFilter(); padF.type = 'lowpass'; padF.frequency.value = 900; padF.Q.value = 0.4; padF.connect(mb);
       var lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 0.06; lg.gain.value = 260;
       lfo.connect(lg); lg.connect(padF.frequency); lfo.start();
@@ -2706,10 +2779,8 @@
         best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
-    /* ASTRO'ya özel ses ayarı: genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ses düzeyi geri yüklenir */
-    var aSnd = STORE.get('dd_astro_snd') !== '0', aVol = parseInt(STORE.get('dd_astro_vol'), 10);
-    if (isNaN(aVol)) aVol = 100; aVol = Math.max(0, Math.min(100, aVol));
-    function gainApply() { if (master) master.gain.value = aSnd ? 0.9 * aVol / 100 : 0; }
+    /* ASTRO'ya özel ses ayarı (SNDA): genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ayar geri yüklenir */
+    function gainApply() { sndCur = SNDA; sndApply(); }
     var elSm = $('spmenu'), elList = $('splist'), mode = 0, introOn = false, introT0 = 0, introTm = 0, ioff = 0;   // mode: 0 açılış menüsü, 1 oyun, 2 duraklatıldı
     /* --- Ana menü mekik karuseli: sahip olunan mekikler arasında sürekli sağa/sola kaydır --- */
     var tfk = 1, asK = 0, pvOn = false, cpK = 0, cpx = 0, cpy = 0, cpAcc = 0, cpSnd = 0, cpSl = 0, cpEa = 0, cpEdx = 0, cpEdy = 0;
@@ -2783,7 +2854,7 @@
     if (window.DDShop) {
       DDShop.onChange = function () { crBuild(); };
       DDShop.onPreview = pvStart;
-      DDShop.onBuy = function () { audioInit(); if (aSnd) { bell(semi(7), .11, 0, 0, 1.5); bell(semi(12), .08, 0, .07, 1.7); bell(semi(16), .06, 0, .14, 1.9); } vib([10, 50, 12]); };
+      DDShop.onBuy = function () { audioInit(); if (SNDA.sfx) { bell(semi(7), .11, 0, 0, 1.5); bell(semi(12), .08, 0, .07, 1.7); bell(semi(16), .06, 0, .14, 1.9); } vib([10, 50, 12]); };
     }
     function menuHtml() {
       var h = '', snd = '<div class="mi" data-sa="settings">Ayarlar</div>';
@@ -2910,10 +2981,9 @@
       else if (a === 'menu') toMenu();
       else if (a === 'settings') showSettings(true);
       else if (a === 'sback') showSettings(false);
-      else if (a === 'ssound') {
-        aSnd = !aSnd; STORE.set('dd_astro_snd', aSnd ? '1' : '0'); gainApply(); setBuild();
-        if (aSnd) bell(semi(7), 0.14, 0, 0, 1.4);
-      } else if (a === 'sdev') {
+      else if (a === 'ssound') showSnd(true);
+      else if (a === 'sndback') showSnd(false);
+      else if (a === 'sdev') {
         var dn = STORE.get('dd_dev') !== '1'; STORE.set('dd_dev', dn ? '1' : '0');
         el.classList.toggle('devok', dn); setBuild();
       } else if (a === 'sreset') {
@@ -2930,43 +3000,23 @@
     }
 
     /* --- ASTRO ayar sayfası --- */
-    var elSs = $('spset'), elSl = $('spslist'), elSn = $('spsnote'), stOn = false, rstConf = false, rstTm = 0, volDrag = null;
-    function volPaint() {
-      var t = $('spvt'); if (!t) return;
-      t.children[0].style.width = aVol + '%'; t.children[1].style.left = aVol + '%'; $('spvp').textContent = aVol + '%';
-    }
+    var elSs = $('spset'), elSl = $('spslist'), elSn = $('spsnote'), stOn = false, rstConf = false, rstTm = 0;
+    var sndA = sndMount($('spsndl'), function () { return SNDA; });
     function setBuild() {
       var dev = STORE.get('dd_dev') === '1';
       elSl.innerHTML =
-        '<div class="si" data-sa="ssound">Ses<small>' + (aSnd ? 'açık' : 'kapalı') + '</small></div>' +
-        '<div class="si vol' + (aSnd ? '' : ' off') + '"><span>Ses seviyesi</span><small id="spvp"></small><div id="spvt"><i></i><b></b></div></div>' +
+        '<div class="si" data-sa="ssound">Ses<small>' + sndLabel(SNDA) + '</small></div>' +
         '<div class="si" data-sa="sdev">Geliştirici modu<small>' + (dev ? 'açık' : 'kapalı') + '</small></div>' +
         '<div class="si warn" data-sa="sreset">ASTRO ilerlemesini sıfırla<small>⟶</small></div>';
       elSn.textContent = 'Bu ayarlar yalnızca ASTRO\'yu etkiler.';
-      volPaint();
     }
+    function showSnd(on) { $('spsnd').classList.toggle('on', on); if (on) sndA.paint(); else setBuild(); }
     function showSettings(on) {
-      stOn = on; rstConf = false; clearTimeout(rstTm); volDrag = null; $('sprs').classList.remove('on');
+      stOn = on; rstConf = false; clearTimeout(rstTm); $('sprs').classList.remove('on');
+      if (!on) $('spsnd').classList.remove('on');
       if (on) setBuild();
       elSs.classList.toggle('on', on);
     }
-    function volSet(e) {
-      var t = $('spvt'); if (!t) return; var r = t.getBoundingClientRect();
-      aVol = Math.round(Math.max(0, Math.min(1, (e.clientX - r.left) / r.width)) * 20) * 5;   // %5 adımlarla
-      volPaint(); gainApply();
-    }
-    elSl.addEventListener('pointerdown', function (e) {
-      var t = e.target && e.target.closest ? e.target.closest('#spvt') : null; if (!t) return;
-      e.preventDefault(); e.stopPropagation(); volDrag = e.pointerId; try { t.setPointerCapture(e.pointerId); } catch (_) {}
-      if (!aSnd) { aSnd = true; STORE.set('dd_astro_snd', '1'); elSl.firstChild.lastChild.textContent = 'açık'; elSl.children[1].classList.remove('off'); }
-      volSet(e);
-    });
-    elSl.addEventListener('pointermove', function (e) { if (e.pointerId === volDrag) { e.preventDefault(); volSet(e); } });
-    function volEnd(e) {
-      if (e.pointerId !== volDrag) return; volDrag = null; STORE.set('dd_astro_vol', String(aVol)); gainApply();
-      if (aSnd) bell(semi(7), 0.14, 0, 0, 1.4);
-    }
-    elSl.addEventListener('pointerup', volEnd); elSl.addEventListener('pointercancel', volEnd);
 
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
@@ -3231,6 +3281,63 @@
           if (Math.random() < .7) mkRockL(0, y1 - S * .23, S * rnd(.06, .09), { cx: 0, amp: a, w: w, ph: ph + 3.14 });   // ayrı bant: kayalar birbirine girmez
         }
         return sp * (rows + .4);
+      },
+      /* --- ÇATALLANMA: yalnızca kayalık kenarlı yolda. Koridorun ortasına sivri uçlu bir kaya adası oturur, yol ikiye ayrılır
+         (biri kolay, biri zor), ada bitince iki şerit yeniden tek yolda birleşir. İki şerit de aynı noktaya çıkar. --- */
+      fork: function (y0, d) {
+        var Lin = S * 1.05, Lout = S * 1.05, n = d >= 6 ? 4 : 3, sl = S * .9, Lb = sl * n + S * .35, Lt = Lin + Lb + Lout,
+            Ho = bLim + S * .215,                                   // sınır kayaları dahil koridor yarı genişliği
+            h = Math.max(S * .2, Math.min(S * .4, cw * .45)),       // adanın yarı genişliği
+            lw = Ho - S * .14 - h, lc = h + lw / 2,                 // şerit net genişliği ve şerit merkezinin yola uzaklığı
+            hard = Math.random() < .5 ? -1 : 1, i, k, u, w, r, yy, off, x, e, sd, y, tp, ty, kinds = [], last = '', usedLz = false;
+        function hAt(uu) { var q = uu < Lin ? uu / Lin : uu > Lt - Lout ? (Lt - uu) / Lout : 1; q = Math.max(0, Math.min(1, q)); return h * q * q * (3 - 2 * q); }
+        function lane(sdL, yv, shift) { return T(yv) + sdL * (lc + (shift || 0)) * Lw(yv); }   // şerit merkezinin x'i (+ yanal kaydırma)
+        // ada: sol kenar, sağ kenar ve orta hat boyunca birbirine geçen sabit kayalar (parçalanmaz, sınır kayaları gibi nefes alır)
+        for (k = -1; k <= 1; k++) {
+          u = S * .02;
+          while (u < Lt) {
+            w = hAt(u); r = S * rnd(.068, .095) * (.55 + .45 * Math.min(1, w / (h * .5)));
+            if (k === 0 && w < r) { u += r * 1.1; continue; }      // uçlarda yan hatlar zaten üst üste biner
+            yy = y0 - u; off = k * Math.max(0, w - r * .85); x = T(yy) + off * Lw(yy);
+            mkRock(x, yy, r, { sd: 2, gen: 2, fix: true, isl: true, nc: true, ox: 0, oy: 0, ovx: 0, ovy: 0, vr: rnd(-.1, .1), hx: x, hy: yy, ax: S * rnd(.005, .011), ay: S * rnd(.005, .011), bw: rnd(.4, .6), ph: u / S * 1.3 + rnd(-.1, .1) });
+            u += r * 1.1;
+          }
+        }
+        // KOLAY şerit: seyrek, küçük, durağan kayalar (sağ-sol dönüşümlü); yanlarından rahatça geçilir
+        sd = -hard;
+        for (k = 0; k < n; k++) {
+          y = y0 - Lin - S * .3 - k * sl - S * rnd(-.06, .06); e = (k % 2 ? 1 : -1) * lw * rnd(.12, .22);
+          mkRock(lane(sd, y, e), y, S * rnd(.045, .062), { nc: true });
+        }
+        // ZOR şerit: dönen çubuk, salınan kaya ya da lazer; art arda aynı tür yok, lazer en fazla bir kez
+        sd = hard;
+        for (k = 0; k < n; k++) {
+          var pool = ['spin', 'osc']; if (!usedLz) pool.push('laser', 'laser');
+          do { ty = pickIn(pool); } while (ty === last && pool.length > 1);
+          last = ty; if (ty === 'laser') usedLz = true; kinds.push(ty);
+          y = y0 - Lin - S * .3 - k * sl; e = (k % 2 ? 1 : -1) * lw * .17;
+          if (ty === 'spin') {
+            obs.push({ t: 'spin', x: lane(sd, y, e), y: y, L: lw * .58, w: rnd(.9, 1.5 + Math.min(.5, d * .05)) * (Math.random() < .5 ? -1 : 1), rot: Math.random() * 6.28, near: false });
+          } else if (ty === 'osc') {
+            var ox0 = lane(sd, y, 0), am = lw * .26, wo = rnd(.8, 1.3) * (Math.random() < .5 ? -1 : 1), ph0 = Math.random() * 6.28;
+            mkRock(ox0, y, S * .055, { cx: ox0, amp: am, w: wo, ph: ph0, nc: true });
+            if (d >= 6) mkRock(ox0, y - S * .24, S * .05, { cx: ox0, amp: am, w: wo, ph: ph0 + 3.14, nc: true });   // ayrı bant: birbirine girmez
+          } else {
+            var bt = T(y), be = Ho * Lw(y);
+            obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, lx0: sd < 0 ? -1e9 : bt, lx1: sd < 0 ? bt : 1e9, gx: lane(sd, y, rnd(-.18, .18) * lw), gw: lw * .55, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
+          }
+        }
+        // ödüller: zor şeritte bol hücre + halka (+ yarışta yıldız); kolay şeritte birkaç hücre
+        for (k = 0; k < n; k++) {
+          y = y0 - Lin - S * .3 - k * sl - sl / 2;
+          x = lane(hard, y, 0);
+          for (i = 0; i < 2; i++) { var cy2 = y - i * S * .07, cx2 = lane(hard, cy2, 0); if (clearAt(cx2, cy2, S * .1)) mkCell(cx2, cy2); }
+          if (k < 2) { x = lane(-hard, y, 0); if (clearAt(x, y, S * .1)) mkCell(x, y); }
+        }
+        y = y0 - Lin - Lb + S * .05; x = lane(hard, y, 0); if (clearAt(x, y, S * .18)) mkRing(x, y);
+        if (race) { y = y0 - Lin - sl * (n - 1) - S * .3 - sl / 2; x = lane(hard, y, 0); if (clearAt(x, y, S * .16)) mkStar(x, y); }
+        forkCool = 2;
+        return Lt;
       }
     };
     function genFirst() {                                          // başlangıç: sakin ama her seferinde farklı koridor (yalnızca durağan kayalar, ödüller)
@@ -3249,7 +3356,7 @@
       genY = y - S * rnd(.2, .5); lastPat = '';
     }
     /* --- sınır kayaları: ileri sektörlerde (BSEC ve sonrası) koridor kenarları yan yana dizili sabit kayalarla çevrilir --- */
-    function borderInit() { trackInit(oy); bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; }
+    function borderInit() { trackInit(oy); bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; forkCool = 1; }
     function genBorder(upTo) {                                     // süzülüp bir hizaya oturmuş kayalar: farklı boyut, yumuşak sapma, hafif nefes; her biri öncekine teğet
       var si, sd, c, guard, f, r, x, y, dx, need, q, wd, it;
       for (si = 0; si < 2; si++) {
@@ -3282,7 +3389,7 @@
       var ws = [], rk = [], i, j, it, o, q, a, b, ymin = 1e9, ymax = -1e9, pad = S;
       for (i = n0; i < obs.length; i++) if (obs[i].t === 'wall') { ws.push(obs[i]); ymin = Math.min(ymin, obs[i].y - obs[i].h / 2); ymax = Math.max(ymax, obs[i].y + obs[i].h / 2); }
       if (!ws.length) return;
-      for (i = 0; i < obs.length; i++) { o = obs[i]; if (o.fix && o.hy > ymin - pad && o.hy < ymax + pad) rk.push(o); }
+      for (i = 0; i < obs.length; i++) { o = obs[i]; if (o.fix && !o.isl && o.hy > ymin - pad && o.hy < ymax + pad) rk.push(o); }
       for (it = 0; it < 30; it++) {
         for (i = 0; i < rk.length; i++) {
           o = rk[i];
@@ -3302,14 +3409,21 @@
       }
       for (i = 0; i < rk.length; i++) { rk[i].x = rk[i].hx; rk[i].y = rk[i].hy; }
     }
-    var lastPat = '';
+    var lastPat = '', forkCool = 0;
+    function forkOk(y, L) {                                        // çatallanma yalnızca yeterince düz/yumuşak bir yol parçasında kurulur (şimşek bölümlerinde değil)
+      var i; if (tkY > y - L - S * .5) return false;
+      for (i = 0; i <= 14; i++) if (Math.abs(Tp(y - L * i / 14)) > .7) return false;
+      return true;
+    }
     function pickPat(d) {                                          // zorluğa göre açılan desenler; ağırlıklı rastgele, art arda aynısı yok
       var w = { field: 3, slalom: 2 };
+      if (forkCool > 0) forkCool--;
       if (d >= 1) w.gate = 2;
       if (d >= 2) w.laser = 2;
       if (d >= 3) { w.pendulum = 2; }
       if (d >= 2) w.hole = 1;
       if (d >= 5) { w.hole = 2; w.laser = 3; w.gate = 3; w.pendulum = 3; }
+      if (bOn && bAct && forkCool <= 0 && genY < bStartY - S * 2 && forkOk(genY, S * 5.6)) w.fork = 7;   // yalnızca kayalık kenarlı yolda
       var ks = [], tot = 0, k;
       for (k in w) if (k !== lastPat) { ks.push(k); tot += w[k]; }
       var r = Math.random() * tot;
@@ -3327,7 +3441,7 @@
         if (bOn && y0 < bStartY + S * 1.8) { bAct = true; bLim = cw - S * .215; cw = cw - S * .26; }   // sınır kayaları var: engeller daha dar alanda kurulur
         var nm = pickPat(d), n0 = obs.length, pk0 = pick.length, L = PAT[nm](y0, d); lastPat = nm;
         if (bAct) for (var kk = n0; kk < obs.length; kk++) {          // kayalar sınır kuşağının içine taşmasın
-          var ob = obs[kk]; if (ob.t !== 'rock') continue;
+          var ob = obs[kk]; if (ob.t !== 'rock' || ob.nc) continue;
           var tcc = T(ob.y), cc = (ob.amp ? ob.cx : ob.x) - tcc, mm = ob.r + (ob.amp || 0);
           if (Math.abs(cc) + mm > bLim) { var c2 = tcc + Math.max(0, bLim - mm) * (cc < 0 ? -1 : 1); ob.cx = c2; ob.x = c2; }
         }
@@ -3359,7 +3473,7 @@
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
     function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); gainApply(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); if (master) master.gain.value = muted ? 0 : 0.9; }
+    function close() { pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); sndCur = SNDG; sndApply(); }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -3415,7 +3529,7 @@
     window.addEventListener('keydown', function (e) {
       if (!on) return;
       e.stopPropagation(); e.preventDefault();
-      if (e.key === 'Escape') { if (stOn) { if ($('sprs').classList.contains('on')) $('sprs').classList.remove('on'); else showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else if (mode === 3) toMenu(); else close(); return; }
+      if (e.key === 'Escape') { if (stOn) { if ($('spsnd').classList.contains('on')) showSnd(false); else if ($('sprs').classList.contains('on')) $('sprs').classList.remove('on'); else showSettings(false); return; } if (mode === 1) pause(); else if (mode === 2) play(false); else if (mode === 3) toMenu(); else close(); return; }
       if (mode === 0 && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) { crGo(e.key === 'ArrowRight' ? 1 : -1); return; }
       if (mode !== 1) { if (e.key === 'Enter' && !introOn) { var pm = elList.querySelector('.primary'); if (pm) spAct(pm.getAttribute('data-sa')); } return; }
       if (e.key === 'p' || e.key === 'P') { pause(); return; }
@@ -4003,7 +4117,7 @@
             var cross = (py0 - o.y) * (P.y - o.y) <= 0 || Math.abs(P.y - o.y) < Rs;
             if (cross) {
               var xc = P.x + (px0 - P.x) * (Math.abs(P.y - o.y) / (Math.abs(P.y - py0) || 1));
-              if ((Math.abs(xc - o.gx) > o.gw / 2 - Rs * .3 || Math.abs(P.x - o.gx) > o.gw / 2 - Rs * .3) && graceT <= 0) { lzArm(o); kill(1); return; }
+              if ((Math.abs(xc - o.gx) > o.gw / 2 - Rs * .3 || Math.abs(P.x - o.gx) > o.gw / 2 - Rs * .3) && graceT <= 0 && (o.lx0 === undefined || (P.x > o.lx0 && P.x < o.lx1))) { lzArm(o); kill(1); return; }
             }
             clr = Math.abs(P.y - o.y) - Rs;
             // yalnızca boşluğun kenarında siyırma sayılır
