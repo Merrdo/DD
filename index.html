@@ -2820,7 +2820,7 @@
     /* kaçış parkuru durumu */
     var comboA = 0, comboShow = 0, comboBar = 0, oy = 0, wait = false, obs = [], pick = [], pops = [], cw = 300, genY = 0, gt = 0, dead = false, deadT = 0, shake = 0, combo = 0, comboT = 0, bonus = 0, sector = 0, near0 = 0,
         best = 0, paid = false, earned = 0, race = false, fScore = 0, fDist = 0, newRec = false, hintT = 0, banner = '', bannerT = 0, flash = 0, lastWarn = 0, thrustSeen = false, seedN = 0, righting = 0, boostRem = 0, boostCap = 0; paid = false; earned = 0;
-    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogCv = null, fogCx = null, fogSp = null;
+    var fogZ = [], fogNextY = 0, fogK = 0, fogMsgT = 0, fogSnd = null, fogLv = -1, fogCreak = 0, fogHa = 0, fogLt = 0, fogFlN = 4, fogFlU = 0, fogP = false, fogVis = 1, fogCv = null, fogCx = null, fogSp = null;
     var waveY = 0, waveT = 0, emb = [], fireT = 0, fHs = null, fH2 = null, boomT = -1, burnT = -1, warnOn = false, burnAcc = 0, smokeAcc = 0;   // yanma sayacı (-1: yanmıyor), patlama zamanı   // yutulma: yanma → patlama zamanı, dönüş, parçacık sayaçları   // alev: taban çizgisi, süre, korlar, dilim yükseklikleri
     best = parseInt(STORE.get('dd_astro_best') || '0', 10) || 0;
     /* ASTRO'ya özel ses ayarı (SNDA): genel ses tercihinden bağımsız; ASTRO'dan çıkınca genel ayar geri yüklenir */
@@ -3079,7 +3079,7 @@
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0;
-      fogStop(); devPanel(false); fogK = 0; fogZ = []; pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
+      fogStop(); devPanel(false); fogK = 0; fogVis = 1; fogZ = []; pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
@@ -3777,9 +3777,9 @@
       if (kx || ky) { var l = Math.hypot(kx, ky); vx = kx / l; vy = ky / l; m = 1; }
       var WS = wingStats();
       { var fz = (race && !dead && !pre) ? fogAt(P.y) : null, ft = 0;
-        if (fz) { ft = Math.max(0, Math.min(1, Math.min(fz.y0 - P.y, P.y - fz.y1) / (S * 1.1))); ft = ft * ft * (3 - 2 * ft); if (!fz.on && ft > .08) { fz.on = true; banner = 'SİS'; bannerT = 2.4; try { bell(semi(-19), .06, 0, 0, .6); } catch (e) {} } }
+        if (fz) { ft = Math.max(0, Math.min(1, Math.min(fz.y0 - P.y, P.y - fz.y1) / (S * .8))); ft = ft * ft * (3 - 2 * ft); if (!fz.on && ft > .08) { fz.on = true; banner = 'SİS'; bannerT = 2.4; try { bell(semi(-19), .06, 0, 0, .6); } catch (e) {} } }
         fogK += (ft - fogK) * (1 - Math.exp(-dt / .35)); if (fogK < .002 && !fz) fogK = 0;
-        while (fogZ.length && fogZ[0].y0 > P.y + H * 2.2) fogZ.shift(); }
+        while (fogZ.length && fogZ[0].y1 > P.y + S * 40) fogZ.shift(); }
       // dönüş: açısal ivme + atalet. RCS torku sınırlı; hız ve jet itişi arttıkça gövde ağırlaşır, tork zorlaşır
       var spd0 = Math.hypot(P.vx, P.vy), auth = (1 / (1 + 1.6 * Math.min(1, spd0 / (S * 0.6)))) * (1 - 0.2 * th),
           aMax = 8 * auth * WS.man, wMax = 3.4 * (0.45 + 0.55 * auth) * (0.5 + 0.5 * Math.min(1, m)) * WS.man, alpha = 0;
@@ -5528,53 +5528,68 @@
         if (on && fogK > .5 && t > fogCreak) { fogCreak = t + rnd(5, 11); var b = -26 + ((Math.random() * 3) | 0), pn = rnd(-.8, .8); bell(semi(b), .04, pn, 0, 3); bell(semi(b + 1), .03, pn, .05, 3); }
       } catch (e) { fogStop(); }
     }
+    function fogBeam(c, k, sx, sy, t, wk, nx, ny, BL) {          // burundan çıkan, uca doğru genişleyen, hafif dalgalı ışın yolu (c: tuval, k: ölçek)
+      var qx = -ny, qy = nx, ox = (sx + nx * S * .055) * k, oy = (sy + ny * S * .055) * k, i, u, d, h;
+      c.beginPath();
+      for (i = 0; i <= 18; i++) { u = i / 18; d = S * .03 * u * Math.sin(u * 6.5 - t * 3.2) * k; h = S * (.03 + .13 * u) * wk * k; c[i ? 'lineTo' : 'moveTo'](ox + nx * BL * u + qx * (d + h), oy + ny * BL * u + qy * (d + h)); }
+      for (i = 18; i >= 0; i--) { u = i / 18; d = S * .03 * u * Math.sin(u * 6.5 - t * 3.2) * k; h = S * (.03 + .13 * u) * wk * k; c.lineTo(ox + nx * BL * u + qx * (d - h), oy + ny * BL * u + qy * (d - h)); }
+      c.closePath();
+    }
+    function fogHash(a, b) { var v = Math.sin(a * 12.9898 + b * 78.233) * 43758.5453; return v - Math.floor(v); }
     function fogDraw(CY, t) {
       if (devOn) return;
-      var i, j, e, ys, r, bx, by, a;
+      var i, j, n, z, vis = [], dt2 = Math.min(.05, Math.max(0, t - fogLt)), EX = S * .3, FU = S * .5, a0, a1, f, g, c, w, h, k, sx, sy, fl, fa, R, ya, yb, nx, ny, BL, ox, oy, wy;
+      fogLt = t; fogVis = dead ? Math.max(0, fogVis - dt2 * 1.2) : Math.min(1, fogVis + dt2 * 2);
+      for (i = 0; i < fogZ.length; i++) { z = fogZ[i]; if (CY + z.y0 - cam.y + EX > -S && CY + z.y1 - cam.y - EX < H + S) vis.push(z); }
+      if (!vis.length || fogVis < .01) return;
       if (!fogSp) {
         fogSp = document.createElement('canvas'); fogSp.width = fogSp.height = 96; var c0 = fogSp.getContext('2d'), g0 = c0.createRadialGradient(48, 48, 0, 48, 48, 48);
-        g0.addColorStop(0, 'rgba(176,196,204,.55)'); g0.addColorStop(.5, 'rgba(176,196,204,.2)'); g0.addColorStop(1, 'rgba(176,196,204,0)'); c0.fillStyle = g0; c0.fillRect(0, 0, 96, 96);
+        g0.addColorStop(0, 'rgba(158,168,184,.55)'); g0.addColorStop(.5, 'rgba(158,168,184,.2)'); g0.addColorStop(1, 'rgba(158,168,184,0)'); c0.fillStyle = g0; c0.fillRect(0, 0, 96, 96);
         fogCv = document.createElement('canvas'); fogCx = fogCv.getContext('2d');
       }
-      cx.save();
-      // yaklaşırken görünen sis duvarı (bölgenin giriş ve çıkış kenarı)
-      for (i = 0; i < fogZ.length; i++) for (e = 0; e < 2; e++) {
-        ys = CY + (e ? fogZ[i].y1 : fogZ[i].y0) - cam.y; if (ys < -S || ys > H + S) continue;
-        for (j = 0; j < 9; j++) {
-          r = S * (.34 + .16 * ((j * 7 + i) % 3)); bx = W / 2 + T(e ? fogZ[i].y1 : fogZ[i].y0) - cam.x + (j - 4) * cw * .26 + Math.sin(t * .35 + j * 1.7 + fogZ[i].ph) * S * .06;
-          by = ys + Math.sin(t * .27 + j * 2.3) * S * .05 + (j % 2 ? S * .08 : -S * .08);
-          cx.globalAlpha = (e ? .16 : .3) * (1 - .5 * fogK); cx.drawImage(fogSp, bx - r, by - r, r * 2, r * 2);
+      w = Math.max(24, Math.ceil(W / 3)); h = Math.max(24, Math.ceil(H / 3)); k = w / W; c = fogCx; sx = W / 2 + P.x - cam.x; sy = CY + P.y - cam.y;
+      if (fogCv.width !== w || fogCv.height !== h) { fogCv.width = w; fogCv.height = h; }
+      fogHa += wrap(P.h - fogHa) * (1 - Math.exp(-dt2 / .09));                          // fener gövdeyi biraz geriden izler
+      if (t > fogFlN) { fogFlU = t + .16; fogFlN = t + rnd(4, 10); }
+      fl = (1 + .025 * Math.sin(t * 13.1) + .02 * Math.sin(t * 23.7) + .03 * Math.sin(t * 1.1)) * (t < fogFlU ? .55 + .2 * Math.sin(t * 90) : 1);   // titreme + ara sıra kesik
+      fa = Math.min(1, fogK * 2);                                                       // fener yalnızca sisin içindeyken yanar
+      // 1) sis tabakası: DÜNYAYA SABİT bölge. Ekrandaki karşılığı bölgenin y aralığı; kenarlar kısa ve yumuşak geçiş
+      c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.clearRect(0, 0, w, h);
+      for (i = 0; i < vis.length; i++) {
+        z = vis[i]; a0 = CY + z.y1 - cam.y - EX; a1 = CY + z.y0 - cam.y + EX; f = Math.min(.5, (EX + FU) / (a1 - a0));
+        g = c.createLinearGradient(0, a0 * k, 0, a1 * k);
+        g.addColorStop(0, 'rgba(22,25,31,0)'); g.addColorStop(f, 'rgba(22,25,31,.985)'); g.addColorStop(1 - f, 'rgba(22,25,31,.985)'); g.addColorStop(1, 'rgba(22,25,31,0)');
+        ya = Math.max(0, a0 * k); yb = Math.min(h, a1 * k); c.fillStyle = g; if (yb > ya) c.fillRect(0, ya, w, yb - ya);
+      }
+      // 2) ışık delikleri (sis tabakasından silinir)
+      c.globalCompositeOperation = 'destination-out';
+      wy = CY + waveY - cam.y - S * .55;                                                // arkadaki alevin parıltısı sisin içinden seçilir
+      if (wy < H) { g = c.createLinearGradient(0, wy * k, 0, (wy + S * .5) * k); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)'); c.fillStyle = g; c.fillRect(0, Math.max(0, wy * k), w, h); }
+      R = S * .055 * k; g = c.createRadialGradient(sx * k, sy * k, 0, sx * k, sy * k, R);   // gövde: yalnızca silik seçilir, etrafı aydınlanmaz
+      g.addColorStop(0, 'rgba(0,0,0,.6)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(sx * k - R, sy * k - R, R * 2, R * 2);
+      nx = Math.cos(fogHa); ny = Math.sin(fogHa); BL = S * .95 * fl * k; ox = (sx + nx * S * .055) * k; oy = (sy + ny * S * .055) * k;
+      g = c.createLinearGradient(ox, oy, ox + nx * BL, oy + ny * BL); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.5, 'rgba(0,0,0,.8)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g;
+      for (j = 0; j < 2; j++) { c.globalAlpha = (j ? 1 : .34) * fa; fogBeam(c, k, sx, sy, t, j ? 1 : 2, nx, ny, BL); c.fill(); }   // geniş sönük geçiş + çekirdek: yumuşak kenar
+      c.globalAlpha = 1; c.globalCompositeOperation = 'source-over';
+      cx.save(); cx.globalAlpha = fogVis; cx.imageSmoothingEnabled = true; cx.drawImage(fogCv, 0, 0, W, H);
+      // 3) bölgeye bağlı, dünyada duran ve usulca süzülen sis tutamları
+      var RH = S * .7, ya0, ya1, n0, n1, hh, h2, wx, rr, ef, wtop = cam.y - CY - S, wbot = cam.y + (H - CY) + S;
+      for (i = 0; i < vis.length; i++) {
+        z = vis[i]; n0 = Math.floor(Math.max(z.y1, wtop) / RH); n1 = Math.floor(Math.min(z.y0, wbot) / RH);
+        for (n = n0; n <= n1; n++) for (j = 0; j < 2; j++) {
+          hh = fogHash(n + z.ph, j); h2 = fogHash(n * 1.7 + j * 3.1, z.ph); wy = (n + hh) * RH; if (wy < z.y1 || wy > z.y0) continue;
+          ef = Math.min(1, (z.y0 - wy) / (S * .7), (wy - z.y1) / (S * .7));
+          wx = T(wy) + (h2 - .5) * cw * 2.1 + Math.sin(t * .3 + n + j * 2) * S * .12; rr = S * (.45 + .35 * hh);
+          cx.globalAlpha = fogVis * ef * (.09 + .05 * h2); cx.drawImage(fogSp, W / 2 + wx - cam.x - rr, CY + wy - cam.y - rr, rr * 2, rr * 2);
         }
       }
-      if (fogK > .004) {
-        var w = Math.max(24, Math.ceil(W / 3)), h = Math.max(24, Math.ceil(H / 3)), k = w / W, c = fogCx, sx = W / 2 + P.x - cam.x, sy = CY + P.y - cam.y, dt2 = Math.min(.05, Math.max(0, t - fogLt)), g, fl, R;
-        if (fogCv.width !== w || fogCv.height !== h) { fogCv.width = w; fogCv.height = h; }
-        fogLt = t; if (dead) fogK = Math.max(0, fogK - dt2 * 1.2); fogHa += wrap(P.h - fogHa) * (1 - Math.exp(-dt2 / .09));            // fener gövdeyi biraz geriden izler
-        if (t > fogFlN) { fogFlU = t + .16; fogFlN = t + rnd(4, 10); }
-        fl = (1 + .025 * Math.sin(t * 13.1) + .02 * Math.sin(t * 23.7) + .03 * Math.sin(t * 1.1)) * (t < fogFlU ? .55 + .2 * Math.sin(t * 90) : 1);   // titreme + ara sıra kesik
-        c.globalCompositeOperation = 'source-over'; c.globalAlpha = 1; c.fillStyle = 'rgb(15,21,24)'; c.fillRect(0, 0, w, h);
-        c.globalCompositeOperation = 'destination-out';
-        var wy = CY + waveY - cam.y - S * .55;                                          // arkadaki alevin parıltısı sisin içinden seçilir
-        if (wy < H) { g = c.createLinearGradient(0, wy * k, 0, (wy + S * .5) * k); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)'); c.fillStyle = g; c.fillRect(0, Math.max(0, wy * k), w, h); }
-        var nx = Math.cos(fogHa), ny = Math.sin(fogHa), qx = -ny, qy = nx, ox0 = (sx + nx * S * .055) * k, oy0 = (sy + ny * S * .055) * k, BL = S * .9 * fl * k, bi, bu, bd, bh, bp;
-        R = S * .05 * k; g = c.createRadialGradient(sx * k, sy * k, 0, sx * k, sy * k, R);   // gövde: yalnızca silik seçilir, etrafı aydınlanmaz
-        g.addColorStop(0, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g; c.fillRect(sx * k - R, sy * k - R, R * 2, R * 2);
-        g = c.createLinearGradient(ox0, oy0, ox0 + nx * BL, oy0 + ny * BL);                  // ışın: burundan baktığı yöne, uca doğru sönen ince çizgi
-        g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(.55, 'rgba(0,0,0,.7)'); g.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = g;
-        for (bp = 0; bp < 2; bp++) {                                                         // geniş sönük geçiş + dar parlak çekirdek: yumuşak kenar
-          c.globalAlpha = bp ? 1 : .32; c.beginPath();
-          for (bi = 0; bi <= 16; bi++) { bu = bi / 16; bd = S * .036 * bu * Math.sin(bu * 7 - t * 3.4) * k; bh = S * (.016 + .042 * bu) * (bp ? 1 : 2.4) * k; c[bi ? 'lineTo' : 'moveTo'](ox0 + nx * BL * bu + qx * (bd + bh), oy0 + ny * BL * bu + qy * (bd + bh)); }
-          for (bi = 16; bi >= 0; bi--) { bu = bi / 16; bd = S * .036 * bu * Math.sin(bu * 7 - t * 3.4) * k; bh = S * (.016 + .042 * bu) * (bp ? 1 : 2.4) * k; c.lineTo(ox0 + nx * BL * bu + qx * (bd - bh), oy0 + ny * BL * bu + qy * (bd - bh)); }
-          c.closePath(); c.fill();
-        }
-        c.globalAlpha = 1;
-        c.globalCompositeOperation = 'source-over';
-        cx.globalAlpha = Math.min(1, fogK) * .97; cx.imageSmoothingEnabled = true; cx.drawImage(fogCv, 0, 0, W, H);
-        for (i = 0; i < 8; i++) {                                                        // süzülen sis tutamları
-          r = S * (.5 + .12 * (i % 4)); bx = ((i * 211 + t * (7 + i * 1.9) - cam.x * .45) % (W + r * 2) + (W + r * 2)) % (W + r * 2) - r; by = ((i * 173 - t * (4 + i) * .6 - cam.y * .45) % (H + r * 2) + (H + r * 2)) % (H + r * 2) - r;
-          cx.globalAlpha = fogK * (.1 + .02 * (i % 3)); cx.drawImage(fogSp, bx - r, by - r, r * 2, r * 2);
-        }
-        a = fogK * (.7 + .3 * fl); cx.globalAlpha = a; cx.fillStyle = 'rgb(255,238,196)'; cx.beginPath(); cx.arc(sx + Math.cos(fogHa) * S * .055, sy + Math.sin(fogHa) * S * .055, 1.8, 0, 6.2832); cx.fill();   // fener merceği
+      // 4) ışığın kendisi: yumuşak, soluk bir parıltı (sisin içinde ışın aydınlık görünür); burunda fener merceği
+      if (fogK > .01) {
+        BL = S * .95 * fl; ox = sx + nx * S * .055; oy = sy + ny * S * .055;
+        cx.globalCompositeOperation = 'lighter'; g = cx.createLinearGradient(ox, oy, ox + nx * BL, oy + ny * BL);
+        g.addColorStop(0, 'rgba(190,204,226,.26)'); g.addColorStop(.5, 'rgba(190,204,226,.12)'); g.addColorStop(1, 'rgba(190,204,226,0)');
+        cx.globalAlpha = fa * fogVis; cx.fillStyle = g; fogBeam(cx, 1, sx, sy, t, 1.1, nx, ny, BL); cx.fill();
+        cx.globalCompositeOperation = 'source-over'; cx.globalAlpha = fa * fogVis * (.7 + .3 * fl); cx.fillStyle = 'rgb(255,238,196)'; cx.beginPath(); cx.arc(ox, oy, 1.8, 0, 6.2832); cx.fill();
       }
       cx.restore();
     }
