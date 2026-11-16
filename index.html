@@ -3713,7 +3713,12 @@
           P.x += dashHx * d; P.y += dashHy * d; trail.length = 0; trail.push({ x: P.x, y: P.y });   // hız ve yönelim aynen korunur
           dashFx.push({ x: P.x, y: P.y, t0: performance.now(), k: 1, h: P.h });
           dashCamT = .45;                                        // kamera yumuşakça yetişir
-          var bs = Math.hypot(P.vx, P.vy), mxs = S * .9 * wingStats().hiz * (1 + .45 * odC);   // ışınlanma biraz ek ivme verir: hız yönünde (yavaşsa burun yönünde) yumuşak itiş
+          var bs = Math.hypot(P.vx, P.vy), mxs = S * .9 * wingStats().hiz * (1 + .45 * odC);
+          if (bs > S * .05 && P.vx * dashHx + P.vy * dashHy < 0) {   // ışınlanma hızın TERS yönüne: hızın yönü ışınlandığı tarafa yarı yarıya döner (hız büyüklüğü %85 korunur)
+            var rx = P.vx / bs * .5 + dashHx * .5, ry = P.vy / bs * .5 + dashHy * .5, rl = Math.hypot(rx, ry);
+            if (rl < .05) { rx = dashHx; ry = dashHy; rl = 1; }
+            bs *= .85; P.vx = rx / rl * bs; P.vy = ry / rl * bs;
+          }   // ışınlanma biraz ek ivme verir: hız yönünde (yavaşsa burun yönünde) yumuşak itiş
           boostRem = S * .16; boostCap = Math.min(mxs, bs + S * .2);
         }
         dashPh = 2; dashT = 0;
@@ -4226,7 +4231,7 @@
     function sfxDoor() { if (!AC) return; breath(.45, .05, 380, 1500, 0); bell(semi(7), .05, 0, .05, .6); }
     function stActivate(s) {                                        // gemi odaya girdi: nokta kaydedilir
       s.on = true; s.act = 0; cpSt = s;
-      cpSave = { waveT: waveT, bonus: bonus };
+      cpSave = { waveT: waveT, bonus: bonus, gap: Math.max(waveY - P.y, H * .6) };   // gap: girişteki alev farkı; ölünce aynı fark geri verilir
       banner = 'Kontrol noktası'; bannerT = 2.6; flash = Math.max(flash, .35); sfxCheckpoint(); vib([12, 30, 12]);
     }
     function stStep(dt, Rs) {                                       // kapı animasyonu + ship'in istasyonla etkileşimi; kapıdan geçen istasyonu döndürür
@@ -4267,7 +4272,7 @@
       obs = []; pick = []; bAct = false; y0 = s.y + H * .65 + S * .6;
       bC = [{ has: false, x: 0, y: y0, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: y0, r: 0, dep: 0, n: 0 }];
       genY = s.y - S * ST_ZONE; lastPat = ''; forkCool = 1; bOn = true;
-      waveY = P.y + Math.max(H * .95, S * 1.3); waveT = cpSave.waveT; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
+      waveY = P.y + Math.max(H * .95, S * 1.3, Math.min(cpSave.gap || 0, H * 1.4)); waveT = cpSave.waveT; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
       for (k = 0; k < stns.length; k++) { stns[k].open = 0; stns[k].snd = false; }
       s.open = 1; s.snd = true; s.act = 0;
       sector = Math.floor(distM() / 50); banner = ''; bannerT = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); hintT = 0;
@@ -4295,7 +4300,9 @@
       } else {
         waveT += dt;
         wv = S * Math.min(.36, .085 + .0022 * waveT + .006 * sector) * (1 + .1 * Math.sin(waveT * .7));
-        if (gap > H * 1.15) wv = Math.max(wv, (gap - H * 1.0) * .35);
+        var nearSt = false, ni; for (ni = 0; ni < stns.length; ni++) if (Math.abs(P.y - stns[ni].y) < S * 2.6) { nearSt = true; break; }
+        if (nearSt) wv *= .5;                                          // istasyona yaklaşırken yavaşlamak kazandığın farkı yemesin
+        else if (gap > H * 1.6) wv = Math.max(wv, (gap - H * 1.4) * .2);   // yetişme kuralı yalnızca çok büyük farkta, daha yumuşak
         waveY -= wv * dt; gap = waveY - P.y;
       }
       fireStep(dt, wv);
@@ -5057,7 +5064,7 @@
         for (j = 0; j < 3; j++) { ph = t * .5 + j * 2.0944; cx.beginPath(); cx.moveTo(wc + Math.cos(ph) * .04 * U, Math.sin(ph) * .04 * U); cx.lineTo(wc + Math.cos(ph) * .075 * U, Math.sin(ph) * .075 * U); cx.stroke(); }
         cx.fillStyle = rgba(BL, .35 + .3 * pu + .25 * (on ? 1 : 0) + .2 * s.ch); cx.beginPath(); cx.arc(wc, 0, .014 * U, 0, 6.2832); cx.fill();
         /* ---- iniş bölmesi ---- */
-        cx.fillStyle = '#04050a'; cx.fillRect(-.01 * U, -DH * U, (BAY + .01) * U, 2 * DH * U);
+        cx.fillStyle = '#04050a'; cx.fillRect(0, -DH * U, BAY * U, 2 * DH * U);
         cx.strokeStyle = 'rgba(244,242,238,.07)'; cx.lineWidth = 1;
         for (j = 1; j < 7; j++) { cx.beginPath(); cx.moveTo(j * PIT * U, -DH * U); cx.lineTo(j * PIT * U, DH * U); cx.stroke(); }     // kaburgalar: gövde dikişleriyle aynı hizada
         for (k = -1; k <= 1; k += 2) { cx.beginPath(); cx.moveTo(0, k * (DH - .03) * U); cx.lineTo(BAY * U, k * (DH - .03) * U); cx.stroke(); }
@@ -5087,22 +5094,22 @@
             cx.beginPath(); cx.moveTo(-.019 * U, .001 * U); cx.lineTo(-.006 * U, .014 * U); cx.lineTo(.02 * U, -.015 * U); cx.stroke(); cx.restore();
           }
         }
-        cx.strokeStyle = rgba(on ? BL : '244,242,238', on ? .8 : .5); cx.lineWidth = 1.3; cx.strokeRect(-.01 * U, -DH * U, (BAY + .01) * U, 2 * DH * U);
+        cx.strokeStyle = rgba(on ? BL : '244,242,238', on ? .8 : .5); cx.lineWidth = 1.3; cx.strokeRect(0, -DH * U, BAY * U, 2 * DH * U);
         /* ---- kapı kanatları: açılırken çerçevenin içine kayar ---- */
-        cx.save(); cx.beginPath(); cx.rect(-.03 * U, -DH * U, .09 * U, 2 * DH * U); cx.clip();
+        cx.save(); cx.beginPath(); cx.rect(0, -DH * U, .06 * U, 2 * DH * U); cx.clip();
         for (k = -1; k <= 1; k += 2) {
           r = DH * U; m = k < 0 ? -r - open * r : open * r;
-          cx.fillStyle = '#12141b'; cx.fillRect(-.02 * U, m, .065 * U, r);
+          cx.fillStyle = '#12141b'; cx.fillRect(0, m, .05 * U, r);
           cx.strokeStyle = 'rgba(244,242,238,.22)'; cx.lineWidth = 1;
-          for (j = 0; j < 5; j++) { cx.beginPath(); cx.moveTo(-.02 * U, m + j * r / 5); cx.lineTo(.045 * U, m + j * r / 5 + r / 5); cx.stroke(); }
-          cx.strokeStyle = rgba('244,242,238', .85); cx.lineWidth = 1.5; cx.strokeRect(-.02 * U, m, .065 * U, r);
+          for (j = 0; j < 5; j++) { cx.beginPath(); cx.moveTo(0, m + j * r / 5); cx.lineTo(.05 * U, m + j * r / 5 + r / 5); cx.stroke(); }
+          cx.strokeStyle = rgba('244,242,238', .85); cx.lineWidth = 1.5; cx.strokeRect(0, m, .05 * U, r);
         }
         cx.restore();
-        if (open < .98) { cx.strokeStyle = rgba(BL, .85 * (1 - open)); cx.lineWidth = 2; cx.beginPath(); cx.moveTo(.012 * U, -3); cx.lineTo(.012 * U, 3); cx.stroke(); }
+        if (open < .98) { cx.strokeStyle = rgba(BL, .85 * (1 - open)); cx.lineWidth = 2; cx.beginPath(); cx.moveTo(.025 * U, -3); cx.lineTo(.025 * U, 3); cx.stroke(); }
         /* ---- kapı kenar fenerleri (ilk hücrenin ortası) ve anten ucu ---- */
         cx.globalCompositeOperation = 'lighter';
         for (k = -1; k <= 1; k += 2) {
-          yc = k * (DH + .035) * U;
+          yc = k * (DH + HH) / 2 * U;
           cx.fillStyle = rgba(BL, .5 + .5 * pu); cx.beginPath(); cx.arc(PIT * .5 * U, yc, U * .011, 0, 6.2832); cx.fill();
           g = cx.createRadialGradient(PIT * .5 * U, yc, 0, PIT * .5 * U, yc, U * .07); g.addColorStop(0, rgba(BL, .4 * (.4 + .6 * pu))); g.addColorStop(1, rgba(BL, 0));
           cx.fillStyle = g; cx.beginPath(); cx.arc(PIT * .5 * U, yc, U * .07, 0, 6.2832); cx.fill();
