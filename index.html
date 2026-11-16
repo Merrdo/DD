@@ -2783,7 +2783,7 @@
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
-    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFx = [], DASH_CD = 2.2;
+    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFx = [], DASH_CD = 2.2, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var frameErr = 0;
@@ -3036,7 +3036,7 @@
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0;
       pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
-      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
+      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
       runStars = 0; stFx = []; scFx = []; stChain = 0; stChainT = 0; elStrN.textContent = '0';
@@ -3637,21 +3637,37 @@
       }
       return true;
     }
-    function dashTry() {
-      if (dead || devOn || dashCd > 0 || (race && pre)) return;
-      var hx = Math.cos(P.h), hy = Math.sin(P.h), Dmax = S * .5, Dmin = S * .2, d, nx = 0, ny = 0, ok = false, j, f;
-      for (d = Dmax; d >= Dmin - 1e-6; d -= S * .02) { nx = P.x + hx * d; ny = P.y + hy * d; if (dashFree(nx, ny)) { ok = true; break; } }
-      if (!ok) { dashCd = .5; sfxTurboFail(); vib([25, 35, 25]); pop('ENGEL ÇOK BÜYÜK', P.x, P.y - S * .1, false); return; }
-      dashFx.push({ x0: P.x, y0: P.y, x1: nx, y1: ny, h: P.h, t0: performance.now() });
-      for (j = 0; j < 22; j++) {                                  // ışınlanma izi: yol boyunca kıvılcımlar
-        f = Math.random(); var pa = Math.random() * 6.2832, ps = S * (.04 + Math.random() * .12);
-        parts.push({ x: P.x + (nx - P.x) * f, y: P.y + (ny - P.y) * f, vx: Math.cos(pa) * ps, vy: Math.sin(pa) * ps, l: 1, d: .3 + Math.random() * .3, r: S * .002, c: 8 });
-      }
+    function dashFind(hx, hy) {                                  // burun yönünde varış noktası: en uzaktan başlayıp kısaltarak ilk uygun yeri bulur (yoksa -1)
+      var Dmax = S * .5, Dmin = S * .2, d;
+      for (d = Dmax; d >= Dmin - 1e-6; d -= S * .02) if (dashFree(P.x + hx * d, P.y + hy * d)) return d;
+      return -1;
+    }
+    function dashSparks(x, y) {                                  // yalnızca uçlarda küçük kıvılcım patlaması (yol boyunca iz bırakılmaz)
+      for (var j = 0; j < 9; j++) { var pa = j / 9 * 6.2832 + Math.random() * .5, ps = S * (.08 + Math.random() * .1); parts.push({ x: x, y: y, vx: P.vx * .6 + Math.cos(pa) * ps, vy: P.vy * .6 + Math.sin(pa) * ps, l: 1, d: .22 + Math.random() * .16, r: S * .002, c: 8 }); }
       if (parts.length > 220) parts.splice(0, parts.length - 220);
-      P.x = nx; P.y = ny; trail.length = 0; trail.push({ x: P.x, y: P.y });   // hız (P.vx, P.vy) ve yönelim aynen korunur
-      graceT = Math.max(graceT, .06); dashCd = DASH_CD;
-      flash = Math.max(flash, .4); shake = Math.max(shake, .22);
-      pop('DASH', P.x, P.y - S * .1, true); sfxTurbo(); vib([10, 16, 10]);
+    }
+    function dashTry() {
+      if (dead || devOn || dashCd > 0 || dashPh || (race && pre)) return;
+      var hx = Math.cos(P.h), hy = Math.sin(P.h), d = dashFind(hx, hy);
+      if (d < 0) { dashCd = .5; sfxTurboFail(); vib([25, 35, 25]); pop('ENGEL ÇOK BÜYÜK', P.x, P.y - S * .1, false); return; }
+      dashHx = hx; dashHy = hy; dashD = d; dashPh = 1; dashT = 0;      // 1: mekik kaybolur (≈0.1 sn) → ışınlan → 2: varış noktasında belirir (≈0.16 sn)
+      dashCd = DASH_CD; graceT = Math.max(graceT, .3);
+      dashFx.push({ x: P.x, y: P.y, t0: performance.now(), k: 0 }); dashSparks(P.x, P.y);
+      sfxTurbo(); vib([10, 16, 10]);
+    }
+    function dashStep(dt) {
+      if (!dashPh) return;
+      dashT += dt;
+      if (dashPh === 1) {
+        if (dashT < .1) return;
+        var d = dashFind(dashHx, dashHy);                       // ışınlanma anında yeniden kontrol: engel kımıldadıysa mesafe kısalır, yer yoksa olduğu yerde belirir
+        if (d >= 0) {
+          P.x += dashHx * d; P.y += dashHy * d; trail.length = 0; trail.push({ x: P.x, y: P.y });   // hız ve yönelim aynen korunur
+          dashFx.push({ x: P.x, y: P.y, t0: performance.now(), k: 1 }); dashSparks(P.x, P.y);
+          dashCamT = .7;                                        // kamera yumuşakça yetişir
+        }
+        dashPh = 2; dashT = 0;
+      } else if (dashT >= .16) { dashPh = 0; dashT = 0; }
     }
     function step(dt) {
       if (race && dead) { stepDead(dt); return; }
@@ -3716,6 +3732,7 @@
       if (tOn && tb <= 0) { tOn = false; sfxTurboOut(); }
       if (tReq && engK() === 'dash') dashTry();
       if (dashCd > 0) dashCd = Math.max(0, dashCd - dt);
+      dashStep(dt);
       tReq = false;
       var want = (jetting && ((!lock && en > 0) || (tOn && tb > 0))) ? 1 : 0;
       th += (want - th) * (1 - Math.exp(-dt / (want ? 0.08 : 0.18)));
@@ -3765,8 +3782,9 @@
       var px0 = P.x, py0 = P.y;
       P.x += P.vx * dt; P.y += P.vy * dt;
       trail.push({ x: P.x, y: P.y }); if (trail.length > 48) trail.shift();
-      var k = 1 - Math.exp(-dt / 0.35); cam.x += (P.x - cam.x) * k; cam.y += (P.y - cam.y) * k;
-      var ox = P.x - cam.x, oy = P.y - cam.y, lim = S * 0.28, ol = Math.hypot(ox, oy);
+      var dcK = Math.min(1, dashCamT / .5); dashCamT = Math.max(0, dashCamT - dt);
+      var k = 1 - Math.exp(-dt / (0.35 - .2 * dcK)); cam.x += (P.x - cam.x) * k; cam.y += (P.y - cam.y) * k;
+      var ox = P.x - cam.x, oy = P.y - cam.y, lim = S * (0.28 + .3 * dcK), ol = Math.hypot(ox, oy);
       if (ol > lim) { cam.x = P.x - ox / ol * lim; cam.y = P.y - oy / ol * lim; }
       if (th > 0.15) { var tfp = 1 + .5 * (tfk - 1); emit += dt * 46 * th * tfp; while (emit >= 1) { emit--; spawn(th * tfp); } }
       for (var i = parts.length - 1; i >= 0; i--) {
@@ -5251,20 +5269,22 @@
         var rd = S * .026 * 3.6; cx.globalAlpha = Math.min(1, sp / (S * .35)) * .75; cx.fillStyle = F;
         cx.beginPath(); cx.arc(ax + P.vx / sp * rd, ay + P.vy / sp * rd, 2.6, 0, 6.2832); cx.fill();
       }
-      cx.globalAlpha = 1; if (dead === 1 && lz && lz.cv) lzDraw(ax, ay); else if (!dead || (dead === 2 && boomT < 0)) ship(ax, ay, ts);
+      cx.globalAlpha = 1; if (dead === 1 && lz && lz.cv) lzDraw(ax, ay); else if (!dead || (dead === 2 && boomT < 0)) {
+        var dA = 1, dS = 1;                                                      // dash: kaybolurken küçülüp söner, varışta büyükten oturarak belirir
+        if (!dead && dashPh === 1) { var dq = Math.min(1, dashT / .1); dA = 1 - dq * dq; dS = 1 - .45 * dq; }
+        else if (!dead && dashPh === 2) { var dq2 = Math.min(1, dashT / .16), de2 = 1 - Math.pow(1 - dq2, 3); dA = de2; dS = 1.35 - .35 * de2; }
+        if (dA < 1 || dS !== 1) { cx.save(); cx.globalAlpha = Math.max(0, dA); cx.translate(ax, ay); cx.scale(dS, dS); cx.translate(-ax, -ay); ship(ax, ay, ts); cx.restore(); }
+        else ship(ax, ay, ts);
+      }
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
-      if (dashFx.length) {                                                        // dash: yol boyunca ışık çizgisi, çıkış ve varış halkaları
+      if (dashFx.length) {                                                        // dash: yalnızca uçlarda ince elektrik halkası (iz yok)
         cx.save(); cx.globalCompositeOperation = 'lighter'; cx.lineCap = 'round';
         for (i = dashFx.length - 1; i >= 0; i--) {
-          var dk = (performance.now() - dashFx[i].t0) / 420; if (dk >= 1) { dashFx.splice(i, 1); continue; }
-          var dfx = dashFx[i], dx0 = W / 2 + dfx.x0 - cam.x, dy0 = CY + dfx.y0 - cam.y, dx1 = W / 2 + dfx.x1 - cam.x, dy1 = CY + dfx.y1 - cam.y, de = 1 - Math.pow(1 - dk, 3), dsr = S * .026;
-          cx.strokeStyle = 'rgb(160,220,255)'; cx.globalAlpha = .7 * (1 - dk); cx.lineWidth = dsr * (1.1 - dk);
-          cx.beginPath(); cx.moveTo(dx0, dy0); cx.lineTo(dx1, dy1); cx.stroke();
-          cx.strokeStyle = 'rgb(255,255,255)'; cx.globalAlpha = .55 * (1 - dk); cx.lineWidth = dsr * .3;
-          cx.beginPath(); cx.moveTo(dx0, dy0); cx.lineTo(dx1, dy1); cx.stroke();
-          cx.strokeStyle = 'rgb(150,215,255)'; cx.lineWidth = 1.6 * (1 - dk) + .4;
-          cx.globalAlpha = .6 * (1 - dk); cx.beginPath(); cx.arc(dx0, dy0, dsr * (2.9 - 2.1 * de), 0, 6.2832); cx.stroke();     // çıkış: içe çöken halka
-          cx.globalAlpha = .7 * (1 - dk); cx.beginPath(); cx.arc(dx1, dy1, dsr * (.8 + 3 * de), 0, 6.2832); cx.stroke();                // varış: yayılan halka
+          var dk = (performance.now() - dashFx[i].t0) / 360; if (dk >= 1) { dashFx.splice(i, 1); continue; }
+          var dfx = dashFx[i], dx0 = W / 2 + dfx.x - cam.x, dy0 = CY + dfx.y - cam.y, de = 1 - Math.pow(1 - dk, 3), dsr = S * .026;
+          cx.strokeStyle = 'rgb(150,215,255)'; cx.lineWidth = 1.6 * (1 - dk) + .4; cx.globalAlpha = .65 * (1 - dk);
+          cx.beginPath(); cx.arc(dx0, dy0, dsr * (dfx.k ? .6 + 2.6 * de : 2.6 - 1.9 * de), 0, 6.2832); cx.stroke();
+          cx.globalAlpha = .35 * (1 - dk) * (1 - dk); cx.fillStyle = 'rgb(200,235,255)'; cx.beginPath(); cx.arc(dx0, dy0, dsr * (dfx.k ? 1.8 - .8 * de : 1.2 + .6 * de), 0, 6.2832); cx.fill();
         }
         cx.restore();
       }
