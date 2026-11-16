@@ -3292,16 +3292,29 @@
             hard = Math.random() < .5 ? -1 : 1, i, k, u, w, r, yy, off, x, e, sd, y, tp, ty, kinds = [], last = '', usedLz = false;
         function hAt(uu) { var q = uu < Lin ? uu / Lin : uu > Lt - Lout ? (Lt - uu) / Lout : 1; q = Math.max(0, Math.min(1, q)); return h * q * q * (3 - 2 * q); }
         function lane(sdL, yv, shift) { return T(yv) + sdL * (lc + (shift || 0)) * Lw(yv); }   // şerit merkezinin x'i (+ yanal kaydırma)
-        // ada: sol kenar, sağ kenar ve orta hat boyunca birbirine geçen sabit kayalar (parçalanmaz, sınır kayaları gibi nefes alır)
-        for (k = -1; k <= 1; k++) {
+        // ada: sol kenar, sağ kenar ve orta hat boyunca sabit kayalar; her kaya öncekilere en fazla teğet olur, asla iç içe girmez
+        var isl = [];
+        function islFree(px, py, pr) { for (var q = 0; q < isl.length; q++) if (Math.hypot(isl[q].x - px, isl[q].y - py) < .93 * (pr + isl[q].r)) return false; return true; }
+        function islPut(px, py, pr, uu) {
+          var rk = mkRock(px, py, pr, { sd: 2, gen: 2, fix: true, isl: true, nc: true, ox: 0, oy: 0, ovx: 0, ovy: 0, vr: rnd(-.1, .1), hx: px, hy: py, ax: S * rnd(.005, .011), ay: S * rnd(.005, .011), bw: rnd(.4, .6), ph: uu / S * 1.3 + rnd(-.1, .1) });
+          isl.push(rk);
+        }
+        for (k = -1; k <= 1; k += 2) {                              // iki kenar hattı: kayayı, öncekine değmeyecek ilk noktaya (yukarı doğru) yerleştir
           u = S * .02;
           while (u < Lt) {
-            w = hAt(u); r = S * rnd(.068, .095) * (.55 + .45 * Math.min(1, w / (h * .5)));
-            if (k === 0 && w < r) { u += r * 1.1; continue; }      // uçlarda yan hatlar zaten üst üste biner
-            yy = y0 - u; off = k * Math.max(0, w - r * .85); x = T(yy) + off * Lw(yy);
-            mkRock(x, yy, r, { sd: 2, gen: 2, fix: true, isl: true, nc: true, ox: 0, oy: 0, ovx: 0, ovy: 0, vr: rnd(-.1, .1), hx: x, hy: yy, ax: S * rnd(.005, .011), ay: S * rnd(.005, .011), bw: rnd(.4, .6), ph: u / S * 1.3 + rnd(-.1, .1) });
-            u += r * 1.1;
+            r = S * rnd(.068, .095);
+            for (var g2 = 0; g2 < 400 && u < Lt; g2++, u += r * .06) {
+              w = hAt(u); var rr = r * (.55 + .45 * Math.min(1, w / (h * .5)));
+              yy = y0 - u; x = T(yy) + k * Math.max(0, w - .85 * rr) * Lw(yy);
+              if (islFree(x, yy, rr)) { islPut(x, yy, rr, u); break; }
+            }
+            u += r * .06;
           }
+        }
+        u = S * .02;                                                // orta hat: yalnızca yeterince genişken, daha küçük kayalarla; yer yoksa atlanır
+        while (u < Lt) {
+          w = hAt(u); r = S * rnd(.05, .075); yy = y0 - u; x = T(yy);
+          if (w > r * 2.2 && islFree(x, yy, r)) { islPut(x, yy, r, u); u += r * 1.9; } else u += r * .5;
         }
         // KOLAY şerit: seyrek, küçük, durağan kayalar (sağ-sol dönüşümlü); yanlarından rahatça geçilir
         sd = -hard;
@@ -3783,7 +3796,7 @@
       var qx, qy, ca, sa;
       if (o.t === 'rock') return Math.hypot(o.x - x, o.y - y) - o.r * .88;
       if (o.t === 'wall') { qx = Math.max(o.x0, Math.min(x, o.x1)); qy = Math.max(o.y - o.h / 2, Math.min(y, o.y + o.h / 2)); return Math.hypot(qx - x, qy - y); }
-      if (o.t === 'spin') { ca = Math.cos(o.rot) * o.L / 2; sa = Math.sin(o.rot) * o.L / 2; return segDist(x, y, o.x - ca, o.y - sa, o.x + ca, o.y + sa) - S * .011; }
+      if (o.t === 'spin') { ca = Math.cos(o.rot) * o.L / 2; sa = Math.sin(o.rot) * o.L / 2; return segDist(x, y, o.x, o.y, o.x + ca, o.y + sa) - S * .011; }
       if (o.t === 'hole') return Math.hypot(o.x - x, o.y - y) - o.R * .85;
       return 1e9;
     }
@@ -3928,7 +3941,7 @@
     function lzArm(o) { if (!dead) lz = { y: o.y, ang: 0, acc: 0, cv: null, cv2: null, R: 0 }; }
     function lzArmSpin(o) {                                      // dönen lazer: kesim çizgisi çubuğun o anki açısındadır, gemi çubuğa oturtulur
       if (dead) return;
-      var ca = Math.cos(o.rot), sa = Math.sin(o.rot), tt = Math.max(-o.L / 2, Math.min(o.L / 2, (P.x - o.x) * ca + (P.y - o.y) * sa));
+      var ca = Math.cos(o.rot), sa = Math.sin(o.rot), tt = Math.max(0, Math.min(o.L / 2, (P.x - o.x) * ca + (P.y - o.y) * sa));
       lz = { px: o.x + ca * tt, py: o.y + sa * tt, y: 0, ang: o.rot, acc: 0, cv: null, cv2: null, R: 0 };
     }
     function lzSnap() {                                          // gemiyi bir kez çiz; kesim çizgisi yatay kalacak şekilde -ang döndürülür
@@ -4106,9 +4119,9 @@
         } else if (o.t === 'spin') {
           o.rot += o.w * dt;
           var ca = Math.cos(o.rot) * o.L / 2, sa = Math.sin(o.rot) * o.L / 2;
-          clr = segDist(P.x, P.y, o.x - ca, o.y - sa, o.x + ca, o.y + sa) - S * .011 - Rs;
-          var sx2 = ca * 2, sy2 = sa * 2, st2 = Math.max(0, Math.min(1, ((P.x - o.x + ca) * sx2 + (P.y - o.y + sa) * sy2) / (sx2 * sx2 + sy2 * sy2 || 1)));
-          anx = o.x - ca + sx2 * st2 - P.x; any_ = o.y - sa + sy2 * st2 - P.y;
+          clr = segDist(P.x, P.y, o.x, o.y, o.x + ca, o.y + sa) - S * .011 - Rs;
+          var sx2 = ca, sy2 = sa, st2 = Math.max(0, Math.min(1, ((P.x - o.x) * sx2 + (P.y - o.y) * sy2) / (sx2 * sx2 + sy2 * sy2 || 1)));
+          anx = o.x + sx2 * st2 - P.x; any_ = o.y + sy2 * st2 - P.y;
         } else if (o.t === 'beam') {
           var ph = ((gt + o.ph) % o.per) / o.per;                // 0..1: kapalı → uyarı → açık
           o.warn = ph > .5 && ph < .72; o.on = ph >= .72 && ph < .955;
@@ -4687,7 +4700,7 @@
       cx.save(); cx.translate(x, y); cx.lineCap = 'round';
       g = cx.createRadialGradient(0, 0, 0, 0, 0, Lh); g.addColorStop(0, rgba(OR, .95)); g.addColorStop(.7, rgba(OR, .5)); g.addColorStop(1, rgba(OR, 0));
       cx.globalCompositeOperation = 'lighter'; cx.fillStyle = g;
-      for (k = 0; k < 2; k++) {                                     // süpürme izi: arkada solan yumuşak kuyruk (dilimlerle, çizgisiz)
+      for (k = 0; k < 1; k++) {                                     // süpürme izi: arkada solan yumuşak kuyruk (dilimlerle, çizgisiz)
         for (i = 0; i < n; i++) {
           th = o.rot + k * Math.PI - sg * (i + .5) / n * span; dl = span / n * .62; al = 1 - (i + .5) / n; al = al * al * .17;
           cx.globalAlpha = al; cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(Math.cos(th - dl) * Lh, Math.sin(th - dl) * Lh); cx.lineTo(Math.cos(th + dl) * Lh, Math.sin(th + dl) * Lh); cx.closePath(); cx.fill();
@@ -4695,15 +4708,14 @@
       }
       cx.globalAlpha = 1; cx.globalCompositeOperation = 'source-over';
       cx.rotate(o.rot);
-      for (sd = -1; sd <= 1; sd += 2) {
-        drawBeamSeg(sd * (gp + bw), sd * Lh, 0, 1, 1, t, sd, 1);       // lazer çubuğuyla aynı ışın
+      for (sd = 1; sd <= 1; sd += 2) {                                 // tek ışın, tek dönen kafa
+        drawBeamSeg(sd * (bw / 2 + gp), sd * Lh, 0, 1, 1, t, sd, 1);       // lazer çubuğuyla aynı ışın
         cx.save(); cx.translate(sd * Lh, 0); cx.globalCompositeOperation = 'lighter';   // uçta yumuşak parıltı ve beyaz nokta
         g = cx.createRadialGradient(0, 0, 0, 0, 0, S * .05); g.addColorStop(0, rgba('255,244,230', .75)); g.addColorStop(.4, rgba(OR, .25)); g.addColorStop(1, rgba(OR, 0));
         cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, S * .05, 0, 6.2832); cx.fill();
         cx.fillStyle = rgba('255,250,242', .95); cx.beginPath(); cx.arc(0, 0, S * .0045, 0, 6.2832); cx.fill(); cx.restore();
       }
-      drawEmitter(-gp, -1, 0, bw, bh, 1, true, 0, t, 9);              // merkez: iki yayıcı kafa sırt sırta (çubuktaki kafalarla aynı tasarım)
-      drawEmitter(gp, 1, 0, bw, bh, 1, true, 0, t, 9);
+      drawEmitter(-bw / 2, 1, 0, bw, bh, 1, true, 0, t, 9);           // merkez: tek yayıcı kafa (ışın dışa doğru)
       cx.restore();
     }
     function rockPath(q, x, y) {
