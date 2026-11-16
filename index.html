@@ -1214,8 +1214,7 @@
     var f = sk ? 'fill="none" stroke="' + sk + '" stroke-width=".06" stroke-linejoin="round"' : 'fill="' + c + '"';
     if (kind === 'wide') return '<path d="M.11 2.17L.11 2.04Q.11 1.99 .16 1.99L.53 1.99Q.58 1.99 .58 2.04L.58 2.17Z" ' + f + '/><path d="M-.11 2.17L-.11 2.04Q-.11 1.99 -.16 1.99L-.53 1.99Q-.58 1.99 -.58 2.04L-.58 2.17Z" ' + f + '/>' +
       (sk ? '' : '<path d="M0 1.55L0 2.17" stroke="#000" stroke-opacity=".16" stroke-width=".04" fill="none"/><path d="M.44 1.2C.46 1.45 .8 1.5 .86 1.8M-.44 1.2C-.46 1.45 -.8 1.5 -.86 1.8" stroke="#000" stroke-opacity=".12" stroke-width=".035" fill="none"/>');
-    if (kind === 'dash') return '<path d="M-.3 2.3L-.3 2.16Q-.3 2.12 -.26 2.12L.26 2.12Q.3 2.12 .3 2.16L.3 2.3Z" ' + f + '/>' +
-      (sk ? '' : '<path d="M-.24 2.27L.24 2.27" stroke="#aee6ff" stroke-width=".035" stroke-linecap="round" fill="none"/>');
+    if (kind === 'dash') return '<path d="M-.32 2.3C-.32 2.17 -.18 2.08 0 2.08C.18 2.08 .32 2.17 .32 2.3Z" ' + f + '/>';
     return '<path d="M-.21 1.95Q0 1.9 .21 1.95L.24 2.1Q0 2.16 -.24 2.1Z" ' + f + '/>' + (sk ? '' : '<ellipse cx="0" cy="2.08" rx=".17" ry=".03" fill="#000" fill-opacity=".5"/>');
   }
   function nzKind() {
@@ -4452,13 +4451,9 @@
         cx.fillStyle = base; vent(1); cx.fill(); vent(-1); cx.fill();
         if (hh > .02) { cx.fillStyle = gl; rr(.15, 2.07, .39, .06, .03); cx.fill(); rr(-.54, 2.07, .39, .06, .03); cx.fill(); }
       } else if (kind === 'dash') {                              // Sıçrama Motoru: sade tek yuva + ince mavi enerji çizgisi (hazırken parlar)
-        rr(-.3, 2.12, .6, .18, .04);
+        cx.beginPath(); cx.moveTo(-.32, 2.3); cx.bezierCurveTo(-.32, 2.17, -.18, 2.08, 0, 2.08); cx.bezierCurveTo(.18, 2.08, .32, 2.17, .32, 2.3); cx.closePath();
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
         cx.fill();
-        var dr = 1 - dashCd / DASH_CD, da = dr >= 1 ? .85 + .15 * Math.sin(performance.now() / 160) : .12 + .3 * dr;
-        cx.lineCap = 'round'; cx.beginPath(); cx.moveTo(-.24, 2.27); cx.lineTo(.24, 2.27);
-        cx.strokeStyle = 'rgba(127,212,255,' + (.28 * da).toFixed(3) + ')'; cx.lineWidth = .09; cx.stroke();
-        cx.strokeStyle = 'rgba(174,230,255,' + da.toFixed(3) + ')'; cx.lineWidth = .035; cx.stroke();
         if (hh > .02) { cx.fillStyle = gl; cx.fillRect(-.22, 2.3, .44, .04); }
       } else {
         cx.beginPath(); cx.moveTo(-.21, 1.95); cx.quadraticCurveTo(0, 1.9, .21, 1.95); cx.lineTo(.24, 2.1); cx.quadraticCurveTo(0, 2.16, -.24, 2.1); cx.closePath();
