@@ -2922,7 +2922,7 @@
     function statsHtml(sc, dist, sec, stars, bst, nw) {
       return '<div class="sx"><div class="sx-l">puan</div><div class="sx-n' + (nw ? ' nw' : '') + '">' + sc + '</div>' +
         (nw ? '<div class="sx-r nw"><i></i><span>' + SX_STAR + 'yeni rekor</span><i></i></div>' : bst > 0 ? '<div class="sx-r"><i></i><span>rekor ' + bst + '</span><i></i></div>' : '<div class="sx-r"></div>') +
-        '<div class="sx-g"><div>' + IC_D + '<b>' + dist + '<i>m</i></b><small>mesafe</small></div><div>' + IC_S + '<b>' + sec + '</b><small>bölge</small></div>' +
+        '<div class="sx-g"><div>' + IC_D + '<b>' + dist + '<i>m</i></b><small>mesafe</small></div><div>' + IC_S + '<b>' + sec + '</b><small>sektör</small></div>' +
         '<div class="' + (stars ? 'sg' : 'z') + '">' + IC_Y + '<b>' + stars + '</b><small>yıldız</small></div></div></div>';
     }
     function showMenu(m) {
@@ -2932,10 +2932,10 @@
         if (race && !paid) { paid = true; }
         var cause = hd ? 'hole' : dead === 2 ? 'burn' : lz ? 'cut' : 'crash';
         st.textContent = { hole: 'KARA DELİK YUTTU', burn: 'ALEV SENİ YUTTU', cut: 'IŞIN SENİ KESTİ', crash: 'KAYAYA ÇARPTIN' }[cause];
-        di.innerHTML = DK_IC[cause]; ss.innerHTML = statsHtml(fScore, fDist, zNo(), runStars, best, newRec);
+        di.innerHTML = DK_IC[cause]; ss.innerHTML = statsHtml(fScore, fDist, sector + 1, runStars, best, newRec);
       } else if (m === 2) {
         st.textContent = 'DURAKLATILDI'; di.innerHTML = DK_IC.pause;
-        ss.innerHTML = race ? statsHtml(score(), distM(), zNo(), runStars, best, false) : (best > 0 ? '<div class="sx"><div class="sx-r">rekor ' + best + '</div></div>' : '');
+        ss.innerHTML = race ? statsHtml(score(), distM(), sector + 1, runStars, best, false) : (best > 0 ? '<div class="sx"><div class="sx-r">rekor ' + best + '</div></div>' : '');
       } else { st.textContent = 'ASTRO'; di.innerHTML = ''; ss.textContent = 'bir mod seç'; }
       el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); elSm.classList.toggle('pz', m === 2); menuHtml(); if (m === 0) crBuild(); elSm.classList.add('on');
     }
@@ -3062,7 +3062,6 @@
     }
 
     function reset() {
-      seedRun();
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0;
       pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
@@ -3081,65 +3080,23 @@
     function distM() { return Math.max(0, Math.floor(-(P.y - oy) / (S * 0.1))); }
 
     /* --- parkur üretimi: engeller dünyaya sabit, ilerledikçe parça parça üretilir --- */
-    /* --- bölgeler: seed'den türeyen sıra/uzunluk; ilk bölge her zaman Klasik --- */
-    var gm = 0, rg, zg, seedZ = 0, zones = [], zBag = [], zCur = null, zv = 0, fogC = null, fogK = '';
-    var REG = { classic: { n: 'Klasik', a: 200, b: 300 }, zumrut: { n: 'Zümrüt Sis', a: 300, b: 400 } };
-    function mb(q) { return function () { q = (q + 0x6D2B79F5) | 0; var t = Math.imul(q ^ q >>> 15, 1 | q); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-    function RG() { return gm ? rg() : Math.random(); }
-    function mAt(y) { return Math.max(0, -(y - oy) / (S * .1)); }
-    function zAdd() {
-      var last = zones.length ? zones[zones.length - 1] : null, id, r, i, j, t;
-      if (!last) id = 'classic';
-      else {
-        if (!zBag.length) { zBag = Object.keys(REG); for (i = zBag.length - 1; i > 0; i--) { j = (zg() * (i + 1)) | 0; t = zBag[i]; zBag[i] = zBag[j]; zBag[j] = t; } }
-        j = zBag[0] === last.id && zBag.length > 1 ? 1 : 0; id = zBag.splice(j, 1)[0];
-      }
-      r = REG[id]; zones.push({ id: id, s: last ? last.e : 0, e: (last ? last.e : 0) + r.a + Math.floor(zg() * ((r.b - r.a) / 10 + 1)) * 10 });
-    }
-    function seedRun(sd) {
-      seedZ = sd === undefined ? (Math.random() * 4294967296) >>> 0 : sd; rg = mb(seedZ); zg = mb(seedZ ^ 0x9e3779b9);
-      zones = []; zCur = null; zv = 0; zBag = Object.keys(REG).filter(function (k) { return k !== 'classic'; }); zAdd();
-    }
-    function zoneAt(m) {
-      if (m < 0) m = 0;
-      while (zones[zones.length - 1].e <= m) zAdd();
-      for (var i = zones.length - 1; i >= 0; i--) if (zones[i].s <= m) return zones[i];
-      return zones[0];
-    }
-    function zk(m) {                                               // Zümrüt Sis ağırlığı 0..1 (bölge kenarında 30 m yumuşak giriş/çıkış)
-      if (!zones.length) return 0;
-      var z = zoneAt(m); if (z.id !== 'zumrut') return 0;
-      var k = Math.max(0, Math.min(1, Math.min(m - z.s, z.e - m) / 30)); return k * k * (3 - 2 * k);
-    }
-    function zNo() { return Math.max(1, zones.indexOf(zCur) + 1); }
-    function zStep() {                                             // oyuncunun bulunduğu bölge: banner + sis geçişi
-      var z = zoneAt(distM()), first = !zCur;
-      if (z !== zCur) { zCur = z; if (!first) { banner = REG[z.id].n.toUpperCase(); bannerT = 2.4; sfxSector(); vib(12); } }
-    }
-    function zEase(dt) { zv += (zk(distM()) - zv) * Math.min(1, dt / 3); }   // ~10 sn'de karışır
-    function zWd(y) {                                              // zümrüt bölgede koridor %20 geniş; istasyon çevresinde 1'e döner
-      if (!zones.length) return 1;
-      var m = mAt(y), k = zk(m); if (k <= 0) return 1;
-      var dm = Math.abs(m - 200 - 150 * Math.max(0, Math.round((m - 200) / 150)));
-      return 1 + .2 * k * Math.max(0, Math.min(1, (dm - 12) / 20));
-    }
-    function rnd(a, b) { return a + RG() * (b - a); }
-    function pickIn(arr) { return arr[(RG() * arr.length) | 0]; }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+    function pickIn(arr) { return arr[(Math.random() * arr.length) | 0]; }
     /* --- kıvrımlı koridor: merkez çizgisi parçalardan (düz, yumuşak viraj, keskin viraj, şimşek) üretilir ---
        Genişlik sabit kalır: yatay yarı genişlik = cw * sqrt(1 + eğim²) (yani yola dik genişlik hep cw). */
     var tk = [], tkY = 0, tkX = 0, tkDir = 1;
-    function trackInit(y0) { tk = []; tkY = y0 - S * 3.5; tkX = 0; tkDir = RG() < .5 ? -1 : 1; }
+    function trackInit(y0) { tk = []; tkY = y0 - S * 3.5; tkX = 0; tkDir = Math.random() < .5 ? -1 : 1; }
     function tkSeg(L, dx, a) { tk.push({ y0: tkY, y1: tkY - L, x0: tkX, x1: tkX + dx, a: a }); tkY -= L; tkX += dx; }
     function tkAdd() {
       if (bOn && tkY <= stNextY + S * ST_LEN / 2) {                 // istasyon sırası geldi: düz bir koridor parçası ekle, istasyonu ortasına koy
-        var yS = tkY - S * ST_LEN / 2, sdS = RG() < .5 ? -1 : 1;
+        var yS = tkY - S * ST_LEN / 2, sdS = Math.random() < .5 ? -1 : 1;
         tkSeg(S * ST_LEN, 0, .5);
         stns.push({ sd: sdS, y: yS, cx: tkX, open: 0, on: false, act: -1, n: stns.length + 1, snd: false });
         stNextY = yS - S * ST_GAP; return;
       }
-      var sec = (oy - tkY) / (S * 5), r = RG(), amp = Math.min(1, .6 + .2 * sec), XM = S * 1.4, i, n, dx;
+      var sec = (oy - tkY) / (S * 5), r = Math.random(), amp = Math.min(1, .6 + .2 * sec), XM = S * 1.4, i, n, dx;
       function turn(force) {                                       // çoğunlukla yön değiştirir (sağ → sol → sağ); sınıra yaklaşınca merkeze döner
-        tkDir = RG() < .8 ? -tkDir : tkDir;
+        tkDir = Math.random() < .8 ? -tkDir : tkDir;
         if (tkX > XM * .55) tkDir = -1; else if (tkX < -XM * .55) tkDir = 1;
         return tkDir;
       }
@@ -3148,8 +3105,8 @@
       if (r < .2) { tkSeg(S * rnd(1.2, 2.4), 0, .5); return; }       // düz
       if (r < .6) { tkSeg(S * rnd(3.4, 5.2), turn() * S * rnd(.7, 1.3) * amp, .5); return; }   // yumuşak viraj
       if (r < .82) { tkSeg(S * rnd(2.1, 2.7), turn() * S * rnd(.9, 1.25) * amp, .3); tkSeg(S * rnd(.5, 1), 0, .5); return; }   // keskin viraj
-      n = 2 + (RG() < .5 ? 1 : 0) + (sec > 5 ? 1 : 0);      // şimşek: art arda çapraz kollar
-      tkDir = tkX > XM * .3 ? -1 : tkX < -XM * .3 ? 1 : (RG() < .5 ? -1 : 1);
+      n = 2 + (Math.random() < .5 ? 1 : 0) + (sec > 5 ? 1 : 0);      // şimşek: art arda çapraz kollar
+      tkDir = tkX > XM * .3 ? -1 : tkX < -XM * .3 ? 1 : (Math.random() < .5 ? -1 : 1);
       for (i = 0; i < n; i++) {
         dx = tkDir * S * rnd(1, 1.3) * amp; tkSeg(S * rnd(1.55, 2), dx, .12); tkDir = -tkDir;
         if (Math.abs(tkX + tkDir * S) > XM * 1.2) tkDir = tkX > 0 ? -1 : 1;
@@ -3177,14 +3134,14 @@
       if (u <= 0 || u >= 1) return 0;
       return -(g.x1 - g.x0) / L * k * (u < a ? u / a : u <= 1 - a ? 1 : (1 - u) / a);
     }
-    function Lw(y) { var q = Tp(y); return Math.sqrt(1 + q * q) * zWd(y); } // yatay genişlik çarpanı (dik genişlik sabit kalsın)
+    function Lw(y) { var q = Tp(y); return Math.sqrt(1 + q * q); } // yatay genişlik çarpanı (dik genişlik sabit kalsın)
     function mkRockL(x, y, r, o) {                                 // koridora göre yerel x ile kaya
       var t = T(y); if (o && o.cx !== undefined) o.cx += t; return mkRock(x + t, y, r, o);
     }
     function mkRock(x, y, r, o) {
-      var n = 9 + ((RG() * 3) | 0), pts = [], i;
-      for (i = 0; i < n; i++) pts.push(.78 + RG() * .22);
-      var k = { t: 'rock', x: x, y: y, cx: x, r: r, pts: pts, rot: RG() * 6.28, vr: rnd(-.35, .35), amp: 0, w: 0, ph: 0, near: false, dv: false, vx: 0, vy: 0, gen: 0, grp: 0, tb: 0, gone: false };
+      var n = 9 + ((Math.random() * 3) | 0), pts = [], i;
+      for (i = 0; i < n; i++) pts.push(.78 + Math.random() * .22);
+      var k = { t: 'rock', x: x, y: y, cx: x, r: r, pts: pts, rot: Math.random() * 6.28, vr: rnd(-.35, .35), amp: 0, w: 0, ph: 0, near: false, dv: false, vx: 0, vy: 0, gen: 0, grp: 0, tb: 0, gone: false };
       if (o) for (var p in o) k[p] = o[p];
       obs.push(k); return k;
     }
@@ -3207,7 +3164,7 @@
     function rv(o) { return o.dv ? { x: o.vx, y: o.vy } : (o.amp ? { x: o.amp * o.w * Math.cos(o.w * gt + o.ph), y: 0 } : { x: 0, y: 0 }); }
     function sfxRock() { if (!AC) return; breath(.5, .05, 1500, 150, 0); bell(semi(-19), .08, 0, 0, .9); }
     function rockFx(x, y) {
-      for (var i = 0; i < 10; i++) { var a = RG() * 6.2832, sp = S * rnd(.04, .16); parts.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, d: rnd(.5, .9), r: rnd(1.5, 3.2), c: 1 }); }
+      for (var i = 0; i < 10; i++) { var a = Math.random() * 6.2832, sp = S * rnd(.04, .16); parts.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, d: rnd(.5, .9), r: rnd(1.5, 3.2), c: 1 }); }
       if (parts.length > 160) parts.splice(0, parts.length - 160);
       if (Math.abs(y - P.y) < H * .6) { sfxRock(); if (Math.hypot(x - P.x, y - P.y) < S * .7) shake = Math.max(shake, .2); }
     }
@@ -3285,11 +3242,11 @@
       for (i = obs.length - 1; i >= 0; i--) if (obs[i].gone) obs.splice(i, 1);
     }
     var scFx = [];
-    function scorePop(v) { scFx.push({ v: v, a: 0, dx: (RG() - .5) * S * .05 }); if (scFx.length > 6) scFx.shift(); }
+    function scorePop(v) { scFx.push({ v: v, a: 0, dx: (Math.random() - .5) * S * .05 }); if (scFx.length > 6) scFx.shift(); }
     var runStars = 0, stFx = [], stChain = 0, stChainT = 0, elStr = $('spstr'), elStrN = elStr.querySelector('b');
-    function mkStar(x, y) { pick.push({ t: 'star', x: x, y: y, got: false, ph: RG() * 6.28 }); }
-    function mkCell(x, y) { pick.push({ t: 'cell', x: x, y: y, got: false, ph: RG() * 6.28 }); }
-    function mkRing(x, y) { pick.push({ t: 'ring', x: x, y: y, r: S * .13, got: false, ph: RG() * 6.28 }); }
+    function mkStar(x, y) { pick.push({ t: 'star', x: x, y: y, got: false, ph: Math.random() * 6.28 }); }
+    function mkCell(x, y) { pick.push({ t: 'cell', x: x, y: y, got: false, ph: Math.random() * 6.28 }); }
+    function mkRing(x, y) { pick.push({ t: 'ring', x: x, y: y, r: S * .13, got: false, ph: Math.random() * 6.28 }); }
     function clearAt(x, y, m) {                                   // bu noktada engel var mı
       for (var i = 0; i < obs.length; i++) {
         var o = obs[i], rr2 = o.t === 'rock' ? o.r : (o.t === 'spin' ? o.L / 2 : o.t === 'hole' ? o.G * .45 : S * .1);
@@ -3307,17 +3264,17 @@
     // desenler: her biri uzunluk (px) döndürür. d = zorluk (0..)
     var PAT = {
       field: function (y0, d) {
-        var L = S * (1.0 + Math.min(.6, d * .05)), n = 3 + Math.min(7, d + ((RG() * 2) | 0));
+        var L = S * (1.0 + Math.min(.6, d * .05)), n = 3 + Math.min(7, d + ((Math.random() * 2) | 0));
         var drs = [];
         for (var i = 0; i < n; i++) {
-          var r = S * rnd(.045, .085), isA = d >= 3 && RG() < Math.min(.5, .22 + d * .03), isD = !isA && d >= 2 && RG() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
+          var r = S * rnd(.045, .085), isA = d >= 3 && Math.random() < Math.min(.5, .22 + d * .03), isD = !isA && d >= 2 && Math.random() < Math.min(.42, .14 + d * .04), am = isA ? S * rnd(.1, .25) : 0;
           for (var tr = 0; tr < 12; tr++) {
             var ry = y0 - rnd(.08, .92) * L, rx = rnd(-cw * .9, cw * .9) + T(ry);
             if (!rockFree(rx, ry, r, am)) continue;
-            if (isA) mkRock(rx, ry, r, { amp: am, w: rnd(.6, 1.3), ph: RG() * 6.28 });
+            if (isA) mkRock(rx, ry, r, { amp: am, w: rnd(.6, 1.3), ph: Math.random() * 6.28 });
             else if (isD) {
-              var ang = RG() * 6.2832, spd = S * rnd(.03, .07);
-              if (drs.length && RG() < .6) { var tg = drs[(RG() * drs.length) | 0]; ang = Math.atan2(tg.y - ry, tg.x - rx) + rnd(-.2, .2); }
+              var ang = Math.random() * 6.2832, spd = S * rnd(.03, .07);
+              if (drs.length && Math.random() < .6) { var tg = drs[(Math.random() * drs.length) | 0]; ang = Math.atan2(tg.y - ry, tg.x - rx) + rnd(-.2, .2); }
               drs.push(mkRock(rx, ry, r, { dv: true, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, vr: rnd(-.5, .5) }));
             } else mkRock(rx, ry, r);
             break;
@@ -3326,7 +3283,7 @@
         return L;
       },
       slalom: function (y0, d) {
-        var n = 3 + Math.min(3, (d / 2) | 0), sp = S * (.52 - Math.min(.16, d * .012)), side = RG() < .5 ? -1 : 1;
+        var n = 3 + Math.min(3, (d / 2) | 0), sp = S * (.52 - Math.min(.16, d * .012)), side = Math.random() < .5 ? -1 : 1;
         for (var i = 0; i < n; i++) { side = -side; mkRockL(side * cw * rnd(.08, .34), y0 - sp * (i + .6), S * rnd(.1, .15)); mkRockL(-side * cw * rnd(.85, .98), y0 - sp * (i + .6) - S * rnd(-.1, .1), S * rnd(.07, .1)); }
         return sp * (n + .4);
       },
@@ -3335,7 +3292,7 @@
             E = (bAct ? bLim + S * .215 : cw + W) * Lw(y);
         obs.push({ t: 'wall', x0: t - E, x1: gx - gw / 2, y: y, h: h, near: false });
         obs.push({ t: 'wall', x0: gx + gw / 2, x1: t + E, y: y, h: h, near: false });
-        if (d > 3 && RG() < .6) {                         // ikinci kapı, ters tarafta
+        if (d > 3 && Math.random() < .6) {                         // ikinci kapı, ters tarafta
           var y2 = y - S * rnd(.55, .75), t2 = T(y2), gx2 = t2 - gl * rnd(.5, 1.1), E2 = (bAct ? bLim + S * .215 : cw + W) * Lw(y2);
           obs.push({ t: 'wall', x0: t2 - E2, x1: gx2 - gw / 2, y: y2, h: h, near: false });
           obs.push({ t: 'wall', x0: gx2 + gw / 2, x1: t2 + E2, y: y2, h: h, near: false });
@@ -3348,16 +3305,16 @@
         for (var i = 0; i < n; i++) {
           y = y0 - S * (.3 + i * .55);
           var bt = T(y), be = (bAct ? bLim + S * .215 : cw) * Lw(y);
-          obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, gx: rnd(-cw * .6, cw * .6) + bt, gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: RG() * 3, on: false, warn: false, wasOn: false });
+          obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, gx: rnd(-cw * .6, cw * .6) + bt, gw: gw, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
         }
         return S * (.55 + n * .45);
       },
       spinner: function (y0, d) {
-        var L = S * rnd(.62, .85), w = rnd(.9, 1.5 + Math.min(.6, d * .06)) * (RG() < .5 ? -1 : 1), y = y0 - S * .6, x = rnd(-cw * .5, cw * .5), x2;
+        var L = S * rnd(.62, .85), w = rnd(.9, 1.5 + Math.min(.6, d * .06)) * (Math.random() < .5 ? -1 : 1), y = y0 - S * .6, x = rnd(-cw * .5, cw * .5), x2;
         if (bAct) { if (bLim < L / 2) L = bLim * 1.9; var mx = Math.max(0, bLim - L / 2); x = Math.max(-mx, Math.min(mx, x)); }
-        obs.push({ t: 'spin', x: x + T(y), y: y, L: L, w: w, rot: RG() * 6.28, near: false });
+        obs.push({ t: 'spin', x: x + T(y), y: y, L: L, w: w, rot: Math.random() * 6.28, near: false });
         x2 = x + (x > 0 ? -1 : 1) * S * rnd(.9, 1.2);
-        if (d > 5 && (!bAct || Math.abs(x2) + L * .85 / 2 <= bLim)) obs.push({ t: 'spin', x: x2 + T(y - S * .55), y: y - S * .55, L: L * .85, w: -w, rot: RG() * 6.28, near: false });
+        if (d > 5 && (!bAct || Math.abs(x2) + L * .85 / 2 <= bLim)) obs.push({ t: 'spin', x: x2 + T(y - S * .55), y: y - S * .55, L: L * .85, w: -w, rot: Math.random() * 6.28, near: false });
         return S * (d > 5 ? 1.5 : 1.2);
       },
       hole: function (y0, d) {                                      // kara delik: çekim alanı + yutan ufuk
@@ -3368,9 +3325,9 @@
       pendulum: function (y0, d) {
         var rows = 3 + Math.min(2, (d / 4) | 0), sp = S * .46;
         for (var i = 0; i < rows; i++) {
-          var a = cw * rnd(.5, .85), ph = RG() * 6.28, w = rnd(.7, 1.2 + d * .04) * (i % 2 ? -1 : 1), y1 = y0 - sp * (i + .7);
+          var a = cw * rnd(.5, .85), ph = Math.random() * 6.28, w = rnd(.7, 1.2 + d * .04) * (i % 2 ? -1 : 1), y1 = y0 - sp * (i + .7);
           mkRockL(0, y1, S * rnd(.075, .11), { cx: 0, amp: a, w: w, ph: ph });
-          if (RG() < .7) mkRockL(0, y1 - S * .23, S * rnd(.06, .09), { cx: 0, amp: a, w: w, ph: ph + 3.14 });   // ayrı bant: kayalar birbirine girmez
+          if (Math.random() < .7) mkRockL(0, y1 - S * .23, S * rnd(.06, .09), { cx: 0, amp: a, w: w, ph: ph + 3.14 });   // ayrı bant: kayalar birbirine girmez
         }
         return sp * (rows + .4);
       },
@@ -3381,7 +3338,7 @@
             Ho = bLim + S * .215,                                   // sınır kayaları dahil koridor yarı genişliği
             h = Math.max(S * .2, Math.min(S * .4, cw * .45)),       // adanın yarı genişliği
             lw = Ho - S * .14 - h, lc = h + lw / 2,                 // şerit net genişliği ve şerit merkezinin yola uzaklığı
-            hard = RG() < .5 ? -1 : 1, i, k, u, w, r, yy, off, x, e, sd, y, tp, ty, kinds = [], last = '', usedLz = false;
+            hard = Math.random() < .5 ? -1 : 1, i, k, u, w, r, yy, off, x, e, sd, y, tp, ty, kinds = [], last = '', usedLz = false;
         function hAt(uu) { var q = uu < Lin ? uu / Lin : uu > Lt - Lout ? (Lt - uu) / Lout : 1; q = Math.max(0, Math.min(1, q)); return h * q * q * (3 - 2 * q); }
         function lane(sdL, yv, shift) { return T(yv) + sdL * (lc + (shift || 0)) * Lw(yv); }   // şerit merkezinin x'i (+ yanal kaydırma)
         // ada: sol kenar, sağ kenar ve orta hat boyunca sabit kayalar; her kaya öncekilere en fazla teğet olur, asla iç içe girmez
@@ -3422,14 +3379,14 @@
           last = ty; if (ty === 'laser') usedLz = true; kinds.push(ty);
           y = y0 - Lin - S * .3 - k * sl; e = (k % 2 ? 1 : -1) * lw * .17;
           if (ty === 'spin') {
-            obs.push({ t: 'spin', x: lane(sd, y, e), y: y, L: lw * .58, w: rnd(.9, 1.5 + Math.min(.5, d * .05)) * (RG() < .5 ? -1 : 1), rot: RG() * 6.28, near: false });
+            obs.push({ t: 'spin', x: lane(sd, y, e), y: y, L: lw * .58, w: rnd(.9, 1.5 + Math.min(.5, d * .05)) * (Math.random() < .5 ? -1 : 1), rot: Math.random() * 6.28, near: false });
           } else if (ty === 'osc') {
-            var ox0 = lane(sd, y, 0), am = lw * .26, wo = rnd(.8, 1.3) * (RG() < .5 ? -1 : 1), ph0 = RG() * 6.28;
+            var ox0 = lane(sd, y, 0), am = lw * .26, wo = rnd(.8, 1.3) * (Math.random() < .5 ? -1 : 1), ph0 = Math.random() * 6.28;
             mkRock(ox0, y, S * .055, { cx: ox0, amp: am, w: wo, ph: ph0, nc: true });
             if (d >= 6) mkRock(ox0, y - S * .24, S * .05, { cx: ox0, amp: am, w: wo, ph: ph0 + 3.14, nc: true });   // ayrı bant: birbirine girmez
           } else {
             var bt = T(y), be = Ho * Lw(y);
-            obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, lx0: sd < 0 ? -1e9 : bt, lx1: sd < 0 ? bt : 1e9, gx: lane(sd, y, rnd(-.18, .18) * lw), gw: lw * .55, per: Math.max(2.4, 3.6 - d * .08), ph: RG() * 3, on: false, warn: false, wasOn: false });
+            obs.push({ t: 'beam', y: y, x0: bt - be, x1: bt + be, lx0: sd < 0 ? -1e9 : bt, lx1: sd < 0 ? bt : 1e9, gx: lane(sd, y, rnd(-.18, .18) * lw), gw: lw * .55, per: Math.max(2.4, 3.6 - d * .08), ph: Math.random() * 3, on: false, warn: false, wasOn: false });
           }
         }
         // ödüller: zor şeritte bol hücre + halka (+ yarışta yıldız); kolay şeritte birkaç hücre
@@ -3445,9 +3402,8 @@
         return Lt;
       }
     };
-    function genFirst() { gm = 1; try { genFirst0(); } finally { gm = 0; } }
-    function genFirst0() {                                          // başlangıç: sakin ama her seferinde farklı koridor (yalnızca durağan kayalar, ödüller)
-      var nr = 2 + ((RG() * 2) | 0), y = oy - S * rnd(1.3, 1.6), i, x, t;
+    function genFirst() {                                          // başlangıç: sakin ama her seferinde farklı koridor (yalnızca durağan kayalar, ödüller)
+      var nr = 2 + ((Math.random() * 2) | 0), y = oy - S * rnd(1.3, 1.6), i, x, t;
       for (i = 0; i < nr; i++) {
         for (t = 0; t < 10; t++) { x = rnd(-cw * .7, cw * .7); if (rockFree(x, y, S * .1, 0)) { mkRock(x, y, S * rnd(.075, .1)); break; } }
         y -= S * rnd(.5, .75);
@@ -3456,14 +3412,13 @@
         for (var t2 = 0; t2 < 20; t2++) { var vx = Math.max(-cw * .85, Math.min(cw * .85, P.x + rnd(-.36, .36) * W)), vy = oy - S * rnd(a, b); if (clearAt(vx, vy, m)) return { x: vx, y: vy }; }
         return null;
       }
-      if (RG() < .22) { var sr = visSpot(.4, .75, S * .22); if (sr) mkRing(sr.x, sr.y); }   // başlangıçta hızlandırma nadir
-      var cn = 2 + ((RG() * 3) | 0);
+      if (Math.random() < .22) { var sr = visSpot(.4, .75, S * .22); if (sr) mkRing(sr.x, sr.y); }   // başlangıçta hızlandırma nadir
+      var cn = 2 + ((Math.random() * 3) | 0);
       for (i = 0; i < cn; i++) { var sc = visSpot(.55, 1.4, S * .12); if (sc) mkCell(sc.x, sc.y); }
       genY = y - S * rnd(.2, .5); lastPat = '';
     }
     /* --- sınır kayaları: ileri sektörlerde (BSEC ve sonrası) koridor kenarları yan yana dizili sabit kayalarla çevrilir --- */
-    function borderInit() { gm = 1; try { borderInit0(); } finally { gm = 0; } }
-    function borderInit0() { stns = []; stNextY = oy - S * ST_FIRST; cpSt = null; cpSave = null; trackInit(oy); bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; forkCool = 1; }
+    function borderInit() { stns = []; stNextY = oy - S * ST_FIRST; cpSt = null; cpSave = null; trackInit(oy); bStartY = oy - BSEC * 50 * S * .1; bY = bStartY; bC = [{ has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: bStartY, r: 0, dep: 0, n: 0 }]; bOn = true; forkCool = 1; }
     function stGap(sd, y) {                                         // bu kenarda, bu yükseklikte istasyon var mı (kayalar kaldırılır)
       for (var i = 0; i < stns.length; i++) if (stns[i].sd === sd && Math.abs(y - stns[i].y) < S * ST_SPAN / 2) return true;
       return false;
@@ -3478,7 +3433,7 @@
         sd = si ? 1 : -1; c = bC[si]; guard = 0;
         while (c.y > upTo && guard++ < 120) {
           f = Math.min(1, (bStartY - c.y) / (S * 1.5));            // ilk kayalar küçük başlar, giderek büyür
-          q = RG(); r = S * (q < .25 ? rnd(.045, .07) : q < .85 ? rnd(.07, .1) : rnd(.1, .125)) * (.55 + .45 * f);
+          q = Math.random(); r = S * (q < .25 ? rnd(.045, .07) : q < .85 ? rnd(.07, .1) : rnd(.1, .125)) * (.55 + .45 * f);
           c.dep = Math.max(0, Math.min(S * .06, c.dep + rnd(-.025, .025) * S));   // iç kenar yavaşça dalgalanır: dümdüz sütun değil
           wd = cw - r * .2 - c.dep; y = c.y; x = T(y) + sd * wd * Lw(y);
           if (c.has) {                                             // kıvrımlı kenarda teğet sıralama: önceki kayaya tam teğet olan ilk noktayı yukarıda ara
@@ -3538,22 +3493,20 @@
       if (d >= 3) { w.pendulum = 2; }
       if (d >= 2) w.hole = 1;
       if (d >= 5) { w.hole = 2; w.laser = 3; w.gate = 3; w.pendulum = 3; }
-      if (zk(mAt(genY)) > .5) { w = { field: 4, slalom: 3 }; if (d >= 1) w.gate = 1; }   // Zümrüt Sis: sakin kalıplar
       if (bOn && bAct && forkCool <= 0 && genY < bStartY - S * 2 && forkOk(genY, S * 5.6)) w.fork = 7;   // yalnızca kayalık kenarlı yolda
       var ks = [], tot = 0, k;
       for (k in w) if (k !== lastPat) { ks.push(k); tot += w[k]; }
-      var r = RG() * tot;
+      var r = Math.random() * tot;
       for (var i = 0; i < ks.length; i++) { r -= w[ks[i]]; if (r <= 0) return ks[i]; }
       return ks[ks.length - 1];
     }
-    function genMore() { gm = 1; try { genMore0(); } finally { gm = 0; } }
-    function genMore0() {
+    function genMore() {
       var guard = 0;
       var ry = devOn ? Math.min(P.y, dv.y) : P.y, ahead = H * 1.6 / (devOn ? Math.min(1, dv.z) : 1);
       tkExtend(ry - ahead - S * 6);
       if (bOn) genBorder(ry - ahead - S * 2.5);
       while (genY > ry - ahead && guard++ < 8) {
-        var d = Math.floor(-(genY - oy) / (S * .1) / 50), y0 = genY, zq = zk(mAt(y0)); if (zq > .5) d = Math.min(d, 3);
+        var d = Math.floor(-(genY - oy) / (S * .1) / 50), y0 = genY;
         var cwS = cw;
         if (bOn && y0 < bStartY + S * 1.8) { bAct = true; bLim = cw - S * .215; cw = cw - S * .26; }   // sınır kayaları var: engeller daha dar alanda kurulur
         var nm = pickPat(d), n0 = obs.length, pk0 = pick.length, L = PAT[nm](y0, d); lastPat = nm;
@@ -3563,12 +3516,12 @@
           var tcc = T(ob.y), cc = (ob.amp ? ob.cx : ob.x) - tcc, mm = ob.r + (ob.amp || 0);
           if (Math.abs(cc) + mm > bLim) { var c2 = tcc + Math.max(0, bLim - mm) * (cc < 0 ? -1 : 1); ob.cx = c2; ob.x = c2; }
         }
-        var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25) * (1 - .28 * zq);
+        var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25);
         // ödüller: bir hücre şeridi, bazen halka
-        var cnt = 2 + ((RG() * 3) | 0), sp0 = spotFor(y0 - L * .5, S * .16);
+        var cnt = 2 + ((Math.random() * 3) | 0), sp0 = spotFor(y0 - L * .5, S * .16);
         if (sp0) for (var i = 0; i < cnt; i++) { var cyy = sp0.y - i * S * .07, cxx = sp0.x + (T(cyy) - T(sp0.y)) + Math.sin(i * .9) * S * .05; if (clearAt(cxx, cyy, S * .1)) mkCell(cxx, cyy); }
-        if (RG() < .42) { var sr = spotFor(y0 - L - gap * .5, S * .22); if (sr) mkRing(sr.x, sr.y); }
-        if (race && RG() < .5) { var ss = spotFor(y0 - L * .82, S * .16); if (ss) mkStar(ss.x, ss.y); }
+        if (Math.random() < .42) { var sr = spotFor(y0 - L - gap * .5, S * .22); if (sr) mkRing(sr.x, sr.y); }
+        if (race && Math.random() < .5) { var ss = spotFor(y0 - L * .82, S * .16); if (ss) mkStar(ss.x, ss.y); }
         if (bAct) settleBorder(n0);
         cw = cwS; bAct = false;
         genY = y0 - L - gap;
@@ -4225,7 +4178,7 @@
       trail = []; parts = []; cam.x = P.x; cam.y = P.y; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; burn = 0; flash = .6; combo = 0; pops = [];
       if (race) {
         waveY = P.y + Math.max(H * .95, S * 1.3); waveT = 0; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
-        var sc = Math.floor(distM() / 50); sector = sc; zCur = zoneAt(distM()); zv = zk(distM());
+        var sc = Math.floor(distM() / 50); sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4;
         genMore();
       }
     }
@@ -4318,11 +4271,11 @@
       /* dünya: istasyonun çevresi baştan kurulur (koridor aynı, engeller yeni); sınır kayaları istasyonun biraz altından başlar */
       obs = []; pick = []; bAct = false; y0 = s.y + H * .65 + S * .6;
       bC = [{ has: false, x: 0, y: y0, r: 0, dep: 0, n: 0 }, { has: false, x: 0, y: y0, r: 0, dep: 0, n: 0 }];
-      seedRun(seedZ); rg = mb(seedZ ^ Math.imul(s.n || 1, 2654435761)); genY = s.y - S * ST_ZONE; lastPat = ''; forkCool = 1; bOn = true;
+      genY = s.y - S * ST_ZONE; lastPat = ''; forkCool = 1; bOn = true;
       waveY = P.y + Math.max(H * .95, S * 1.3, Math.min(cpSave.gap || 0, H * 1.4)); waveT = cpSave.waveT; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
       for (k = 0; k < stns.length; k++) { stns[k].open = 0; stns[k].snd = false; }
       s.open = 1; s.snd = true; s.act = 0;
-      sector = Math.floor(distM() / 50); zCur = zoneAt(distM()); zv = zk(distM()); banner = ''; bannerT = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); hintT = 0;
+      sector = Math.floor(distM() / 50); banner = ''; bannerT = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); hintT = 0;
       elStrN.textContent = runStars;
       genMore();
     }
@@ -4332,8 +4285,7 @@
       genMore();
       // sektör
       var d = distM(), sc = Math.floor(d / 50);
-      if (sc > sector) sector = sc;
-      zStep(); zEase(dt);
+      if (sc > sector) { sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4; sfxSector(); vib(12); }
       // kenar duvarları (esnek)
       var tcP = T(P.y), cwp = cw * Lw(P.y), wvx = Tp(P.y) * P.vy;   // wvx: gemi yükseldikçe duvarın yanal hızı
       var inS = stStep(dt, Rs); inStn = !!inS; beaconStep(dt, inS);                                      // istasyon: kapı, iç oda duvarları, kontrol noktası (kapıdan geçiyorsa o kenarda koridor duvarı yok)
@@ -5592,8 +5544,7 @@
       if (race && shake > .01) cx.translate((Math.random() - .5) * shake * S * .035, (Math.random() - .5) * shake * S * .035);
       var CY = H * 0.46, sp = Math.hypot(P.vx, P.vy), i;
       // yıldızlar (üç katman paralaks, hızlanınca çizgiye döner)
-      var SC = zv > .02 ? 'rgb(' + Math.round(244 - 96 * zv) + ',' + Math.round(242 - 14 * zv) + ',' + Math.round(238 - 36 * zv) + ')' : F;
-      cx.fillStyle = SC; cx.strokeStyle = SC;
+      cx.fillStyle = F; cx.strokeStyle = F;
       for (i = 0; i < stars.length; i++) {
         var st = stars[i], x = ((st.x - cam.x * st.f) % W + W) % W, y = ((st.y - cam.y * st.f) % H + H) % H, sl = sp * st.f * 0.012;
         cx.globalAlpha = st.a;
@@ -5603,11 +5554,6 @@
       var W0 = W, H0 = H;
       if (devOn) { W = W0 / dv.z; H = H0 / dv.z; CY = H * 0.46; cx.save(); cx.scale(dv.z, dv.z); }   // dev kamerası: dünya ölçeklenir (kırpma sınırları da genişler)
       if (race) drawWorld(CY, ts / 1000);                                        // kenarlar, ödüller, engeller
-      if (race && zv > .02) {                                                    // Zümrüt Sis: uzak görüşü kısan tek gradyan
-        var fk = Math.round(zv * 20) + '|' + Math.round(H);
-        if (fk !== fogK) { fogK = fk; fogC = cx.createLinearGradient(0, 0, 0, H * .5); fogC.addColorStop(0, 'rgba(8,34,30,' + (.8 * zv).toFixed(3) + ')'); fogC.addColorStop(.55, 'rgba(8,34,30,' + (.34 * zv).toFixed(3) + ')'); fogC.addColorStop(1, 'rgba(8,34,30,0)'); }
-        cx.fillStyle = fogC; cx.fillRect(-20, -20, W + 40, H * .5 + 20);
-      }
       // egzoz kıvılcımları + RCS gazı
       var skd = window.DDShop && DDShop.fx().sk;                                 // efektin kıvılcım rengi
       for (i = 0; i < parts.length; i++) {
