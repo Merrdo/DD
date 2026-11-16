@@ -382,7 +382,7 @@
   #spmenu.on { opacity: 1; pointer-events: auto; }
   #spmenu.ps { background: #000; justify-content: center; gap: 9vh; padding: 0 0 6%; }
   #spmenu.ps #spico { display: none; }
-  #spmenu.ps.go { background: rgba(0,0,0,.62); }
+  #spmenu.ps.go { background: #000; }
   /* ölüm + duraklat ekranı */
   #spdi { display: flex; justify-content: center; margin-bottom: 22px; }
   #spdi:empty { display: none; }
@@ -2801,6 +2801,63 @@
     var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFailAt = 0, dashRdyPrev = true, dashFx = [], DASH_CD = 2.2, DASH_T1 = .05, DASH_T2 = .1, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
+    /* --- BÖLGELER: oyun başında seed'den plan çıkar (ilk bölge hep Klasik; uzunluklar 10'un katı, art arda aynı bölge yok) --- */
+    var ZN = [{ n: 'Klasik', lo: 200, hi: 300 }, { n: 'Zümrüt Sis', lo: 300, hi: 400 }], zSeed = 1, zPlan = [], zb = 0, zi = -1, zNo = 0, zFog = [], zMote = [];
+    function zR() { zSeed = zSeed + 0x6D2B79F5 | 0; var t = Math.imul(zSeed ^ zSeed >>> 15, 1 | zSeed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }
+    function zExtend(m) {
+      var l, k, z;
+      while (!zPlan.length || zPlan[zPlan.length - 1].b <= m) {
+        l = zPlan.length ? zPlan[zPlan.length - 1] : null;
+        if (l) { do { k = (zR() * ZN.length) | 0; } while (k === l.k); } else k = 0;
+        z = ZN[k];
+        var a = l ? l.b : 0;
+        zPlan.push({ i: zPlan.length, k: k, a: a, b: a + z.lo + 10 * ((zR() * ((z.hi - z.lo) / 10 + 1)) | 0) });
+      }
+    }
+    function zoneAtM(m) { zExtend(m + 1); for (var i = 0; i < zPlan.length; i++) if (m < zPlan[i].b) return zPlan[i]; return zPlan[zPlan.length - 1]; }
+    function zInit() {
+      zSeed = (Math.random() * 4294967296) | 0; zPlan = []; zi = -1; zNo = 0; zb = 0; zFog = []; zMote = []; zExtend(0);
+      for (var i = 0; i < 6; i++) zFog.push({ x: Math.random(), y: Math.random(), r: .32 + Math.random() * .3, f: .025 + Math.random() * .04, c: i % 3, ph: Math.random() * 6.28, vx: (Math.random() - .5) * .006, vy: .002 + Math.random() * .004 });
+      for (i = 0; i < 26; i++) zMote.push({ x: Math.random(), y: Math.random(), r: .7 + Math.random() * 1.3, f: .1 + Math.random() * .22, ph: Math.random() * 6.28, sp: .4 + Math.random() * .8 });
+    }
+    function zSnap() { var e = zoneAtM(distM()); zi = e.i; zNo = e.i; zb = e.k === 1 ? 1 : 0; }
+    function zStep(dt) {
+      var m = distM(), e = zoneAtM(m);
+      if (e.i !== zi) { if (zi >= 0) { banner = ZN[e.k].n; bannerT = 2.4; sfxSector(); vib(12); } zi = e.i; zNo = e.i; }
+      var tg = zoneAtM(m + 20).k === 1 ? 1 : 0;                  // geçiş sınırdan az önce başlar, ~10 sn'de oturur
+      zb += (tg - zb) * Math.min(1, dt / 4); if (Math.abs(tg - zb) < .002) zb = tg;
+    }
+    var ZC = [[40, 168, 148], [64, 176, 122], [34, 120, 132]];
+    function zDraw(t) {
+      if (zb < .01) return;
+      var g, i, b, x, y, r, a, c, m = Math.max(W, H), sw, sh, dn = .78 + .22 * Math.sin(t * .09);
+      cx.save();
+      g = cx.createLinearGradient(0, 0, 0, H);
+      g.addColorStop(0, 'rgba(5,26,24,' + zb + ')'); g.addColorStop(.6, 'rgba(3,16,16,' + zb + ')'); g.addColorStop(1, 'rgba(2,9,12,' + zb + ')');
+      cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+      cx.globalCompositeOperation = 'lighter';
+      for (i = 0; i < zFog.length; i++) {                         // sis kütleleri: çok yavaş kayar, kenara sarar; yarıçapta tamamen sönük olduğundan kırpma izi kalmaz
+        b = zFog[i]; r = b.r * m; sw = W + 2 * r; sh = H + 2 * r; c = ZC[b.c];
+        x = (((b.x * sw - cam.x * b.f + t * b.vx * m) % sw) + sw) % sw - r;
+        y = (((b.y * sh - cam.y * b.f + t * b.vy * m) % sh) + sh) % sh - r;
+        a = zb * .13 * dn * (.7 + .3 * Math.sin(t * .17 + b.ph));
+        g = cx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, 'rgba(' + c + ',' + a + ')'); g.addColorStop(.45, 'rgba(' + c + ',' + a * .45 + ')'); g.addColorStop(1, 'rgba(' + c + ',0)');
+        cx.fillStyle = g; cx.fillRect(x - r, y - r, r * 2, r * 2);
+      }
+      for (i = 0; i < zMote.length; i++) {                        // süzülen ışık tozu
+        b = zMote[i];
+        x = (((b.x * W - cam.x * b.f - t * 3 * b.sp) % W) + W) % W; y = (((b.y * H - cam.y * b.f - t * 5 * b.sp) % H) + H) % H;
+        a = zb * (.3 + .3 * Math.sin(t * b.sp + b.ph));
+        cx.fillStyle = 'rgba(150,240,210,' + a * .18 + ')'; cx.beginPath(); cx.arc(x, y, b.r * 3.2, 0, 6.2832); cx.fill();
+        cx.fillStyle = 'rgba(200,255,236,' + a + ')'; cx.beginPath(); cx.arc(x, y, b.r, 0, 6.2832); cx.fill();
+      }
+      cx.globalCompositeOperation = 'source-over';
+      g = cx.createRadialGradient(W / 2, H * .46, Math.min(W, H) * .35, W / 2, H * .46, m * .8);   // hafif karartma: odak ortada
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,6,6,' + .38 * zb + ')');
+      cx.fillStyle = g; cx.fillRect(0, 0, W, H);
+      cx.restore();
+    }
     var frameErr = 0;
     var hd = 0, lz = null, lzSp = [], lzLast = 0, nowT = 0;   // lazer ölümü durumu, lazer-kaya kıvılcım/kırıntı havuzu, son çizim zamanı
     /* kaçış parkuru durumu */
@@ -2922,7 +2979,7 @@
     function statsHtml(sc, dist, sec, stars, bst, nw) {
       return '<div class="sx"><div class="sx-l">puan</div><div class="sx-n' + (nw ? ' nw' : '') + '">' + sc + '</div>' +
         (nw ? '<div class="sx-r nw"><i></i><span>' + SX_STAR + 'yeni rekor</span><i></i></div>' : bst > 0 ? '<div class="sx-r"><i></i><span>rekor ' + bst + '</span><i></i></div>' : '<div class="sx-r"></div>') +
-        '<div class="sx-g"><div>' + IC_D + '<b>' + dist + '<i>m</i></b><small>mesafe</small></div><div>' + IC_S + '<b>' + sec + '</b><small>sektör</small></div>' +
+        '<div class="sx-g"><div>' + IC_D + '<b>' + dist + '<i>m</i></b><small>mesafe</small></div><div>' + IC_S + '<b>' + sec + '</b><small>bölge</small></div>' +
         '<div class="' + (stars ? 'sg' : 'z') + '">' + IC_Y + '<b>' + stars + '</b><small>yıldız</small></div></div></div>';
     }
     function showMenu(m) {
@@ -2932,10 +2989,10 @@
         if (race && !paid) { paid = true; }
         var cause = hd ? 'hole' : dead === 2 ? 'burn' : lz ? 'cut' : 'crash';
         st.textContent = { hole: 'KARA DELİK YUTTU', burn: 'ALEV SENİ YUTTU', cut: 'IŞIN SENİ KESTİ', crash: 'KAYAYA ÇARPTIN' }[cause];
-        di.innerHTML = DK_IC[cause]; ss.innerHTML = statsHtml(fScore, fDist, sector + 1, runStars, best, newRec);
+        di.innerHTML = DK_IC[cause]; ss.innerHTML = statsHtml(fScore, fDist, zNo + 1, runStars, best, newRec);
       } else if (m === 2) {
         st.textContent = 'DURAKLATILDI'; di.innerHTML = DK_IC.pause;
-        ss.innerHTML = race ? statsHtml(score(), distM(), sector + 1, runStars, best, false) : (best > 0 ? '<div class="sx"><div class="sx-r">rekor ' + best + '</div></div>' : '');
+        ss.innerHTML = race ? statsHtml(score(), distM(), zNo + 1, runStars, best, false) : (best > 0 ? '<div class="sx"><div class="sx-r">rekor ' + best + '</div></div>' : '');
       } else { st.textContent = 'ASTRO'; di.innerHTML = ''; ss.textContent = 'bir mod seç'; }
       el.classList.remove('play'); elSm.classList.toggle('ps', m >= 2); elSm.classList.toggle('go', m === 3); elSm.classList.toggle('pz', m === 2); menuHtml(); if (m === 0) crBuild(); elSm.classList.add('on');
     }
@@ -3071,7 +3128,7 @@
       runStars = 0; stFx = []; scFx = []; stChain = 0; stChainT = 0; elStrN.textContent = '0';
       bOn = false; devOn = false; devJump = false; graceT = 0; devPts = {}; el.classList.remove('devcam'); comboA = 0; oy = 0; wait = false; obs = []; pick = []; pops = []; gt = 0; dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; combo = 0; comboT = 0; bonus = 0; sector = 0; near0 = 0; newRec = false;
       hintT = 0; banner = ''; bannerT = 0; flash = 0; lastWarn = 0; thrustSeen = false; seedN = 0; righting = 0; boostRem = 0; boostCap = 0;
-      genY = -S * 0.7; genFirst(); borderInit(); waveY = Math.max(H * .55, S * .85); waveT = 0; emb = []; fireT = 0; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0;
+      zInit(); genY = -S * 0.7; genFirst(); borderInit(); waveY = Math.max(H * .55, S * .85); waveT = 0; emb = []; fireT = 0; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0;
       elV.textContent = '0.0'; lastL = ''; hintA = 0; lastV = '';
       elL.textContent = 'm/sn'; startMsgT = 0; lastMsg = ''; pre = 1; cdT = 3; lastCd = 0; dkMsg('', '', '', '');
       } else { tk = []; elV.textContent = '0.0'; elL.textContent = 'm/sn'; hintA = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); }
@@ -3493,6 +3550,7 @@
       if (d >= 3) { w.pendulum = 2; }
       if (d >= 2) w.hole = 1;
       if (d >= 5) { w.hole = 2; w.laser = 3; w.gate = 3; w.pendulum = 3; }
+      if (race && zoneAtM(-(genY - oy) / (S * .1)).k === 1) { w.field = 5; w.slalom = 3; if (w.laser) w.laser = 1; if (w.pendulum) w.pendulum = 1; }   // Zümrüt Sis: sakin, süzülen kaya ağırlıklı
       if (bOn && bAct && forkCool <= 0 && genY < bStartY - S * 2 && forkOk(genY, S * 5.6)) w.fork = 7;   // yalnızca kayalık kenarlı yolda
       var ks = [], tot = 0, k;
       for (k in w) if (k !== lastPat) { ks.push(k); tot += w[k]; }
@@ -3516,7 +3574,7 @@
           var tcc = T(ob.y), cc = (ob.amp ? ob.cx : ob.x) - tcc, mm = ob.r + (ob.amp || 0);
           if (Math.abs(cc) + mm > bLim) { var c2 = tcc + Math.max(0, bLim - mm) * (cc < 0 ? -1 : 1); ob.cx = c2; ob.x = c2; }
         }
-        var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25);
+        var gap = S * Math.max(.3, .62 - d * .035) * rnd(.9, 1.25) * (race && zoneAtM(-(y0 - oy) / (S * .1)).k === 1 ? 1.18 : 1);
         // ödüller: bir hücre şeridi, bazen halka
         var cnt = 2 + ((Math.random() * 3) | 0), sp0 = spotFor(y0 - L * .5, S * .16);
         if (sp0) for (var i = 0; i < cnt; i++) { var cyy = sp0.y - i * S * .07, cxx = sp0.x + (T(cyy) - T(sp0.y)) + Math.sin(i * .9) * S * .05; if (clearAt(cxx, cyy, S * .1)) mkCell(cxx, cyy); }
@@ -4178,7 +4236,7 @@
       trail = []; parts = []; cam.x = P.x; cam.y = P.y; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; burn = 0; flash = .6; combo = 0; pops = [];
       if (race) {
         waveY = P.y + Math.max(H * .95, S * 1.3); waveT = 0; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
-        var sc = Math.floor(distM() / 50); sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4;
+        sector = Math.floor(distM() / 50); zSnap();
         genMore();
       }
     }
@@ -4275,7 +4333,7 @@
       waveY = P.y + Math.max(H * .95, S * 1.3, Math.min(cpSave.gap || 0, H * 1.4)); waveT = cpSave.waveT; emb = []; burnT = -1; boomT = -1; warnOn = false; burnAcc = 0; smokeAcc = 0; lastWarn = 0;
       for (k = 0; k < stns.length; k++) { stns[k].open = 0; stns[k].snd = false; }
       s.open = 1; s.snd = true; s.act = 0;
-      sector = Math.floor(distM() / 50); banner = ''; bannerT = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); hintT = 0;
+      sector = Math.floor(distM() / 50); zSnap(); banner = ''; bannerT = 0; startMsgT = 0; lastMsg = ''; dkMsg('', '', '', ''); hintT = 0;
       elStrN.textContent = runStars;
       genMore();
     }
@@ -4285,7 +4343,7 @@
       genMore();
       // sektör
       var d = distM(), sc = Math.floor(d / 50);
-      if (sc > sector) { sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4; sfxSector(); vib(12); }
+      if (sc > sector) sector = sc; zStep(dt);
       // kenar duvarları (esnek)
       var tcP = T(P.y), cwp = cw * Lw(P.y), wvx = Tp(P.y) * P.vy;   // wvx: gemi yükseldikçe duvarın yanal hızı
       var inS = stStep(dt, Rs); inStn = !!inS; beaconStep(dt, inS);                                      // istasyon: kapı, iç oda duvarları, kontrol noktası (kapıdan geçiyorsa o kenarda koridor duvarı yok)
@@ -5543,8 +5601,10 @@
       cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H); cx.globalAlpha = 1;
       if (race && shake > .01) cx.translate((Math.random() - .5) * shake * S * .035, (Math.random() - .5) * shake * S * .035);
       var CY = H * 0.46, sp = Math.hypot(P.vx, P.vy), i;
+      if (race) zDraw(ts / 1000);                                                // bölge ortamı (sis, ışık tozu)
       // yıldızlar (üç katman paralaks, hızlanınca çizgiye döner)
-      cx.fillStyle = F; cx.strokeStyle = F;
+      var zc = zb > .01 ? 'rgb(' + (244 - 39 * zb | 0) + ',' + (242 + zb | 0) + ',' + (238 - 8 * zb | 0) + ')' : F;
+      cx.fillStyle = zc; cx.strokeStyle = zc;
       for (i = 0; i < stars.length; i++) {
         var st = stars[i], x = ((st.x - cam.x * st.f) % W + W) % W, y = ((st.y - cam.y * st.f) % H + H) % H, sl = sp * st.f * 0.012;
         cx.globalAlpha = st.a;
@@ -5664,7 +5724,7 @@
       raf = requestAnimationFrame(frame);
       var dt = Math.max(0, Math.min(0.05, (ts - last) / 1000)) || 0.016; last = ts;
       try {
-        if (mode === 1 || mode === 3) { if (devOn) { devStep(dt); draw(ts); Music.thrust(0); } else { step(dt); draw(ts); Music.thrust(th); } } else { Music.thrust(0); if (introOn) drawIntro(ts, dt); }
+        if (mode === 1) { if (devOn) { devStep(dt); draw(ts); Music.thrust(0); } else { step(dt); draw(ts); Music.thrust(th); } } else { Music.thrust(0); if (introOn) drawIntro(ts, dt); }
         frameErr = 0;
       } catch (err) {
         frameErr++;
