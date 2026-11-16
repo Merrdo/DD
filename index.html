@@ -744,6 +744,7 @@
   #shop .s-km.kx .k-ship .sh-b { transform:translate(.22px,.04px); }
   #shop .s-km.kx .k-ship .sh-n { transform:none; }   /* motor gövdeye gömülü: ayrılmaz */
   #shop .s-km.kz-kanat .k-ship .sh-c, #shop .s-km.kz-kanat .k-ship .sh-w, #shop .s-km.kz-kanat .k-ship .sh-n { opacity:.35; }
+  #shop .s-km.kz-ruzgar .k-ship .sh-a, #shop .s-km.kz-ruzgar .k-ship .sh-b, #shop .s-km.kz-ruzgar .k-ship .sh-w { opacity:.35; }
   #shop .s-km.kz-motor .k-ship .sh-a, #shop .s-km.kz-motor .k-ship .sh-b, #shop .s-km.kz-motor .k-ship .sh-w { opacity:.35; }
   #shop .s-km.kz-motor .k-ship .sh-c { opacity:.5; }
   #shop .k-fr, #shop .k-lb { display:none; }
@@ -1011,7 +1012,8 @@
   var STATS = [
     { k:'ivme', n:'İvmelenme',     up:'İvmelenmeyi artırır',      dn:'İvmelenmeyi azaltır' },
     { k:'man',  n:'Manevra',       up:'Manevrayı kolaylaştırır',  dn:'Manevrayı zorlaştırır' },
-    { k:'hiz',  n:'En yüksek hız', up:'En yüksek hızı artırır',   dn:'En yüksek hızı düşürür' }
+    { k:'hiz',  n:'En yüksek hız', up:'En yüksek hızı artırır',   dn:'En yüksek hızı düşürür' },
+    { k:'fren', n:'Hava freni',    up:'Hava frenini güçlendirir', dn:'Hava frenini zayıflatır' }
   ];   // parça özellikleri: st:{ ivme:+12, man:-8 } = standart değerlere göre yüzde değişim
   var ENG = [
     { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, nz:'std', st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru. Çan biçimli tek lüle, dengeli itiş.' },
@@ -1081,11 +1083,12 @@
   function bal() { return dev() ? Infinity : D.coins; }
   function load() {
     var j = null; try { j = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
-    D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std' };
+    D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std', ro:{ std:1 }, rn:'std' };
     if (j && typeof j === 'object') { D.coins = j.coins | 0; D.owned = j.owned || D.owned; D.eq = j.eq || 'klasik'; D.lv = j.lv || {};
       if (j.fx && typeof j.fx === 'object') D.fx = j.fx; if (j.fxo && typeof j.fxo === 'object') D.fxo = j.fxo;
       if (j.eo && typeof j.eo === 'object') D.eo = j.eo; if (j.en) D.en = j.en;
-      if (j.wo && typeof j.wo === 'object') D.wo = j.wo; if (j.wn) D.wn = j.wn; }
+      if (j.wo && typeof j.wo === 'object') D.wo = j.wo; if (j.wn) D.wn = j.wn;
+      if (j.ro && typeof j.ro === 'object') D.ro = j.ro; if (j.rn) D.rn = j.rn; }
     (function () {                                                // eski hata: önleyicinin seviyesi uzun bir açıklama metni anahtarıyla kaydedilmişti; 'onl'e taşı
       var k, mv = 0; for (k in D.lv) if (k.length > 24) { mv = Math.max(mv, D.lv[k] | 0); delete D.lv[k]; }
       if (mv) { D.lv.onl = Math.min(5, Math.max(D.lv.onl | 0, mv)); save(); }
@@ -1093,6 +1096,7 @@
     D.owned.klasik = 1; if (!cfind(D.eq) || !D.owned[D.eq]) D.eq = 'klasik';
     D.fxo.kor = 1; fxFix();
     D.eo.jet = 1; if (!efind(D.en) || !eown(efind(D.en))) D.en = ENG[0].id;
+    D.ro = D.ro || {}; D.ro.std = 1; (function () { var r = kfind(kpart('ruzgar'), D.rn); if (!r || !kown(kpart('ruzgar'), r)) D.rn = 'std'; })();
     D.wo = D.wo || {}; D.wo.std = 1; (function () { var w = kfind(kpart('kanat'), D.wn); if (!w || !kown(kpart('kanat'), w)) D.wn = 'std'; })();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch (e) {} }
@@ -1200,6 +1204,8 @@
     for (i = 0; i < cm.length; i++) { c = cm[i]; d += c[0]; for (j = 1; j < c.length; j += 2) d += (j > 1 ? ' ' : '') + +(sd * c[j]).toFixed(3) + ' ' + c[j + 1]; }
     return d + 'Z';
   }
+  function curR() { var it = (typeof D !== 'undefined' && D && D.rn) ? kfind(kpart('ruzgar'), D.rn) : null; return (it && it.fl) || [1.17, .3]; }
+  function rsvg(fl, k, m) { var d = fl[1] * (m || 1); return 'M' + (k * .46) + ' 1.95L' + (k * fl[0]) + ' 1.95L' + (k * (fl[0] - .04)).toFixed(3) + ' ' + (1.95 + d).toFixed(3) + 'L' + (k * .5) + ' ' + (1.95 + d).toFixed(3) + 'Z'; }
   function curW() { var it = (typeof D !== 'undefined' && D && D.wn) ? kfind(kpart('kanat'), D.wn) : null; return (it && it.sh) || WSTD; }
   /* Motor lüleleri: nz:'std' çan biçimli tek lüle, nz:'wide' yayvan çift lüleli blok (mekik birimleriyle; oyundaki canvas çizimi nozC ile aynı) */
   /* Motor gövdeye gömülüdür: std = kuyruğa açılmış GİRİNTİ (lüle çukurun içinde oturur), wide = gövdenin yanlara taşan ÇIKINTISI (kuyruk genişler, altında iki girinti havalandırma).
@@ -1237,6 +1243,7 @@
     return '<svg class="s-sv" viewBox="' + (vb || '0 0 40 ' + (big ? 74 : 56)) + '" fill="none" aria-hidden="true"><g transform="translate(20 26) scale(9)">' + (big ? flameSet(fx, nzKind()) : '') +
       '<path class="sh-a" d="' + wsvg(curW(), -1) + '" fill="' + p.a + '"' + st + '/>' +
       '<path class="sh-b" d="' + wsvg(curW(), 1) + '" fill="' + p.b + '"' + st + '/>' +
+      (nf ? '<path class="sh-r1" d="' + rsvg(curR(), -1, .9) + '" fill="' + p.b + '"' + st + '/><path class="sh-r2" d="' + rsvg(curR(), 1, .9) + '" fill="' + p.b + '"' + st + '/>' : '') +
       '<path class="sh-c" d="' + hullD(nzKind()) + '" fill="' + ((p.c === 'none' && p.s) ? '#000' : p.c) + '"' + st + '/>' +
       '<path class="sh-w" d="M-.2 -1.5Q0 -1.64 .2 -1.5L.26 -1.1L-.26 -1.1Z" fill="' + p.w + '"/>' +
       '<g class="sh-n" data-c="' + p.n + '" data-s="' + (p.s || '') + '">' + nozSvg(nzKind(), p.n, p.s) + '</g>' +
@@ -1331,9 +1338,18 @@
       st:{ man:20, ivme:12, hiz:-10 },
       sh:[['M', .4, -1.4], ['Q', .7, .5, 1.52, 1.95], ['L', .4, 1.95]] }
   ];
+  /* Rüzgarlık: kuyruğun iki yanındaki fren panelleri. Joystick'i gidiş yönünün tersine çekince açılıp hızı keser.
+     fl: [panelin dış ucu (x), tam açıkken derinliği]; standart = [1.17, .3]. Etkisi fren özelliğiyle (st.fren) oyundaki hava frenine eklenir. */
+  var RZG = [
+    { id:'std',    n:'Standart Rüzgarlık', tag:'Orijinal', price:0, st:{}, fl:[1.17, .3], d:'Mekiğin ilk günden beri taşıdığı orijinal fren panelleri. Joystick\'i gidiş yönünün tersine çekince iki yandaki paneller açılıp hızını keser.' },
+    { id:'genis',  n:'Geniş Rüzgarlık',    price:250, st:{ fren:35, hiz:-5 }, fl:[1.32, .4], d:'Daha geniş paneller daha çok hava tutar: hızı belirgin biçimde daha çabuk keser. Fazladan sürtünme en yüksek hızı biraz düşürür.' },
+    { id:'hassas', n:'Hassas Rüzgarlık',   price:300, st:{ fren:15, man:15 }, fl:[1.0, .26], d:'Küçük ve çabuk açılan paneller: frene hafif destek verir, dönüşü daha keskin yapar.' },
+    { id:'agir',   n:'Ağır Rüzgarlık',     price:450, st:{ fren:60, ivme:-8 }, fl:[1.4, .52], d:'Büyük ve kalın paneller: çok güçlü fren yapar, mekiği neredeyse yerinde durdurur. Ağırlığı yüzünden mekik biraz daha geç hızlanır.' }
+  ];
   var KPART = [
     { id:'motor', t:'Motor', list:ENG, cur:'en', own:'eo', fr:[112, 330, 136, 66], z:1.7, dots:[[180, 380]] },
-    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[130, 230, 100, 100], z:1, dots:[[251, 284], [109, 284]] }
+    { id:'kanat', t:'Kanat', list:WNG, cur:'wn', own:'wo', fr:[130, 230, 100, 100], z:1, dots:[[251, 284], [109, 284]] },
+    { id:'ruzgar', t:'Rüzgarlık', list:RZG, cur:'rn', own:'ro', fr:[96, 346, 168, 56], z:1.45, dots:[[236, 372], [124, 372]] }
   ];
   function kpart(id) { for (var i = 0; i < KPART.length; i++) if (KPART[i].id === id) return KPART[i]; return null; }
   function kfind(p, id) { for (var i = 0; i < p.list.length; i++) if (p.list[i].id === id) return p.list[i]; return null; }
@@ -1360,7 +1376,7 @@
       });
       h += '</g></svg>';
       km.innerHTML = h;
-      km.className = 's-km'; km.removeAttribute('data-wv');
+      km.className = 's-km'; km.removeAttribute('data-wv'); km.removeAttribute('data-rv');
       // önce toplu görünüm, sonra parçalar yumuşakça açılır; noktalar açılma bitince belirir
       if (anim && !(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) { void km.offsetWidth; setTimeout(function () { km.classList.add('kx'); }, 280); }
       else km.classList.add('kx');
@@ -1373,7 +1389,7 @@
     km.classList.toggle('zm', !!S.kp);
     km.classList.toggle('wh', !!S.kw);
     var wb = q('.k-wh'); if (wb) { wb.classList.toggle('on', !!S.kw); wb.setAttribute('aria-pressed', S.kw ? 'true' : 'false'); wb.setAttribute('aria-label', S.kw ? 'Parçalara ayır' : 'Bütün hali göster'); }
-    kPanel(); kPreview(); kPreviewN(); kZoom();
+    kPanel(); kPreview(); kPreviewN(); kPreviewR(); kZoom();
     var sp = q('.k-sp'); if (sp) { if (S.ks) kStatPage(); sp.classList.toggle('on', !!S.ks); }
   }
   /* Canlı önizleme: panelde seçili (henüz kuşanılmamış) seçenek gemide anında görünür; panel kapanınca kuşanılan seçeneğe dönülür.
@@ -1385,6 +1401,15 @@
     key = it.id; if (km.getAttribute('data-wv') === key) return;
     km.setAttribute('data-wv', key);
     a.setAttribute('d', wsvg(it.sh || WSTD, -1)); b.setAttribute('d', wsvg(it.sh || WSTD, 1));
+    [a, b].forEach(function (e) { e.style.animation = 'none'; void e.getBBox(); e.style.animation = 'k-sw .45s cubic-bezier(.2,.7,.2,1)'; });
+  }
+  function kPreviewR() {                                         // rüzgarlık seçimi: paneller gemide anında değişir
+    var km = q('.s-km'), a = km && km.querySelector('.sh-r1'), b = km && km.querySelector('.sh-r2'), p = kpart('ruzgar'), it, key;
+    if (!a || !b || !p) return;
+    it = S.kp === 'ruzgar' ? (kfind(p, S.ke) || kcur(p)) : kcur(p);
+    key = it.id; if (km.getAttribute('data-rv') === key) return;
+    km.setAttribute('data-rv', key);
+    a.setAttribute('d', rsvg(it.fl, -1, .9)); b.setAttribute('d', rsvg(it.fl, 1, .9));
     [a, b].forEach(function (e) { e.style.animation = 'none'; void e.getBBox(); e.style.animation = 'k-sw .45s cubic-bezier(.2,.7,.2,1)'; });
   }
   function kPreviewN() {                                         // motor seçimi: lüle gemide anında değişir
@@ -1399,7 +1424,8 @@
   }
   function kIco(p, g) {                                         // seçenek kartındaki küçük mekik: kanatta o kanat, motorda gövde girintisi/çıkıntısı ve alev vurgulanır
     var sh = g.sh || WSTD, k = g.nz || 'std', fl = 'M-.17 2.3C-.18 2.6 -.08 2.85 0 3.05C.08 2.85 .18 2.6 .17 2.3Z';
-    return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true"><path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/><path class="bd" d="' + hullD(k) + '"/>' +
+    var rz = p.id === 'ruzgar' ? '<path class="nz" d="' + rsvg(g.fl, -1, 1.3) + '"/><path class="nz" d="' + rsvg(g.fl, 1, 1.3) + '"/>' : '';
+    return '<svg viewBox="-1.9 -2.6 3.8 5.7" aria-hidden="true">' + rz + '<path class="w" d="' + wsvg(sh, -1) + '"/><path class="w" d="' + wsvg(sh, 1) + '"/><path class="bd" d="' + hullD(k) + '"/>' +
       nozSvg(k, '#4b4a47').replace(/<path /g, '<path class="nz" ').replace(/ fill="[^"]*"/g, '').replace(/<ellipse[^>]*>/g, '') +
       (k === 'wide' ? '<path class="fl" transform="translate(-.34 -.1) scale(.62 1)" d="' + fl + '"/><path class="fl" transform="translate(.34 -.1) scale(.62 1)" d="' + fl + '"/>' : '<path class="fl" transform="translate(0 ' + (k === 'dash' ? '.1' : '-.1') + ')" d="' + fl + '"/>') + '</svg>';
   }
@@ -1472,7 +1498,7 @@
         cancelAnimationFrame(kRaf);
         kRaf = requestAnimationFrame(function () {
           var i = Math.max(0, Math.min(p.list.length - 1, Math.round(rs.scrollTop / KSTEP)));
-          if (p.list[i].id !== S.ke) { S.ke = p.list[i].id; kRailUpdate(); kPreview(); kPreviewN(); }
+          if (p.list[i].id !== S.ke) { S.ke = p.list[i].id; kRailUpdate(); kPreview(); kPreviewN(); kPreviewR(); }
         });
       }, { passive: true });
     }
@@ -1676,7 +1702,7 @@
     rate: 5,                                   // kaç puan = 1 yıldız
     onBack: function () { API.close(); },
     onChange: null,                            // kostüm / seviye değişince çağrılır
-    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kw = false; S.ks = false; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
+    reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std', ro:{ std:1 }, rn:'std' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kw = false; S.ks = false; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
     pv: '',
     engine: ENGINE,
     pal: function () { try { var c = cfind(API.pv && cfind(API.pv) ? API.pv : D.eq); return (c && c.p) || null; } catch (e) { return null; } },
@@ -1693,6 +1719,7 @@
     motor: function () { return D.en; },
     nozzle: function () { var e = efind(D.en); return (e && e.nz) || 'std'; },   // oyuna: lüle türü ('std' | 'wide')
     kanat: function () { return D.wn; },
+    flap: function () { return curR().slice(); },   // oyuna: rüzgarlık panel boyutu [dış uç x, açık derinlik]
     wing: function () { return curW(); },
     stats: function () { var o = {}, k; STATS.forEach(function (t) { o[t.k] = 0; }); KPART.forEach(function (p) { var it = kcur(p); if (it && it.st) for (k in it.st) o[k] = (o[k] | 0) + it.st[k]; }); return o; },   // kuşanılan parçaların toplam yüzde değişimi (oyuna bağlamak için)
     owned: function () { var a = []; COST.forEach(function (c) { if (D.owned[c.id]) a.push(c.id); }); return a; },
@@ -1714,6 +1741,7 @@
         var k, good;
         if (seen[g.id]) bad.push(p.id + ': yinelenen kimlik ' + g.id); seen[g.id] = 1;
         if (g.st) for (k in g.st) if (!STATS.some(function (t) { return t.k === k; }) || !ok(g.st[k])) { bad.push(g.id + ': geçersiz özellik ' + k); delete g.st[k]; }
+        if (g.fl && !(Array.isArray(g.fl) && g.fl.length === 2 && ok(g.fl[0]) && ok(g.fl[1]) && g.fl[0] > .5 && g.fl[0] < 2 && g.fl[1] > .05 && g.fl[1] < 1)) { bad.push(g.id + ': bozuk rüzgarlık boyutu'); g.fl = [1.17, .3]; }
         if (g.nz && g.nz !== 'std' && g.nz !== 'wide' && g.nz !== 'dash') { bad.push(g.id + ': bilinmeyen lüle türü ' + g.nz); delete g.nz; }
         if (g.sh) {
           good = Array.isArray(g.sh) && g.sh.length >= 3 && g.sh[0][0] === 'M' && g.sh.every(function (c) {
@@ -3619,10 +3647,11 @@
       else puff(sd * .18, -2.2, sd * .1, -1);                                      // fren: burundan
     }
     function rcsYaw(sg) { puff(-sg * .3, -2.0, -sg, -.1); puff(sg * 1.25, 1.85, sg, 0); }   // dönüş çifti: burun + kanat ucu
+    function rzF() { try { return (window.DDShop && DDShop.flap && DDShop.flap()) || [1.17, .3]; } catch (e) { return [1.17, .3]; } }   // takılı rüzgarlığın panel boyutu
     function engK() { try { return (window.DDShop && DDShop.nozzle && DDShop.nozzle()) || 'std'; } catch (e) { return 'std'; } }   // takılı motorun türü
     /* Kuşanılan kanatların özellikleri → çarpanlar (ivme: itiş gücü, man: dönüş + hava freni, hiz: en yüksek hız). Güvenli aralıkta tutulur. */
     function wingStats() {
-      var o = { ivme: 1, man: 1, hiz: 1 }, s = null, k, v;
+      var o = { ivme: 1, man: 1, hiz: 1, fren: 1 }, s = null, k, v;
       try { s = window.DDShop && DDShop.stats && DDShop.stats(); } catch (e) { s = null; }
       if (s) for (k in o) { v = +s[k]; if (isFinite(v)) o[k] = Math.max(.5, Math.min(1.6, 1 + v / 100)); }
       var lvM = 0; try { lvM = (window.DDShop && DDShop.lv && DDShop.lv('man')) | 0; } catch (e) { lvM = 0; }
@@ -3786,6 +3815,8 @@
       if (m > 0.18 && s0 > S * 0.004) {
         var ux = tx / s0, uy = ty / s0, au = .3 + .7 * Math.min(1, s0 / (S * .3)), RC = S * 0.05 * au * WS.man;
         var nx2 = tx + vx * RC * dt, ny2 = ty + vy * RC * dt, s1 = Math.hypot(nx2, ny2);
+        var bk0 = -(ux * vx + uy * vy);                         // rüzgarlık: joystick'in hızın tersine olan bileşeni ek (ya da eksik) fren uygular
+        if (bk0 > 0 && WS.fren !== 1) { var cu = nx2 * ux + ny2 * uy, ex = Math.min(bk0 * RC * dt * (WS.fren - 1), Math.max(0, cu)); nx2 -= ux * ex; ny2 -= uy * ex; s1 = Math.hypot(nx2, ny2); }
         if (s1 > s0) { nx2 *= s0 / s1; ny2 *= s0 / s1; }
         var dvx = nx2 - tx, dvy = ny2 - ty, dv = Math.hypot(dvx, dvy);
         tx = nx2; ty = ny2;
@@ -4526,9 +4557,9 @@
       if (gh) cx.restore();
       cx.fillStyle = GR;                                         // joystickle açılan flap panelleri: yalnızca açıkken görünür
       for (k = -1; k <= 1; k += 2) {
-        var fd = .3 * (k < 0 ? flapL : flapR);
+        var RZ = rzF(), fd = RZ[1] * (k < 0 ? flapL : flapR);
         if (fd < .012) continue;
-        cx.beginPath(); cx.moveTo(k * .46, 1.95); cx.lineTo(k * 1.17, 1.95); cx.lineTo(k * 1.13, 1.95 + fd); cx.lineTo(k * .5, 1.95 + fd); cx.closePath(); cx.fill();
+        cx.beginPath(); cx.moveTo(k * .46, 1.95); cx.lineTo(k * RZ[0], 1.95); cx.lineTo(k * (RZ[0] - .04), 1.95 + fd); cx.lineTo(k * .5, 1.95 + fd); cx.closePath(); cx.fill();
       }
       hullP(); pf(HC);                    // gövde
       cx.save(); hullP(); cx.clip(); cx.fillStyle = 'rgba(0,0,0,.07)';   // gövde gölgesi (ikondaki aynı şekil)
