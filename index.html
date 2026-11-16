@@ -4197,14 +4197,15 @@
       for (i = 0; i < stns.length; i++) {
         s = stns[i]; dy = P.y - s.y;
         if (s.act >= 0) s.act += dt;
-        if (Math.abs(dy) > S * 2.6) { s.open = Math.max(0, s.open - dt * 2); s.snd = false; continue; }
+        if (Math.abs(dy) > S * 2.6) { s.in = false; s.open = Math.max(0, s.open - dt * 2); s.snd = false; continue; }
         ex = s.cx + s.sd * cw; d = (P.x - ex) * s.sd;
         tgt = !dead && Math.hypot(d - S * .1, dy) < S * 1.15;       // yaklaşınca açılır, uzaklaşınca kapanır
         s.open = Math.max(0, Math.min(1, s.open + (tgt ? dt * 3.4 : -dt * 1.4)));
         if (tgt && !s.snd) { s.snd = true; if (Math.abs(dy) < H * .6) sfxDoor(); } else if (!tgt && s.open < .05) s.snd = false;
+        s.in = false;
         if (dead) continue;
         if (Math.abs(dy) < hh + Rs && d > -Rs && (d > 0 || (Math.abs(dy) < dh - Rs * .2 && s.open > .8))) {   // kapıdan geçiyor / içeride
-          hit = s; lim = dh - Rs;
+          hit = s; s.in = true; lim = dh - Rs;
           if (P.y < s.y - lim) { P.y = s.y - lim; if (P.vy < 0) { P.vy *= -.4; shake = Math.max(shake, .15); } }
           else if (P.y > s.y + lim) { P.y = s.y + lim; if (P.vy > 0) { P.vy *= -.4; shake = Math.max(shake, .15); } }
           if (d > bay - Rs) { P.x = ex + s.sd * (bay - Rs); if (P.vx * s.sd > 0) { P.vx *= -.4; shake = Math.max(shake, .15); } }
@@ -4249,15 +4250,22 @@
       if (P.x > tcP + cwp - Rs && !(inS && inS.sd > 0)) { P.x = tcP + cwp - Rs; if (P.vx > wvx) { P.vx = wvx - (P.vx - wvx) * .45; shake = Math.max(shake, .2); } }
       if (P.x < tcP - cwp + Rs && !(inS && inS.sd < 0)) { P.x = tcP - cwp + Rs; if (P.vx < wvx) { P.vx = wvx + (wvx - P.vx) * .45; shake = Math.max(shake, .2); } }
       // alev: zamanla, sektörle hızlanır, nefes alır; çok geride kalırsa yetişir (gerilim). Ölüm: görünen alev ucu gemiye değince.
-      waveT += dt;
-      var wv = S * Math.min(.36, .085 + .0022 * waveT + .006 * sector) * (1 + .1 * Math.sin(waveT * .7)), gap = waveY - P.y;
-      if (gap > H * 1.15) wv = Math.max(wv, (gap - H * 1.0) * .35);
-      waveY -= wv * dt; gap = waveY - P.y;
+      var wv, gap = waveY - P.y;
+      if (inS) {                                                     // kontrol noktasının içinde: alev durur, çok yakındaysa güvenli mesafeye çekilir; yanma söner
+        wv = 0; burnT = -1; burnAcc = 0; smokeAcc = 0;
+        if (gap < H * .6) waveY += (P.y + H * .6 - waveY) * (1 - Math.exp(-dt / .5));
+        gap = waveY - P.y;
+      } else {
+        waveT += dt;
+        wv = S * Math.min(.36, .085 + .0022 * waveT + .006 * sector) * (1 + .1 * Math.sin(waveT * .7));
+        if (gap > H * 1.15) wv = Math.max(wv, (gap - H * 1.0) * .35);
+        waveY -= wv * dt; gap = waveY - P.y;
+      }
       fireStep(dt, wv);
-      if (gap < H * .5) {
+      if (gap < H * .5 && !inS) {
         lastWarn -= dt; if (lastWarn <= 0) { lastWarn = Math.max(.35, gap / H); sfxWarn(); vib(8); }
       }
-      if (burnT < 0 && waveY - fireH(P.x, fireT) - P.y < Rs * .5) { burnT = 0; burnAcc = 0; smokeAcc = 0; sfxWarn(); vib([20, 30, 20]); shake = Math.max(shake, .3); flash = Math.max(flash, .3); }   // aleve değdi: gemi alev alır
+      if (!inS && burnT < 0 && waveY - fireH(P.x, fireT) - P.y < Rs * .5) { burnT = 0; burnAcc = 0; smokeAcc = 0; sfxWarn(); vib([20, 30, 20]); shake = Math.max(shake, .3); flash = Math.max(flash, .3); }   // aleve değdi: gemi alev alır
       if (burnT >= 0) {                                          // yanıyor: oyun sürer, kontrol sende; süre dolunca patlar
         burnT += dt;
         if (burnT >= 2.8) { kill(2); return; }
@@ -4411,7 +4419,8 @@
       for (i = scFx.length - 1; i >= 0; i--) { scFx[i].a += dt / 1.1; if (scFx[i].a >= 1) scFx.splice(i, 1); }
       for (i = stFx.length - 1; i >= 0; i--) { stFx[i].a += dt / .55; if (stFx[i].a >= 1) stFx.splice(i, 1); }
       startMsgT = Math.max(0, startMsgT - dt);
-      if (burnT >= 0) dkMsg('warn', '', 'Yanıyorsun', '');
+      if (inS && inS.on) { warnOn = false; dkMsg('ok', '', 'Kontrol noktası kaydedildi', 'Alev durdu · ölürsen buradan devam edersin'); }
+      else if (burnT >= 0) dkMsg('warn', '', 'Yanıyorsun', '');
       else if (warnOn = warnOn ? waveY - P.y < H * .6 : waveY - P.y < H * .5) dkMsg('warn', '', 'Alev yaklaşıyor', '');
       else if (bannerT > 0) dkMsg('ok', '', banner.charAt(0) + banner.slice(1).toLowerCase(), '');
       else if (startMsgT > 0) dkMsg('ok', '', 'Kaç', '');
@@ -5023,6 +5032,15 @@
         }
         cx.globalCompositeOperation = 'source-over';
         cx.restore();
+        s.lb = Math.max(0, Math.min(1, (s.lb || 0) + (s.in && s.on ? .06 : -.08)));   // iç oda yazısı: içerideyken belirir
+        if (s.lb > .01) {
+          var bxm = X + sd * BAY * U * .5, fs = Math.max(11, U * .036);
+          cx.save(); cx.globalAlpha = s.lb; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+          cx.fillStyle = rgba(BL, 1); cx.font = '600 ' + fs * 1.15 + 'px system-ui,sans-serif'; cx.fillText('✓ KONTROL NOKTASI', bxm, Y - DH * U * .62);
+          cx.fillStyle = 'rgba(244,242,238,.85)'; cx.font = '500 ' + fs * .8 + 'px system-ui,sans-serif';
+          cx.fillText('Alev durdu · ölürsen buradan devam', bxm, Y + DH * U * .66);
+          cx.restore();
+        }
       }
     }
     function drawWorld(CY, t) {
