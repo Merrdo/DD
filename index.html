@@ -318,6 +318,11 @@
   #spen s.on { color: #7fd4ff; }
   #spen s.no { animation: tno .4s ease; }
   @keyframes tno { 0%,100% { transform: translateX(0); color: #ff8a5c; } 20% { transform: translateX(-2px); } 40% { transform: translateX(2px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(1px); } }
+  #spen.dz u { background: #7fd4ff; transition: background .2s ease, box-shadow .2s ease; }
+  #spen.dz u.rdy { animation: dkflash .55s ease-out; }
+  #spen.dz s.rdy { animation: dkbump .55s cubic-bezier(.2,.8,.3,1.4); }
+  @keyframes dkflash { 0% { background: #fff; box-shadow: 0 0 0 0 rgba(180,235,255,0); } 25% { background: #fff; box-shadow: 0 0 10px 3px rgba(150,225,255,1); } 100% { background: #7fd4ff; box-shadow: 0 0 0 0 rgba(150,225,255,0); } }
+  @keyframes dkbump { 0% { transform: scale(1); } 35% { transform: scale(1.7); color: #fff; filter: drop-shadow(0 0 6px rgba(127,212,255,1)); } 100% { transform: scale(1); } }
   #spen s.act { color: #fff; filter: drop-shadow(0 0 4px rgba(127,212,255,1)); }
   #space.play::after { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 190px; background: linear-gradient(rgba(0,0,0,.85), rgba(0,0,0,0)); pointer-events: none; z-index: 1; }
   /* ilk giriş rehberi: sol / sağ yarıda ne yapılacağı */
@@ -2792,7 +2797,7 @@
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
-    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFailAt = 0, dashFx = [], DASH_CD = 2.2, DASH_T1 = .05, DASH_T2 = .1, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
+    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFailAt = 0, dashRdyPrev = true, dashFx = [], DASH_CD = 2.2, DASH_T1 = .05, DASH_T2 = .1, dashPh = 0, dashT = 0, dashHx = 0, dashHy = 0, dashD = 0, dashCamT = 0;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var frameErr = 0;
@@ -3839,11 +3844,11 @@
       if (enGainT > 0) {
         enGainT = Math.max(0, enGainT - dt);
         var gl = Math.min(enFrom, en), gw = Math.max(0, Math.min(enTo, en) - gl);
-        var gk = engK() === 'wide' ? .5 : 1; elGain.style.left = (gl * 100 * gk) + '%'; elGain.style.width = (gw * 100 * gk) + '%'; elGain.style.opacity = Math.min(1, enGainT / .6);
+        var gk = (engK() === 'wide' || engK() === 'dash') ? .5 : 1; elGain.style.left = (gl * 100 * gk) + '%'; elGain.style.width = (gw * 100 * gk) + '%'; elGain.style.opacity = Math.min(1, enGainT / .6);
       } else if (elGain.style.opacity !== '0') elGain.style.opacity = 0;
-      elEn.style.opacity = (en > 0.995 && (engK() !== 'wide' || tb > 0.995) && enGainT <= 0) ? .45 : 1;
-      var wz = engK() === 'wide', lw = lock || en < 0.2;
-      if (elEn.classList.contains('wd') !== wz) { elEn.classList.toggle('wd', wz); lastE = ''; }
+      elEn.style.opacity = (en > 0.995 && engK() !== 'dash' && (engK() !== 'wide' || tb > 0.995) && enGainT <= 0) ? .45 : 1;
+      var dz = engK() === 'dash', wz = engK() === 'wide' || dz, lw = lock || en < 0.2;
+      if (elEn.classList.contains('wd') !== wz || elEn.classList.contains('dz') !== dz) { elEn.classList.toggle('wd', wz); elEn.classList.toggle('dz', dz); lastE = ''; }
       var es = en.toFixed(2) + '|' + (wz ? tb.toFixed(2) + (tOn ? 'o' : '') : '') + (lw ? 'l' : '');
       if (es !== lastE) {
         lastE = es; var bar = elEn.firstElementChild;
@@ -3854,6 +3859,13 @@
           var ic = elEn.querySelector('s'); ic.classList.toggle('on', tb > .02); ic.classList.toggle('act', !!tOn);
         }
       }
+      if (dz) {                                                 // dash şarjı: kullanınca anında söner, bekleme boyunca dolar, dolunca parlayıp sıçrar
+        var dch = (dashPh || dashCd >= DASH_CD) ? 0 : 1 - dashCd / DASH_CD, dRdy = dashCd <= 0 && !dashPh, du2 = elEn.querySelector('u'), dic = elEn.querySelector('s');
+        du2.style.transform = 'scaleX(' + (dRdy ? 1 : Math.max(0, Math.min(.999, dch))).toFixed(3) + ')';
+        dic.classList.toggle('on', dRdy); dic.classList.remove('act');
+        if (dRdy && !dashRdyPrev) { du2.classList.remove('rdy'); dic.classList.remove('rdy'); void du2.offsetWidth; du2.classList.add('rdy'); dic.classList.add('rdy'); }
+        dashRdyPrev = dRdy;
+      } else dashRdyPrev = true;
       bA += (((jetId !== null || keys[' ']) ? 1 : 0) - bA) * (1 - Math.exp(-dt / 0.12)); pulse = Math.max(0, pulse - dt / 0.5);
       if (jetId === null && bA < 0.02) { bbx = bx; bby = by; }
       thrT = odK; thrustSet(th);
