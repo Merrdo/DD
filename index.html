@@ -342,6 +342,8 @@
   #spmsg .k:empty { display: none; }
   #spmsg .t { font-size: clamp(26px, 7.4vmin, 36px); font-weight: 600; letter-spacing: -.01em; line-height: 1.1; }
   #spmsg .s { font-size: 14px; font-weight: 500; letter-spacing: .02em; color: rgba(244,242,238,.9); font-variant-numeric: tabular-nums; }
+  #spmsg .s { transition: opacity 1.2s ease; }
+  #spmsg .s.gone { opacity: 0; }
   #spmsg.warn .t { font-weight: 600; color: #ffb08a; }
   #spmsg.ok .t { font-weight: 600; text-shadow: 0 0 26px rgba(244,242,238,.65), 0 0 3px rgba(0,0,0,.8); }
   #spmsg.hide { opacity: 0; animation: spout 1s ease both; }
@@ -2815,6 +2817,7 @@
     var elCp = null, lastCpO = -1, lastCpH = false;
     /* --- kontrol noktası istasyonları: koridorun bir duvarında, 5 sınır kayasının yerine oturan çıkıntı. Kapı yaklaşınca açılır; içeri girilince nokta kaydedilir.
            Ölünce menüden "Kontrol noktası" ile istasyondan devam edilir. Ölçüler S (ekran birimi) cinsindendir. --- */
+    var inStn = false, inSubT = 0, sbT = 0;     // inStn: gemi istasyonun içinde (depo dolar); inSubT: içeride geçen süre; sbT: sinyal sayacı
     var stns = [], stNextY = 0, cpSt = null, cpSave = null,
         ST_FIRST = 20,     // ilk istasyon: başlangıçtan kaç S ileride (20 S = 200 m)
         ST_GAP = 15,       // istasyonlar arası (15 S = 150 m = 3 sektör)
@@ -3060,7 +3063,7 @@
 
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
-      th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0;
+      th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0;
       pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
@@ -3854,7 +3857,12 @@
       odK += (odT - odK) * (1 - Math.exp(-dt / (odT ? .25 : .35)));
       odC += (odT - odC) * (1 - Math.exp(-dt / (odT ? .4 : 2.5)));      // tavan hız yavaş söner: turbo bitince hız ani kesilmez
       if (!wideE) { odK = 0; odC = 0; }
-      if (using) { idleT = 0; if (odT) tb = Math.max(0, tb - drain * 2.3 * dt); else { en -= (wideE ? drain / .93 : drain) * dt; if (wideE && tb < 1) tb = Math.min(1, tb + .035 * dt); } }
+      if (inStn) {                                              // kontrol noktasının içinde: jet serbest ama depo harcanmaz, hızla (≈1 sn) dolar
+        idleT = 0;
+        if (en < 1) gainEn(1.15 * dt);
+        if (wideE && tb < 1) tb = Math.min(1, tb + 1.8 * dt);
+      }
+      else if (using) { idleT = 0; if (odT) tb = Math.max(0, tb - drain * 2.3 * dt); else { en -= (wideE ? drain / .93 : drain) * dt; if (wideE && tb < 1) tb = Math.min(1, tb + .035 * dt); } }
       else {
         idleT += dt;
         if (idleT > 0.7) { if (en < 1) en = Math.min(1, en + (wideE ? .075 : .08) * dt); if (wideE && tb < 1) tb = Math.min(1, tb + .09 * dt); }
@@ -4186,11 +4194,40 @@
       if (elDvz) elDvz.textContent = '×' + dv.z.toFixed(2);
     }
     function sfxCheckpoint() { if (!AC) return; bell(semi(12), .1, 0, 0, 1.3); bell(semi(19), .08, 0, .09, 1.5); bell(semi(24), .06, 0, .18, 1.8); }
+    /* --- istasyon radyo sinyali: pentatonik üçlü, eşit aralıkla tekrarlar; yaklaştıkça güçlenir ve parlaklaşır, Doppler gibi yaklaşırken tizleşir / uzaklaşırken pesleşir --- */
+    var SB_T = 2.2, SB_R = 6;                                       // SB_T: tekrar aralığı (sn), SB_R: duyulma menzili (S)
+    function beaconVoice(freq, vol, pan, delay, dur, lpf) {
+      try {
+        var t0 = AC.currentTime + delay + .005, g = voiceOut(pan), f = AC.createBiquadFilter(), eg = AC.createGain(), o = AC.createOscillator(), o2 = AC.createOscillator(), og = AC.createGain();
+        f.type = 'lowpass'; f.frequency.value = lpf; f.Q.value = .5;
+        eg.gain.setValueAtTime(.0001, t0); eg.gain.linearRampToValueAtTime(vol, t0 + .012); eg.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+        o.type = 'sine'; o.frequency.value = freq; o2.type = 'triangle'; o2.frequency.value = freq * 2.003; og.gain.value = .26;
+        o.connect(eg); o2.connect(og); og.connect(eg); eg.connect(f); f.connect(g);
+        o.start(t0); o2.start(t0); o.stop(t0 + dur + .05); o2.stop(t0 + dur + .05);
+      } catch (e) {}
+    }
+    function beaconStep(dt, inS) {
+      if (!AC || !SNDA.sfx || dead || !stns.length) return;
+      sbT -= dt; if (sbT > 0) return;
+      var i, s, ex, d, bd = 1e9, bs = null;
+      for (i = 0; i < stns.length; i++) { s = stns[i]; ex = s.cx + s.sd * cw; d = Math.hypot(P.x - ex, P.y - s.y); if (d < bd) { bd = d; bs = s; } }
+      if (!bs || bd > S * SB_R || inS) { sbT = .25; return; }       // menzil dışı ya da içeride: sessiz; menzile girer girmez başlar
+      sbT = SB_T;
+      ex = bs.cx + bs.sd * cw;
+      var near = 1 - bd / (S * SB_R), cl = -((P.x - ex) * P.vx + (P.y - bs.y) * P.vy) / Math.max(1, bd),   // cl: yaklaşma hızı (+ yaklaşıyor)
+          dp = 1 + Math.max(-.12, Math.min(.16, cl / (S * 3))),
+          vol = .015 + .17 * near * near, pan = Math.max(-.8, Math.min(.8, (ex - P.x) / (S * 1.5))), lpf = 700 + 5200 * near,
+          b = 5 + (bs.n % 3), q = [pf(b), pf(b + 1), pf(b + 3)];
+      beaconVoice(q[0] * dp, vol, pan, 0, .2, lpf);
+      beaconVoice(q[1] * dp, vol, pan, .16, .2, lpf);
+      beaconVoice(q[2] * dp, vol * 1.15, pan, .32, .55, lpf);
+      breath(.05, vol * .12, 3200, 1600, 0);                         // radyo tıkırtısı
+    }
     function sfxDoor() { if (!AC) return; breath(.45, .05, 380, 1500, 0); bell(semi(7), .05, 0, .05, .6); }
     function stActivate(s) {                                        // gemi odaya girdi: nokta kaydedilir
       s.on = true; s.act = 0; cpSt = s;
       cpSave = { waveT: waveT, bonus: bonus };
-      banner = 'Kontrol noktası kaydedildi'; bannerT = 2.6; flash = Math.max(flash, .35); sfxCheckpoint(); vib([12, 30, 12]);
+      banner = 'Kontrol noktası'; bannerT = 2.6; flash = Math.max(flash, .35); sfxCheckpoint(); vib([12, 30, 12]);
     }
     function stStep(dt, Rs) {                                       // kapı animasyonu + ship'in istasyonla etkileşimi; kapıdan geçen istasyonu döndürür
       var i, s, ex, d, dy, tgt, lim, hit = null, dh = S * ST_DH, hh = S * ST_HH, bay = S * ST_BAY;
@@ -4220,7 +4257,7 @@
       ex = s.cx + s.sd * cw;
       mode = 1; last = 0; elSm.classList.remove('on'); el.classList.add('play'); el.classList.add('race'); Music.mode(1);
       P = { x: ex + s.sd * S * .34, y: s.y, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: P.x, y: P.y };
-      th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; devPts = {}; devOn = false; el.classList.remove('devcam');
+      th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0; devPts = {}; devOn = false; el.classList.remove('devcam');
       pre = 0; cdT = 0; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = .7; pops = []; scFx = []; stFx = []; stChain = 0; stChainT = 0; lastL = ''; lastV = '';
@@ -4246,7 +4283,7 @@
       if (sc > sector) { sector = sc; banner = 'SEKTÖR ' + (sc + 1); bannerT = 2.4; sfxSector(); vib(12); }
       // kenar duvarları (esnek)
       var tcP = T(P.y), cwp = cw * Lw(P.y), wvx = Tp(P.y) * P.vy;   // wvx: gemi yükseldikçe duvarın yanal hızı
-      var inS = stStep(dt, Rs);                                      // istasyon: kapı, iç oda duvarları, kontrol noktası (kapıdan geçiyorsa o kenarda koridor duvarı yok)
+      var inS = stStep(dt, Rs); inStn = !!inS; beaconStep(dt, inS);                                      // istasyon: kapı, iç oda duvarları, kontrol noktası (kapıdan geçiyorsa o kenarda koridor duvarı yok)
       if (P.x > tcP + cwp - Rs && !(inS && inS.sd > 0)) { P.x = tcP + cwp - Rs; if (P.vx > wvx) { P.vx = wvx - (P.vx - wvx) * .45; shake = Math.max(shake, .2); } }
       if (P.x < tcP - cwp + Rs && !(inS && inS.sd < 0)) { P.x = tcP - cwp + Rs; if (P.vx < wvx) { P.vx = wvx + (wvx - P.vx) * .45; shake = Math.max(shake, .2); } }
       // alev: zamanla, sektörle hızlanır, nefes alır; çok geride kalırsa yetişir (gerilim). Ölüm: görünen alev ucu gemiye değince.
@@ -4419,7 +4456,9 @@
       for (i = scFx.length - 1; i >= 0; i--) { scFx[i].a += dt / 1.1; if (scFx[i].a >= 1) scFx.splice(i, 1); }
       for (i = stFx.length - 1; i >= 0; i--) { stFx[i].a += dt / .55; if (stFx[i].a >= 1) stFx.splice(i, 1); }
       startMsgT = Math.max(0, startMsgT - dt);
-      if (inS && inS.on) { warnOn = false; dkMsg('ok', '', 'Kontrol noktası kaydedildi', 'Alev durdu · ölürsen buradan devam edersin'); }
+      if (inS && inS.on) inSubT += dt; else inSubT = 0;                 // açıklama içeride ~4 sn görünür, sonra yumuşakça kaybolur; başlık kalır
+      elMs.classList.toggle('gone', inSubT > 4);
+      if (inS && inS.on) { warnOn = false; dkMsg('ok', '', 'Kontrol noktası', 'Ölürsen buradan devam edersin'); }
       else if (burnT >= 0) dkMsg('warn', '', 'Yanıyorsun', '');
       else if (warnOn = warnOn ? waveY - P.y < H * .6 : waveY - P.y < H * .5) dkMsg('warn', '', 'Alev yaklaşıyor', '');
       else if (bannerT > 0) dkMsg('ok', '', banner.charAt(0) + banner.slice(1).toLowerCase(), '');
@@ -4931,116 +4970,150 @@
       }
       return { l: l, r: r, hl: hl, hr: hr, ql: ql, qr: qr };
     }
-    /* --- kontrol noktası istasyonu çizimi: yerel çerçevede x = koridor kenarından dışa uzaklık, y = istasyon merkezine göre dikey; sd < 0 ise aynalanır --- */
+    /* --- kontrol noktası istasyonu çizimi: yerel çerçevede x = koridor kenarından dışa uzaklık, y = istasyon merkezine göre dikey; sd < 0 ise aynalanır.
+           Tüm parçalar tek bir .125 S'lik ızgaraya oturur (gövde dikişleri, pencereler, iniş ışıkları, oklar, kenetlenme halkası). --- */
     function drawStations(ox, oy, t) {
-      var i, s, X, Y, sd, U = S, HH = ST_HH, DH = ST_DH, DEP = ST_DEP, BAY = ST_BAY, open, on, pu, g, j, k, h, lit, a, ap, sy, w0;
+      var i, s, X, Y, sd, U = S, HH = ST_HH, DH = ST_DH, DEP = ST_DEP, BAY = ST_BAY, PIT = .125, open, on, pu, g, j, k, m, ph, r, L, xa, xb, yc, lit, ap, cxr, bm, wc,
+          ang = [.62, .42, .26, .12], aal = [.05, .07, .1, .14];
       for (i = 0; i < stns.length; i++) {
         s = stns[i]; Y = oy + s.y; sd = s.sd; X = ox + s.cx + sd * cw;
-        if (Y < -S * .95 || Y > H + S * .95) continue;
-        if (sd > 0 ? (X > W + 30 || X + S * 1.3 < -30) : (X < -30 || X - S * 1.3 > W + 30)) continue;
+        L = cw * 2;                                                              // ışın karşı duvara kadar uzanır
+        if (Y < -U * 2.3 || Y > H + U * 2.3) continue;
+        xa = X - sd * L; xb = X + sd * U * 1.4;
+        if (Math.max(xa, xb) < -30 || Math.min(xa, xb) > W + 30) continue;
         open = s.open; on = s.on; pu = .5 + .5 * Math.sin(t * 2.6 + s.n);
-        a = on ? 1 : 0;
+        s.ch = (s.ch || 0) + ((s.in ? 1 : 0) - (s.ch || 0)) * .1;                // şarj parıltısı: içerideyken artar
         cx.save(); cx.translate(X, Y); cx.scale(sd, 1); cx.lineJoin = 'round'; cx.lineCap = 'round';
-        /* uzaktan görünürlük: kapı çevresinde yumuşak mavi ışıma, kapı açılınca koridora ışık sızar */
+        /* ---- ışın: kapı ağzından (±DH) başlar, açılarak karşı duvara varır; uzaklaştıkça enerjisi düşer (1/d² benzeri) ---- */
         cx.globalCompositeOperation = 'lighter';
-        g = cx.createRadialGradient(0, 0, 0, 0, 0, U * .75); g.addColorStop(0, rgba(BL, .13 + .06 * pu + .12 * open + .06 * a)); g.addColorStop(1, rgba(BL, 0));
-        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, U * .75, 0, 6.2832); cx.fill();
-        if (open > .02) {
-          g = cx.createLinearGradient(0, 0, -U * .6, 0); g.addColorStop(0, rgba(BL, .3 * open)); g.addColorStop(1, rgba(BL, 0));
-          cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, -DH * U); cx.lineTo(-U * .6, -DH * U * 2.1); cx.lineTo(-U * .6, DH * U * 2.1); cx.lineTo(0, DH * U); cx.closePath(); cx.fill();
+        bm = (.6 + .4 * open) * (.93 + .07 * pu) * (on ? 1.12 : 1);
+        for (k = 0; k < 4; k++) {
+          r = DH * U * (1 - k * .18); m = L * ang[k];
+          g = cx.createLinearGradient(0, 0, -L, 0);
+          g.addColorStop(0, rgba(k > 1 ? '225,236,255' : BL, bm * aal[k]));
+          g.addColorStop(.1, rgba(k > 1 ? '225,236,255' : BL, bm * aal[k] * .62));
+          g.addColorStop(.3, rgba(BL, bm * aal[k] * .28));
+          g.addColorStop(.62, rgba(BL, bm * aal[k] * .1));
+          g.addColorStop(1, rgba(BL, bm * aal[k] * .03));
+          cx.fillStyle = g; cx.beginPath(); cx.moveTo(0, -r); cx.lineTo(-L, -r - m); cx.lineTo(-L, r + m); cx.lineTo(0, r); cx.closePath(); cx.fill();
+        }
+        cx.save(); cx.translate(-L, 0); cx.scale(.3, 1);                          // karşı duvarda sönük ışık lekesi
+        g = cx.createRadialGradient(0, 0, 0, 0, 0, L * .5); g.addColorStop(0, rgba(BL, bm * .045)); g.addColorStop(1, rgba(BL, 0));
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, L * .5, 0, 6.2832); cx.fill(); cx.restore();
+        g = cx.createRadialGradient(0, 0, 0, 0, 0, U * .5); g.addColorStop(0, rgba(BL, (.16 + .08 * pu + .14 * open) * (1 + .2 * (on ? 1 : 0)))); g.addColorStop(1, rgba(BL, 0));
+        cx.fillStyle = g; cx.beginPath(); cx.arc(0, 0, U * .5, 0, 6.2832); cx.fill();
+        cx.globalCompositeOperation = 'source-over';
+        /* ---- güneş panelleri: gövdenin tam ortasına (x = .5) bağlı ---- */
+        for (k = -1; k <= 1; k += 2) {
+          yc = k > 0 ? (HH + .1) * U : -(HH + .28) * U;
+          cx.strokeStyle = rgba('244,242,238', .55); cx.lineWidth = 1.4;
+          cx.beginPath(); cx.moveTo(DEP * .5 * U, k * HH * U); cx.lineTo(DEP * .5 * U, k > 0 ? yc : yc + .18 * U); cx.stroke();
+          cx.fillStyle = '#0b0c11'; rr(.24 * U, yc, .52 * U, .18 * U, .015 * U); cx.fill();
+          cx.save(); rr(.24 * U, yc, .52 * U, .18 * U, .015 * U); cx.clip();
+          g = cx.createLinearGradient(.24 * U, yc, .76 * U, yc + .18 * U); g.addColorStop(0, rgba(BL, .0)); g.addColorStop(.5, rgba(BL, .1 + .06 * (on ? 1 : 0))); g.addColorStop(1, rgba(BL, 0));
+          cx.fillStyle = g; cx.fillRect(.24 * U, yc, .52 * U, .18 * U);
+          cx.strokeStyle = rgba(BL, .24 + .1 * (on ? 1 : 0)); cx.lineWidth = 1;
+          for (j = 1; j < 4; j++) { cx.beginPath(); cx.moveTo((.24 + j * .13) * U, yc); cx.lineTo((.24 + j * .13) * U, yc + .18 * U); cx.stroke(); }
+          cx.beginPath(); cx.moveTo(.24 * U, yc + .09 * U); cx.lineTo(.76 * U, yc + .09 * U); cx.stroke();
+          cx.restore();
+          cx.strokeStyle = rgba('244,242,238', .8); cx.lineWidth = 1.5; rr(.24 * U, yc, .52 * U, .18 * U, .015 * U); cx.stroke();
+        }
+        /* ---- anten: kuyruğa doğru kısalan üç dipol + ritmik radyo dalgaları ---- */
+        cxr = (DEP + .17) * U;
+        cx.strokeStyle = rgba('244,242,238', .8); cx.lineWidth = 1.5;
+        cx.beginPath(); cx.moveTo(DEP * U, 0); cx.lineTo(cxr, 0);
+        for (j = 0; j < 3; j++) { cx.moveTo((DEP + .04 + j * .045) * U, -(.1 - j * .03) * U); cx.lineTo((DEP + .04 + j * .045) * U, (.1 - j * .03) * U); }
+        cx.stroke();
+        cx.globalCompositeOperation = 'lighter';
+        for (j = 0; j < 3; j++) {
+          ph = (t / SB_T + j / 3) % 1; cx.strokeStyle = rgba(BL, .34 * (1 - ph) * (1 - ph)); cx.lineWidth = 1.4;
+          cx.beginPath(); cx.arc(cxr, 0, U * (.03 + .24 * ph), -.9, .9); cx.stroke();
         }
         cx.globalCompositeOperation = 'source-over';
-        /* güneş panelleri (gövdenin arkasında; yalnızca süs) */
-        for (k = -1; k <= 1; k += 2) {
-          cx.strokeStyle = rgba('244,242,238', .55); cx.lineWidth = 1.4;
-          cx.beginPath(); cx.moveTo(.66 * U, k * HH * U); cx.lineTo(.66 * U, k * (HH + .12) * U); cx.stroke();
-          cx.fillStyle = '#0b0c11'; rr(.4 * U, k > 0 ? (HH + .1) * U : -(HH + .28) * U, .52 * U, .18 * U, .015 * U); cx.fill();
-          cx.strokeStyle = rgba('244,242,238', .8); cx.lineWidth = 1.5; cx.stroke();
-          cx.strokeStyle = rgba(BL, .22 + .12 * a); cx.lineWidth = 1;
-          sy = k > 0 ? (HH + .1) * U : -(HH + .28) * U;
-          for (j = 1; j < 5; j++) { cx.beginPath(); cx.moveTo((.4 + j * .104) * U, sy); cx.lineTo((.4 + j * .104) * U, sy + .18 * U); cx.stroke(); }
-          cx.beginPath(); cx.moveTo(.4 * U, sy + .09 * U); cx.lineTo(.92 * U, sy + .09 * U); cx.stroke();
-        }
-        /* anten */
-        cx.strokeStyle = rgba('244,242,238', .8); cx.lineWidth = 1.5;
-        cx.beginPath(); cx.moveTo(DEP * U, 0); cx.lineTo((DEP + .2) * U, 0); cx.moveTo((DEP + .06) * U, -.05 * U); cx.lineTo((DEP + .06) * U, .05 * U); cx.moveTo((DEP + .12) * U, -.09 * U); cx.lineTo((DEP + .12) * U, .09 * U); cx.stroke();
-        /* ana gövde */
+        /* ---- ana gövde ---- */
         g = cx.createLinearGradient(0, 0, DEP * U, 0); g.addColorStop(0, '#171a22'); g.addColorStop(1, '#0b0c11');
         cx.fillStyle = g; rr(0, -HH * U, DEP * U, 2 * HH * U, .07 * U); cx.fill();
         cx.save(); rr(0, -HH * U, DEP * U, 2 * HH * U, .07 * U); cx.clip();
-        cx.strokeStyle = 'rgba(244,242,238,.14)'; cx.lineWidth = 1;
-        for (j = 0; j < 4; j++) { cx.beginPath(); cx.moveTo((.2 + j * .22) * U, -HH * U); cx.lineTo((.2 + j * .22) * U, HH * U); cx.stroke(); }
-        for (k = -1; k <= 1; k += 2) { cx.beginPath(); cx.moveTo(0, k * .27 * U); cx.lineTo(DEP * U, k * .27 * U); cx.stroke(); }
-        w0 = .11 * U; cx.strokeStyle = 'rgba(244,242,238,.2)';                    // kapı çerçevesinde uyarı çizgileri
-        for (k = -1; k <= 1; k += 2) for (j = 0; j < 8; j++) { cx.beginPath(); cx.moveTo(j * .03 * U, k * DH * U); cx.lineTo(j * .03 * U + .06 * U, k * HH * U); cx.stroke(); }
-        for (k = -1; k <= 1; k += 2) for (j = 0; j < 10; j++) {                     // pencereler
-          lit = on ? .8 : (hr(s.n * 7.1, j + k * 13, 3) > .45 ? .55 + .3 * Math.sin(t * 1.3 + j * 2.1 + s.n) : .12);
-          cx.fillStyle = rgba(BL, Math.max(0, .1 + lit * .5)); rr((.2 + j * .075) * U, k * .335 * U - .016 * U, .045 * U, .032 * U, .008 * U); cx.fill();
+        for (k = -1; k <= 1; k += 2) {
+          yc = k * (DH + HH) / 2 * U;                                            // üst/alt şeridin orta çizgisi (±.3 S)
+          cx.strokeStyle = 'rgba(244,242,238,.14)'; cx.lineWidth = 1;
+          for (j = 1; j < 8; j++) { cx.beginPath(); cx.moveTo(j * PIT * U, k * DH * U); cx.lineTo(j * PIT * U, k * HH * U); cx.stroke(); }
+          cx.save(); cx.beginPath(); cx.rect(0, k > 0 ? DH * U : -HH * U, PIT * U, (HH - DH) * U); cx.clip();      // ağız çevresi: tehlike şeridi (ilk hücre)
+          cx.strokeStyle = rgba(OR, .5); cx.lineWidth = 3.2;
+          for (j = -7; j < 5; j++) { cx.beginPath(); cx.moveTo(j * .03 * U, k * DH * U); cx.lineTo(j * .03 * U + .2 * U, k * HH * U); cx.stroke(); }
+          cx.restore();
+          for (j = 1; j < 8; j++) {                                              // pencereler: her hücrenin tam ortasında
+            lit = on ? .55 + .4 * Math.max(0, Math.sin(t * 3 - j * .9)) : (hr(s.n * 7.1, j + k * 13, 3) > .45 ? .5 + .3 * Math.sin(t * 1.3 + j * 2.1 + s.n) : .1);
+            cx.fillStyle = rgba(BL, Math.max(0, .08 + lit * .52)); rr((j + .5) * PIT * U - .035 * U, yc - .017 * U, .07 * U, .034 * U, .008 * U); cx.fill();
+          }
         }
         cx.restore();
         cx.strokeStyle = on ? rgba(BL, .95) : rgba('244,242,238', .88); cx.lineWidth = 1.8; rr(0, -HH * U, DEP * U, 2 * HH * U, .07 * U); cx.stroke();
-        /* arka bölüm: reaktör çekirdeği */
+        /* ---- kuyruk bölümü: reaktör çekirdeği (bölmenin tam ortasında) ---- */
+        wc = (BAY + DEP) / 2 * U;
         cx.strokeStyle = rgba(on ? BL : '244,242,238', on ? .7 : .45); cx.lineWidth = 1.4;
-        cx.beginPath(); cx.arc((BAY + (DEP - BAY) / 2 + .02) * U, 0, .075 * U, 0, 6.2832); cx.stroke();
-        cx.beginPath(); cx.arc((BAY + (DEP - BAY) / 2 + .02) * U, 0, .04 * U, 0, 6.2832); cx.stroke();
-        for (j = 0; j < 3; j++) { a = t * .5 + j * 2.0944; cx.beginPath(); cx.moveTo((BAY + (DEP - BAY) / 2 + .02) * U + Math.cos(a) * .04 * U, Math.sin(a) * .04 * U); cx.lineTo((BAY + (DEP - BAY) / 2 + .02) * U + Math.cos(a) * .075 * U, Math.sin(a) * .075 * U); cx.stroke(); }
-        cx.fillStyle = rgba(BL, .35 + .3 * pu + .25 * (on ? 1 : 0)); cx.beginPath(); cx.arc((BAY + (DEP - BAY) / 2 + .02) * U, 0, .014 * U, 0, 6.2832); cx.fill();
-        /* iç oda */
+        cx.beginPath(); cx.arc(wc, 0, .075 * U, 0, 6.2832); cx.stroke();
+        cx.beginPath(); cx.arc(wc, 0, .04 * U, 0, 6.2832); cx.stroke();
+        for (j = 0; j < 3; j++) { ph = t * .5 + j * 2.0944; cx.beginPath(); cx.moveTo(wc + Math.cos(ph) * .04 * U, Math.sin(ph) * .04 * U); cx.lineTo(wc + Math.cos(ph) * .075 * U, Math.sin(ph) * .075 * U); cx.stroke(); }
+        cx.fillStyle = rgba(BL, .35 + .3 * pu + .25 * (on ? 1 : 0) + .2 * s.ch); cx.beginPath(); cx.arc(wc, 0, .014 * U, 0, 6.2832); cx.fill();
+        /* ---- iniş bölmesi ---- */
         cx.fillStyle = '#04050a'; cx.fillRect(-.01 * U, -DH * U, (BAY + .01) * U, 2 * DH * U);
-        cx.strokeStyle = 'rgba(244,242,238,.07)'; cx.lineWidth = 1;                // oda kaburgaları
-        for (j = 1; j < 8; j++) { cx.beginPath(); cx.moveTo(j * .1 * U, -DH * U); cx.lineTo(j * .1 * U, DH * U); cx.stroke(); }
-        cx.beginPath(); cx.moveTo(0, -DH * U * .5); cx.lineTo(BAY * U, -DH * U * .5); cx.moveTo(0, DH * U * .5); cx.lineTo(BAY * U, DH * U * .5); cx.stroke();
+        cx.strokeStyle = 'rgba(244,242,238,.07)'; cx.lineWidth = 1;
+        for (j = 1; j < 7; j++) { cx.beginPath(); cx.moveTo(j * PIT * U, -DH * U); cx.lineTo(j * PIT * U, DH * U); cx.stroke(); }     // kaburgalar: gövde dikişleriyle aynı hizada
+        for (k = -1; k <= 1; k += 2) { cx.beginPath(); cx.moveTo(0, k * (DH - .03) * U); cx.lineTo(BAY * U, k * (DH - .03) * U); cx.stroke(); }
         if (open > .02) {
           cx.globalCompositeOperation = 'lighter';
-          g = cx.createRadialGradient(BAY * U, 0, 0, BAY * U, 0, BAY * U * 1.1); g.addColorStop(0, rgba(BL, (.26 + .2 * a) * open)); g.addColorStop(1, rgba(BL, 0));
+          g = cx.createRadialGradient(BAY * U, 0, 0, BAY * U, 0, BAY * U * 1.1); g.addColorStop(0, rgba(BL, (.24 + .2 * (on ? 1 : 0) + .2 * s.ch) * open)); g.addColorStop(1, rgba(BL, 0));
           cx.fillStyle = g; cx.fillRect(0, -DH * U, BAY * U, 2 * DH * U);
-          for (k = -1; k <= 1; k += 2) for (j = 0; j < 7; j++) {                    // iniş ışıkları: içeri doğru akar
+          for (k = -1; k <= 1; k += 2) for (j = 0; j < 6; j++) {                  // iniş ışıkları: hücre ortalarında, içeri doğru akar
             ap = Math.max(0, Math.sin(t * 6 - j * 1.0)); cx.fillStyle = rgba('225,236,255', open * (.25 + .65 * ap));
-            cx.beginPath(); cx.arc((.07 + j * .1) * U, k * (DH - .022) * U, U * .0075, 0, 6.2832); cx.fill();
+            cx.beginPath(); cx.arc((j + .5) * PIT * U, k * (DH - .03) * U, U * .0075, 0, 6.2832); cx.fill();
           }
-          for (j = 0; j < 3; j++) {                                                 // yönlendirici oklar
+          for (j = 0; j < 3; j++) {                                               // yönlendirici oklar: .25 / .375 / .5 (ızgara çizgileri)
             ap = Math.max(0, Math.sin(t * 6 - j * 1.2 + 1.5)); cx.strokeStyle = rgba(BL, open * (.2 + .7 * ap)); cx.lineWidth = 2;
-            cx.beginPath(); cx.moveTo((.46 + j * .08) * U, -.06 * U); cx.lineTo((.5 + j * .08) * U, 0); cx.lineTo((.46 + j * .08) * U, .06 * U); cx.stroke();
+            cx.beginPath(); cx.moveTo((.25 + j * PIT - .0175) * U, -.05 * U); cx.lineTo((.25 + j * PIT + .0175) * U, 0); cx.lineTo((.25 + j * PIT - .0175) * U, .05 * U); cx.stroke();
+          }
+          cx.strokeStyle = rgba(BL, .16 * open); cx.lineWidth = 1; cx.setLineDash([3, 5]);               // orta kılavuz çizgisi
+          cx.beginPath(); cx.moveTo(.08 * U, 0); cx.lineTo(.575 * U, 0); cx.stroke(); cx.setLineDash([]);
+          for (m = 0; m < 2; m++) {                                               // şarj halkaları: içerideyken kenetlenme halkasına doğru toplanır
+            if (s.ch < .02) break;
+            ph = (t * 1.3 + m * .5) % 1; cx.strokeStyle = rgba(BL, .6 * s.ch * ph * open); cx.lineWidth = 1.4;
+            cx.beginPath(); cx.arc(.625 * U, 0, U * (.045 + .1 * (1 - ph)), 0, 6.2832); cx.stroke();
           }
           cx.globalCompositeOperation = 'source-over';
-          cx.strokeStyle = rgba(BL, (on ? .95 : .55) * open); cx.lineWidth = 1.6; cx.beginPath(); cx.arc(.62 * U, 0, .045 * U, 0, 6.2832); cx.stroke();
-          if (on) { cx.fillStyle = rgba('255,255,255', .9 * open); cx.beginPath(); cx.arc(.62 * U, 0, .016 * U, 0, 6.2832); cx.fill(); }
+          cx.strokeStyle = rgba(BL, (on ? .95 : .55) * open); cx.lineWidth = 1.6; cx.beginPath(); cx.arc(.625 * U, 0, .045 * U, 0, 6.2832); cx.stroke();
+          if (on) {                                                               // kayıt işareti: kenetlenme halkasının içinde (aynalamadan etkilenmesin diye geri çevrilir)
+            cx.save(); cx.translate(.625 * U, 0); cx.scale(sd, 1); cx.strokeStyle = rgba('255,255,255', .95 * open); cx.lineWidth = 2;
+            cx.beginPath(); cx.moveTo(-.019 * U, .001 * U); cx.lineTo(-.006 * U, .014 * U); cx.lineTo(.02 * U, -.015 * U); cx.stroke(); cx.restore();
+          }
         }
         cx.strokeStyle = rgba(on ? BL : '244,242,238', on ? .8 : .5); cx.lineWidth = 1.3; cx.strokeRect(-.01 * U, -DH * U, (BAY + .01) * U, 2 * DH * U);
-        /* kapı kanatları: açılırken çerçevenin içine kayar */
+        /* ---- kapı kanatları: açılırken çerçevenin içine kayar ---- */
         cx.save(); cx.beginPath(); cx.rect(-.03 * U, -DH * U, .09 * U, 2 * DH * U); cx.clip();
         for (k = -1; k <= 1; k += 2) {
-          h = DH * U; w0 = k < 0 ? -h - open * h : open * h;
-          cx.fillStyle = '#12141b'; cx.fillRect(-.02 * U, w0, .065 * U, h);
+          r = DH * U; m = k < 0 ? -r - open * r : open * r;
+          cx.fillStyle = '#12141b'; cx.fillRect(-.02 * U, m, .065 * U, r);
           cx.strokeStyle = 'rgba(244,242,238,.22)'; cx.lineWidth = 1;
-          for (j = 0; j < 5; j++) { cx.beginPath(); cx.moveTo(-.02 * U, w0 + j * h / 5); cx.lineTo(.045 * U, w0 + j * h / 5 + h / 5); cx.stroke(); }
-          cx.strokeStyle = rgba('244,242,238', .85); cx.lineWidth = 1.5; cx.strokeRect(-.02 * U, w0, .065 * U, h);
+          for (j = 0; j < 5; j++) { cx.beginPath(); cx.moveTo(-.02 * U, m + j * r / 5); cx.lineTo(.045 * U, m + j * r / 5 + r / 5); cx.stroke(); }
+          cx.strokeStyle = rgba('244,242,238', .85); cx.lineWidth = 1.5; cx.strokeRect(-.02 * U, m, .065 * U, r);
         }
         cx.restore();
         if (open < .98) { cx.strokeStyle = rgba(BL, .85 * (1 - open)); cx.lineWidth = 2; cx.beginPath(); cx.moveTo(.012 * U, -3); cx.lineTo(.012 * U, 3); cx.stroke(); }
-        /* kapı kenar ışıkları ve farlar */
+        /* ---- kapı kenar fenerleri (ilk hücrenin ortası) ve anten ucu ---- */
         cx.globalCompositeOperation = 'lighter';
         for (k = -1; k <= 1; k += 2) {
-          cx.fillStyle = rgba(BL, .5 + .5 * pu); cx.beginPath(); cx.arc(.1 * U, k * (DH + .03) * U, U * .011, 0, 6.2832); cx.fill();
-          g = cx.createRadialGradient(.1 * U, k * (DH + .03) * U, 0, .1 * U, k * (DH + .03) * U, U * .07); g.addColorStop(0, rgba(BL, .4 * (.4 + .6 * pu))); g.addColorStop(1, rgba(BL, 0));
-          cx.fillStyle = g; cx.beginPath(); cx.arc(.1 * U, k * (DH + .03) * U, U * .07, 0, 6.2832); cx.fill();
+          yc = k * (DH + .035) * U;
+          cx.fillStyle = rgba(BL, .5 + .5 * pu); cx.beginPath(); cx.arc(PIT * .5 * U, yc, U * .011, 0, 6.2832); cx.fill();
+          g = cx.createRadialGradient(PIT * .5 * U, yc, 0, PIT * .5 * U, yc, U * .07); g.addColorStop(0, rgba(BL, .4 * (.4 + .6 * pu))); g.addColorStop(1, rgba(BL, 0));
+          cx.fillStyle = g; cx.beginPath(); cx.arc(PIT * .5 * U, yc, U * .07, 0, 6.2832); cx.fill();
         }
-        cx.fillStyle = rgba(on ? '255,255,255' : BL, on ? .95 : .4 + .6 * (Math.sin(t * 4 + s.n) > .6 ? 1 : 0)); cx.beginPath(); cx.arc((DEP + .2) * U, 0, U * .012, 0, 6.2832); cx.fill();   // anten ucu
-        if (s.act >= 0 && s.act < 1.3) {                                           // kayıt dalgası
-          a = s.act / 1.3; cx.strokeStyle = rgba(BL, .8 * (1 - a)); cx.lineWidth = 2.2 * (1 - a) + .5;
-          cx.beginPath(); cx.arc(.4 * U, 0, U * (.08 + .65 * qOut(a)), 0, 6.2832); cx.stroke();
+        cx.fillStyle = rgba(on ? '255,255,255' : BL, on ? .95 : .4 + .6 * (Math.sin(t * 4 + s.n) > .6 ? 1 : 0)); cx.beginPath(); cx.arc(cxr, 0, U * .012, 0, 6.2832); cx.fill();
+        if (s.act >= 0 && s.act < 1.3) {                                           // kayıt dalgası: kenetlenme halkasından yayılır
+          ph = s.act / 1.3; cx.strokeStyle = rgba(BL, .8 * (1 - ph)); cx.lineWidth = 2.2 * (1 - ph) + .5;
+          cx.beginPath(); cx.arc(.625 * U, 0, U * (.08 + .65 * qOut(ph)), 0, 6.2832); cx.stroke();
         }
         cx.globalCompositeOperation = 'source-over';
         cx.restore();
-        s.lb = Math.max(0, Math.min(1, (s.lb || 0) + (s.in && s.on ? .06 : -.08)));   // iç oda yazısı: içerideyken belirir
-        if (s.lb > .01) {
-          var bxm = X + sd * BAY * U * .5, fs = Math.max(11, U * .036);
-          cx.save(); cx.globalAlpha = s.lb; cx.textAlign = 'center'; cx.textBaseline = 'middle';
-          cx.fillStyle = rgba(BL, 1); cx.font = '600 ' + fs * 1.15 + 'px system-ui,sans-serif'; cx.fillText('✓ KONTROL NOKTASI', bxm, Y - DH * U * .62);
-          cx.fillStyle = 'rgba(244,242,238,.85)'; cx.font = '500 ' + fs * .8 + 'px system-ui,sans-serif';
-          cx.fillText('Alev durdu · ölürsen buradan devam', bxm, Y + DH * U * .66);
-          cx.restore();
-        }
       }
     }
     function drawWorld(CY, t) {
