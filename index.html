@@ -361,6 +361,20 @@
   #devbar div { min-width: 46px; height: 46px; padding: 0 10px; border: 1px solid rgba(244,242,238,.3); border-radius: 23px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 200; color: var(--fg); background: rgba(0,0,0,.45); cursor: pointer; }
   #devbar div:active { background: rgba(244,242,238,.18); }
   #devbar #devz { font-size: 11px; letter-spacing: .12em; min-width: 64px; color: var(--soft); cursor: default; }
+  #devbar #devcmp svg { width: 22px; height: 22px; display: block; }
+  #devscrim { position: absolute; inset: 0; z-index: 3; display: none; }
+  #devscrim.on { display: block; }
+  #devpanel { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; max-height: 58%; display: flex; flex-direction: column; background: rgba(8,10,11,.96); border-top: 1px solid rgba(244,242,238,.2); border-radius: 22px 22px 0 0; transform: translateY(104%); transition: transform .42s cubic-bezier(.22,.61,.36,1); pointer-events: none; }
+  #devpanel.on { transform: none; pointer-events: auto; }
+  #devpanel .dpg { align-self: center; flex: none; width: 38px; height: 4px; border-radius: 2px; background: rgba(244,242,238,.25); margin: 10px 0 2px; }
+  #devpanel .dpt { flex: none; text-align: center; font-size: 11px; letter-spacing: .3em; text-indent: .3em; text-transform: uppercase; color: var(--dim); padding: 10px 0 12px; }
+  #devpanel .dpl { overflow-y: auto; -webkit-overflow-scrolling: touch; touch-action: pan-y; overscroll-behavior: contain; padding: 0 18px calc(env(safe-area-inset-bottom, 0px) + 22px); }
+  #devpanel .dpr { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 15px 6px; border-top: 1px solid rgba(244,242,238,.1); cursor: pointer; }
+  #devpanel .dpr:active { background: rgba(244,242,238,.08); }
+  #devpanel .dpr b { display: block; font-weight: 300; font-size: 17px; letter-spacing: .02em; color: var(--fg); }
+  #devpanel .dpr small { display: block; margin-top: 3px; font-size: 12px; color: var(--dim); }
+  #devpanel .dpr span { flex: none; font-size: 13px; color: var(--soft); font-variant-numeric: tabular-nums; }
+  #devpanel .dpr.off { opacity: .35; pointer-events: none; }
   #spause { position: absolute; top: calc(env(safe-area-inset-top, 0px) + 6px); right: calc(env(safe-area-inset-right, 0px) + 8px); width: 52px; height: 52px; display: none; align-items: center; justify-content: center; gap: 5px; color: var(--soft); cursor: pointer; z-index: 2; }
   #space.play #spause { display: flex; }
   #spause i { display: block; width: 3.5px; height: 17px; border-radius: 1.5px; background: currentColor; }
@@ -972,7 +986,7 @@
 
   <div id="mbtn" class="gone"><i></i><i></i><i></i></div>
   <div id="help" class="gone">?</div>
-  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><u></u><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="spsnd" class="sndpg"><div id="spsndback" class="sndback" data-sa="sndback" aria-label="Geri"><i></i></div><div class="sndt">Ses</div><div class="sndsub">yalnızca ASTRO</div><div id="spsndl" class="sndl"></div><div class="sndnote">Anahtarla aç ya da kapat, çubukla seviyeyi ayarla.</div></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
+  <div id="space"><canvas id="spcv"></canvas><div id="sphud"><div class="r"><div id="spv">0.0</div><div id="spl">m/sn</div></div><div id="spen"><i></i><u></u><s><svg viewBox="0 0 24 24"><path d="M13.5 2L5 13.5h5.6L9.5 22 19 9.8h-5.7z"/></svg></s></div><div id="spstr"><svg viewBox="0 0 24 24"><path d="M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2z"/></svg><b>0</b></div><div id="spst"><i id="spcp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.6C12.9 3.7 13.6 6 13.6 8.6V17.4Q13.6 18.8 12.7 18.8H11.3Q10.4 18.8 10.4 17.4V8.6C10.4 6 11.1 3.7 12 2.6Z"/><path d="M13.6 11L15.9 16.4Q16.2 17.5 15.2 17.5H13.6"/><path d="M10.4 11L8.1 16.4Q7.8 17.5 8.8 17.5H10.4"/><path d="M18.4 9.6Q19.9 12 18.4 14.4"/><path d="M20.6 7.4Q23.4 12 20.6 16.6"/><path d="M5.6 9.6Q4.1 12 5.6 14.4"/><path d="M3.4 7.4Q.6 12 3.4 16.6"/></svg></i></div></div><div id="spbn"><div id="spmsg"><div class="k"></div><div class="t"></div><div class="s" style="display:none"></div></div></div><div id="sptut"><div class="th" id="sptl"><b>Sol taraf</b><strong>Basılı tut ve sürükle</strong><span>Mekiğin yönünü belirler. Yavaşlatmak için ters yöne çek.</span></div><div class="th" id="sptr"><b>Sağ taraf</b><strong>Basılı tut</strong><span>Jet motoru çalışır, mekik baktığı yöne hızlanır. Enerji harcar.</span></div></div><div id="spause"><i></i><i></i></div><div id="devchip">DEV</div><div id="devbar"><div data-dv="out">−</div><div id="devz">×1.00</div><div data-dv="in">+</div><div data-dv="home">⌖</div><div data-dv="zones" id="devcmp" aria-label="Bölgeler"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.6 8.4l-2.1 5.1-5.1 2.1 2.1-5.1z"/></svg></div></div><div id="sppv"><small></small><div data-sa="pvend">Bitir</div></div><div id="spmenu"><div><div id="spdi"></div><div id="sptitle">ASTRO</div><div id="spsub">serbest uçuş</div></div><div id="spico"></div><div id="splist"></div></div><div id="spset"><div id="spsback" data-sa="sback"><i></i></div><div id="spstitle">ASTRO</div><div id="spssub">ayarlar</div><div id="spslist"></div><div id="spsnote"></div><div id="spsnd" class="sndpg"><div id="spsndback" class="sndback" data-sa="sndback" aria-label="Geri"><i></i></div><div class="sndt">Ses</div><div class="sndsub">yalnızca ASTRO</div><div id="spsndl" class="sndl"></div><div class="sndnote">Anahtarla aç ya da kapat, çubukla seviyeyi ayarla.</div></div><div id="sprs"><div class="sc" data-sa="srno"></div><div class="sp" role="dialog" aria-modal="true"><div class="gr"></div><h3>ASTRO ilerlemesi silinsin mi?</h3><p>Rekorun, dükkandaki yıldızların, satın aldığın kostümler ve güçlendirmeler ile öğreticiler silinir. Ses ve geliştirici ayarları ile diğer oyunlar etkilenmez. Bu işlem geri alınamaz.</p><div class="row"><div data-sa="srno">Vazgeç</div><div data-sa="sryes" class="yes">Sil</div></div></div></div></div></div>
 </div>
 
 <script>
@@ -3065,7 +3079,7 @@
     function reset() {
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0; inStn = false; inSubT = 0; sbT = 0;
-      fogStop(); fogK = 0; fogZ = []; pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
+      fogStop(); devPanel(false); fogK = 0; fogZ = []; pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
       bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; dashPh = 0; dashT = 0; dashCamT = 0; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
@@ -3568,7 +3582,7 @@
       for (var l = 0; l < 3; l++) for (var i = 0; i < L[l][3]; i++) stars.push({ x: Math.random() * W, y: Math.random() * H, f: L[l][0], s: L[l][1], a: L[l][2] });
     }
     function open() { size(); reset(); elDvz = $('devz'); el.classList.toggle('devok', STORE.get('dd_dev') === '1'); on = true; el.classList.add('on'); last = 0; audioInit(); gainApply(); Music.start(); startIntro(); showMenu(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(frame); }
-    function close() { fogStop(); pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); sndCur = SNDG; sndApply(); }
+    function close() { fogStop(); devPanel(false); pvOn = false; if (window.DDShop) DDShop.pv = ''; el.classList.remove('pv'); on = false; mode = 0; devOn = false; el.classList.remove('on', 'play', 'devcam'); elSm.classList.remove('on'); cancelAnimationFrame(raf); thrustSet(0); Music.stop(); endIntro(); showSettings(false); sndCur = SNDG; sndApply(); }
 
     /* --- girdi --- */
     function pos(e) { var r = el.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
@@ -3578,6 +3592,7 @@
       jv.x = dx / l * m; jv.y = dy / l * m;
     }
     el.addEventListener('pointerdown', function (e) {
+      if (e.target && e.target.closest) { if (e.target.closest('#devpanel')) { e.stopPropagation(); return; } if (e.target.closest('#devscrim')) { e.preventDefault(); e.stopPropagation(); devPanel(false); return; } }   // bölge paneli: kaydırma ve dokunma kendi işini görür
       e.preventDefault(); e.stopPropagation(); audioInit(); thrustInit();
       if (introOn) return;                                                          // giriş animasyonu sırasında dokunuş yutulur
       var tg = e.target && e.target.closest ? e.target : null;
@@ -3588,7 +3603,7 @@
         if (mode === 0 && !stOn && tg.closest('#spico')) { crDown(e); return; }
         if (tg.closest('#devchip')) { devToggle(!devOn); return; }
         var db = tg.closest('[data-dv]');
-        if (db && devOn) { var da = db.getAttribute('data-dv'); if (da === 'in') devZoom(1.35); else if (da === 'out') devZoom(1 / 1.35); else if (da === 'home') { dv.x = P.x; dv.y = P.y; } return; }
+        if (db && devOn) { var da = db.getAttribute('data-dv'); if (da === 'in') devZoom(1.35); else if (da === 'out') devZoom(1 / 1.35); else if (da === 'home') { dv.x = P.x; dv.y = P.y; } else if (da === 'zones') devPanel(!dpOpen); return; }
       }
       if (mode !== 1) return;
       if (devOn) { var dp = pos(e); devPts[e.pointerId] = { x: dp.x, y: dp.y }; try { el.setPointerCapture(e.pointerId); } catch (_) {} return; }
@@ -3615,7 +3630,7 @@
       }
       if (e.pointerId === joyId) { e.preventDefault(); joy(pos(e)); }
     });
-    el.addEventListener('wheel', function (e) { if (devOn) { e.preventDefault(); devZoom(Math.exp(-e.deltaY * .0015)); } }, { passive: false });
+    el.addEventListener('wheel', function (e) { if (devOn && !(e.target.closest && e.target.closest('#devpanel'))) { e.preventDefault(); devZoom(Math.exp(-e.deltaY * .0015)); } }, { passive: false });
     // TURBO: sağ tarafa (ya da Boşluk'a) çift dokunup ikinci basışta basılı tutmak mavi depoyu açar
     function jetPress() { var n = performance.now(); tReq = (n - jetTapT) < 350; jetDownT = n; }
     function jetRel() { var n = performance.now(); jetTapT = ((n - jetDownT) < 230) ? n : 0; tReq = false; }
@@ -4179,6 +4194,7 @@
     /* --- geliştirici kamerası: gemi donar, kamera serbest uçar; parkur üretilmeye ve hareket etmeye devam eder --- */
     function devToggle(on) {
       if (on === devOn) return;
+      if (!on) devPanel(false);
       if (on) {
         if (mode !== 1) return;
         devOn = true; dvSave = { x: cam.x, y: cam.y }; dv.x = cam.x; dv.y = cam.y; dv.z = 1;
@@ -4213,6 +4229,55 @@
       }
     }
     function devZoom(f) { dv.z = Math.max(.12, Math.min(3, dv.z * f)); }
+    /* --- geliştirici: bölge bulucu (pusula). Listeden seçilen bölgenin kameraya EN YAKIN olanına gemi ışınlanır. Yeni bölge türü için ZONES'a satır ekle. --- */
+    var dpEl = null, dpSc = null, dpOpen = false;
+    var ZONES = [
+      { id: 'fog', name: 'Sis bölgesi', sub: '125 m · yavaşlatır, yetenekler kapanır', ap: 3.2,
+        find: function (ref) { var i, b = null; for (i = 0; i < fogZ.length; i++) if (fogZ[i].y0 < ref - S * 4 && (!b || fogZ[i].y0 > b.y0)) b = fogZ[i]; return b ? { y: b.y0 } : null; } },
+      { id: 'stn', name: 'Kontrol noktası', sub: 'istasyon · enerji dolar, kayıt alınır', ap: 3.4,
+        find: function (ref) { var i, b = null; for (i = 0; i < stns.length; i++) if (stns[i].y < ref - S * 4 && (!b || stns[i].y > b.y)) b = stns[i]; return b ? { y: b.y } : null; } }
+    ];
+    function zoneNearest(zn, ref) {                                // ileride değilse pisti öne doğru uzatıp ara (en çok 400 S)
+      var r = zn.find(ref), n = 0;
+      while (!r && tkY > ref - S * 400 && n++ < 40) { tkExtend(tkY - S * 12); r = zn.find(ref); }
+      return r;
+    }
+    function dpInit() {
+      dpSc = document.createElement('div'); dpSc.id = 'devscrim';
+      dpEl = document.createElement('div'); dpEl.id = 'devpanel';
+      dpEl.innerHTML = '<i class="dpg"></i><div class="dpt">Bölgeler</div><div class="dpl"></div>';
+      el.appendChild(dpSc); el.appendChild(dpEl);
+      dpEl.addEventListener('click', function (e) { var r = e.target.closest ? e.target.closest('[data-dz]') : null; if (r) devGoZone(r.getAttribute('data-dz')); });
+    }
+    function dpBuild() {
+      var ref = devOn ? dv.y : P.y, h = '';
+      ZONES.forEach(function (zn) {
+        var r = zoneNearest(zn, ref), m = r ? Math.max(0, Math.round((ref - r.y) / (S * .1))) : -1;
+        h += '<div class="dpr' + (r ? '' : ' off') + '" data-dz="' + zn.id + '"><div><b>' + zn.name + '</b><small>' + zn.sub + '</small></div><span>' + (r ? 'en yakın · ' + m + ' m' : 'bulunamadı') + '</span></div>';
+      });
+      dpEl.querySelector('.dpl').innerHTML = h; dpEl.querySelector('.dpl').scrollTop = 0;
+    }
+    function devPanel(on) {
+      if (!dpEl) { if (!on) return; dpInit(); }
+      on = !!on; if (on === dpOpen) return;
+      if (on) { if (!devOn) return; dpBuild(); }
+      dpOpen = on; dpEl.classList.toggle('on', on); dpSc.classList.toggle('on', on);
+    }
+    function devGoZone(id) {
+      var zn = null, i, r, y, n, tgt, g0;
+      for (i = 0; i < ZONES.length; i++) if (ZONES[i].id === id) zn = ZONES[i];
+      if (!zn || !devOn) return;
+      r = zoneNearest(zn, dv.y); if (!r) return;
+      y = r.y + S * zn.ap; dv.x = T(y); dv.y = y;                    // bölgenin hemen önü (giriş kenarından ~30 m geride)
+      tgt = y - H * 1.6 / Math.min(1, dv.z) - S * 2.5;
+      for (n = 0; n < 400; n++) {                                    // hedefe kadar parkuru eşzamanlı üret (engeller ve sınır kayaları hazır olsun)
+        g0 = genY; genMore();
+        if (genY <= tgt && (!bOn || (bC[0].y <= tgt && bC[1].y <= tgt))) break;
+        if (genY === g0 && n > 8) break;
+      }
+      devPanel(false); devToggle(false);                             // dev kapanırken gemi kameranın olduğu yere ışınlanır
+    }
+
     function devStep(dt) {
       var sp2 = S * 1.3 / dv.z * dt, kx = (keys.arrowright || keys.d ? 1 : 0) - (keys.arrowleft || keys.a ? 1 : 0), ky = (keys.arrowdown || keys.s ? 1 : 0) - (keys.arrowup || keys.w ? 1 : 0), i, o;
       dv.x += kx * sp2; dv.y += ky * sp2;
