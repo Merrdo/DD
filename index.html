@@ -3899,7 +3899,7 @@
       // enerji: yalnızca jet harcar (basılı kaldıkça artan hızda); joystick yardımı sınırsız; dinlenince dolar
       if (th > 0.05) burn += dt; else burn = Math.max(0, burn - dt * 2);
       var using = th > 0.05, wideE = engK() === 'wide';
-      var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0));
+      var drain = th * 0.17 * (1 + burn * 0.12) / (1 + .2 * (window.DDShop ? DDShop.lv('depo') : 0)) * (1 - .65 * fogK);   // sisteki tavan hız düşüşüyle (×0.35) orantılı: yakıt da o oranda yavaş biter
       // GENİŞ MOTOR: tek çubuk, iki depo. Sol yarı (en) normal uçuş: standart motordaki depoya çok yakın (%7 daha az dayanır).
       // Sağ yarı (tb) TURBO: yalnızca sağ tarafa çift dokunup basılı tutunca açılır, ~2,5 sn'de biter. Normal jetteyken ~28 sn, dinlenirken ~11 sn'de dolar.
       // Turbo açıkken yalnızca tb harcanır; tb bitince normal moda dönülür.
