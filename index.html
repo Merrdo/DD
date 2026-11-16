@@ -982,7 +982,8 @@
   // p: a/b kanatlar, c gövde, w cam, n lüle, f alev, s (varsa) yalnızca çizgi
   var COST = [
     { id:'klasik',  n:'Klasik',  price:0,   p:{a:'#f4f2ee',b:'#cfcbc1',c:'#f4f2ee',w:'#10162a',n:'#4b4a47',f:'#f4f2ee'}, d:'İlk günden beri seninle olan mekik.' },
-    { id:'hayalet', n:'Hayalet', price:500, p:{a:'none',b:'none',c:'none',w:'#f4f2ee',n:'#f4f2ee',f:'#f4f2ee',s:'#f4f2ee'}, d:'Yalnızca ince çizgilerden oluşan, karanlıkta süzülen mekik.' }
+    { id:'hayalet', n:'Hayalet', price:500, p:{a:'none',b:'none',c:'none',w:'#f4f2ee',n:'#f4f2ee',f:'#f4f2ee',s:'#f4f2ee'}, d:'Yalnızca ince çizgilerden oluşan, karanlıkta süzülen mekik.' },
+    { id:'alaca', n:'Alacakaranlık', price:400, p:{a:'#8a5fb8',b:'#5b3d86',c:'#f6d3bd',w:'#2a1347',n:'#7a5a4a',f:'#ffb98a',g:'#46306b'}, d:'Gün batımının son ışığını taşıyan mekik: gül altını gövde, mor gölgeye batan kanatlar ve koyu menekşe cam.' }
   ];
   var POW = [
     { id:'depo', n:'Geniş depo', base:150, max:5, s:20, f:'+#% enerji', d:'Jet enerji deposu büyür, jet daha uzun süre çalışır.', ic:'<rect x="3" y="8" width="16" height="9" rx="2"/><path d="M21 11v3M7 11v3"/>' },
@@ -1661,6 +1662,7 @@
     reset: function () { D = { coins:0, owned:{ klasik:1 }, eq:'klasik', lv:{}, fx:{ jet:'kor' }, fxo:{ kor:1 }, eo:{ jet:1 }, en:'jet', wo:{ std:1 }, wn:'std' }; S.sel = 'klasik'; S.shown = ''; S.fsel = 'kor'; S.fshown = ''; S.eng = 'jet'; S.open = ''; S.kp = ''; S.kw = false; S.ks = false; S.kshown = ''; try { localStorage.removeItem(KEY); } catch (e) {} },
     pv: '',
     engine: ENGINE,
+    pal: function () { try { var c = cfind(API.pv && cfind(API.pv) ? API.pv : D.eq); return (c && c.p) || null; } catch (e) { return null; } },
     look: function () { return (API.pv && cfind(API.pv)) ? API.pv : D.eq; },
     fx: function () { var id = (API.pv && API.pv.indexOf('fx:') === 0) ? API.pv.slice(3) : D.fx[D.en || ENGINE]; return ffind(id) || FX[0]; },   // oyundaki alev: önizleme ya da kuşanılan efekt
     onPreview: null, onBuy: null,
@@ -4370,6 +4372,9 @@
       // minimal beyaz mekik: üstten görünüm, çift delta kanat, iki tonlu düz gölge. Burun gidiş yönüne bakar.
       var u = S * 0.026, t = ts / 1000, g, k, CR = '#f4f2ee', WR = '#cfcbc1', GR = '#b3aea2',
           gh = window.DDShop && DDShop.look() === 'hayalet', FXd = window.DDShop && DDShop.fx();   // Hayalet kostümü: yalnızca çizgi
+      var CP = !gh && window.DDShop && DDShop.pal && DDShop.pal();                        // kostüm paleti (Klasik = orijinal renkler)
+      if (CP && CP.c && CP.c !== 'none' && CP.c !== CR) { CR = CP.a; WR = CP.b; GR = CP.g || GR; }
+      var HC = CP && CP.c && CP.c !== 'none' && CP.c !== '#f4f2ee' ? CP.c : CR, GL = CP && CP.w && CP.c !== '#f4f2ee' ? CP.w : '#10162a';
       function pf(c) { if (gh) { cx.lineWidth = .09; cx.lineJoin = 'round'; cx.strokeStyle = CR; cx.stroke(); } else { cx.fillStyle = c; cx.fill(); } }
       cx.save(); cx.translate(sx, sy); cx.rotate(P.h + Math.PI / 2); cx.scale(u, u);
       cx.translate(Math.sin(t * 83) * .025 * th * tfk, Math.sin(t * 1.4) * .04 + Math.sin(t * 71) * .02 * th * tfk);   // süzülme + yüksek itişte hafif titreşim
@@ -4431,7 +4436,7 @@
         if (fd < .012) continue;
         cx.beginPath(); cx.moveTo(k * .46, 1.95); cx.lineTo(k * 1.17, 1.95); cx.lineTo(k * 1.13, 1.95 + fd); cx.lineTo(k * .5, 1.95 + fd); cx.closePath(); cx.fill();
       }
-      hullP(); pf(CR);                    // gövde
+      hullP(); pf(HC);                    // gövde
       cx.save(); hullP(); cx.clip(); cx.fillStyle = 'rgba(0,0,0,.07)';   // gövde gölgesi (ikondaki aynı şekil)
       cx.beginPath(); cx.moveTo(.14, -2.2); cx.bezierCurveTo(.3, -1.9, .44, -1.3, .44, -.6); cx.lineTo(.44, 1.7);
       cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.14, 2.05); cx.closePath(); cx.fill();
@@ -4442,7 +4447,7 @@
       }
       cx.restore();
       cx.fillStyle = 'rgba(120,114,95,.22)'; rr(-.24, -.55, .48, 2, .1); cx.fill();     // kargo bölümü
-      cx.fillStyle = gh ? CR : '#10162a'; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
+      cx.fillStyle = gh ? CR : GL; cx.beginPath(); cx.moveTo(-.2, -1.5); cx.quadraticCurveTo(0, -1.64, .2, -1.5); cx.lineTo(.26, -1.1); cx.lineTo(-.26, -1.1); cx.closePath(); cx.fill();   // kokpit camı
       var hh = Math.min(1, Math.max(heat * .85, odK));                                                  // nozul: soğukken koyu gri, yanarken turuncuya
       var NT = (FXd && FXd.ht) || [255, 150, 90]; cx.fillStyle = 'rgb(' + (75 + (NT[0] - 75) * hh | 0) + ',' + (74 + (NT[1] - 74) * hh | 0) + ',' + (71 + (NT[2] - 71) * hh | 0) + ')'; nozC(engK(), hh, NT, gh);
       if (cpK > .03) {                                           // çarpışma önleyici: çarpacak taraftaki küçük itiş motoru (daha görünür)
