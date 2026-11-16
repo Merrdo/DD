@@ -1012,7 +1012,10 @@
     { id:'jet', n:'Standart Jet', tag:'Orijinal', price:0, nz:'std', st:{}, d:'Mekiğin ilk günden beri taşıdığı orijinal jet motoru. Çan biçimli tek lüle, dengeli itiş.' },
     { id:'genis', n:'Geniş Motor', tag:'Yeni', price:600, nz:'wide', st:{ ivme:-8, man:-4 },
       ex:['Çift dokun: turbo', 'Normal depo ≈ standart'],
-      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır ama iki depodan oluşur: beyaz yarı normal uçuş içindir ve standart motordaki kadar dayanır, mavi yarı turbo içindir. Turbo için sağ tarafa çift dokunup ikinci dokunuşta basılı tut: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama mavi depo hızla boşalır. Uçarken yavaş, dinlenirken hızlı dolar. Boşken denersen motor marş basıp tutmaz. Mavi depo bitince normal moda dönülür.' }
+      d:'Yayvan, çift lüleli geniş bir motor bloğu. Enerji çubuğu tek parçadır ama iki depodan oluşur: beyaz yarı normal uçuş içindir ve standart motordaki kadar dayanır, mavi yarı turbo içindir. Turbo için sağ tarafa çift dokunup ikinci dokunuşta basılı tut: mekik aşırı hızlanır ve çok daha yüksek hıza çıkar, ama mavi depo hızla boşalır. Uçarken yavaş, dinlenirken hızlı dolar. Boşken denersen motor marş basıp tutmaz. Mavi depo bitince normal moda dönülür.' },
+    { id:'sicra', n:'Sıçrama Motoru', tag:'Yeni', price:800, nz:'dash', st:{ ivme:10, hiz:8 },
+      ex:['Çift dokun: ışınlanarak dash'],
+      d:'Standart motora benzeyen, ama kuyruğa daha derin ve köşeli bir girinti açılmış tek lüleli motor. Biraz daha hızlı hızlanır ve biraz daha yüksek hıza çıkar. Sağ tarafa çift dokunursan (ya da Boşluk\'a çift basarsan) mekik burnunun baktığı yönde ileri ışınlanır: hızın ve yönün aynı kalır, arada kalan engellerin üstünden geçersin. Atlayış mesafesi sabittir; varış noktası bir engelin içine ya da tünelin dışına denk gelirse mesafe kısalır, çok büyük engelleri aşamazsın. Her atlayıştan sonra kısa bir bekleme süresi vardır; jet düğmesinin etrafındaki mavi halka dolunca hazırdır.' }
   ];
   var FX = [
     { id:'kor', eng:'jet', n:'Kor', tag:'Orijinal', price:0, rgb:'255,138,92', k:'', pal:null,
@@ -1061,6 +1064,16 @@
       sk:[[235,248,255],[70,150,255]], ht:[110,180,255],
       d:'İki lüleden yan yana akan soğuk mavi plazma. Çekirdekler beyaza kadar ısınır.' }
   ];
+  (function () {                                                // Sıçrama Motoru: tek lüleli, standart jetin iki alevi (Kor, İyon Fırtınası) bu motora da takılır
+    var add = [];
+    FX.forEach(function (f) { if (f.eng === 'jet' && (f.id === 'kor' || f.id === 'ion')) { var c = {}, k; for (k in f) c[k] = f[k]; c.id = 'sc-' + f.id; c.eng = 'sicra'; add.push(c); } });
+    add.forEach(function (c) { FX.push(c); });
+  })();
+  (function () {                                                // Sıçrama Motoru: tek lüleli, standart jetin iki alevi (Kor, İyon Fırtınası) bu motora da takılır
+    var add = [];
+    FX.forEach(function (f) { if (f.eng === 'jet' && (f.id === 'kor' || f.id === 'ion')) { var c = {}, k; for (k in f) c[k] = f[k]; c.id = 'sc-' + f.id; c.eng = 'sicra'; add.push(c); } });
+    add.forEach(function (c) { FX.push(c); });
+  })();
 
   /* ===== Kalıcı veri ===== */
   var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1, kp:'', ke:'jet', kshown:'', kdone:false, kw:false, ks:false, wk:'' };
@@ -1193,6 +1206,7 @@
      Gövde rengi kostümden (p.c), girinti rengi lüle renginden (p.n) gelir; Hayalet kostümünde yalnızca çizgi çizilir. */
   var HULL = {
     std:  'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L.21 2.05L.21 1.95Q0 1.9 -.21 1.95L-.21 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
+    dash: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .3 2.05L.27 2.05L.27 1.82L-.27 1.82L-.27 2.05L-.3 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
     wide: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.05C.44 1.5 .92 1.4 .94 1.85L.9 2.1Q.89 2.17 .82 2.17L-.82 2.17Q-.89 2.17 -.9 2.1L-.94 1.85C-.92 1.4 -.44 1.5 -.44 1.05L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z'
   };
   function hullD(kind) { return HULL[kind] || HULL.std; }
@@ -1200,6 +1214,8 @@
     var f = sk ? 'fill="none" stroke="' + sk + '" stroke-width=".06" stroke-linejoin="round"' : 'fill="' + c + '"';
     if (kind === 'wide') return '<path d="M.11 2.17L.11 2.04Q.11 1.99 .16 1.99L.53 1.99Q.58 1.99 .58 2.04L.58 2.17Z" ' + f + '/><path d="M-.11 2.17L-.11 2.04Q-.11 1.99 -.16 1.99L-.53 1.99Q-.58 1.99 -.58 2.04L-.58 2.17Z" ' + f + '/>' +
       (sk ? '' : '<path d="M0 1.55L0 2.17" stroke="#000" stroke-opacity=".16" stroke-width=".04" fill="none"/><path d="M.44 1.2C.46 1.45 .8 1.5 .86 1.8M-.44 1.2C-.46 1.45 -.8 1.5 -.86 1.8" stroke="#000" stroke-opacity=".12" stroke-width=".035" fill="none"/>');
+    if (kind === 'dash') return '<path d="M-.23 1.86Q-.23 1.83 -.2 1.83L.2 1.83Q.23 1.83 .23 1.86L.25 2.05L-.25 2.05Z" ' + f + '/>' +
+      (sk ? '' : '<path d="M-.08 1.86L-.08 2.05M.08 1.86L.08 2.05" stroke="#000" stroke-opacity=".3" stroke-width=".035" fill="none"/><rect x="-.21" y="2.02" width=".42" height=".03" fill="#000" fill-opacity=".5"/>');
     return '<path d="M-.21 1.95Q0 1.9 .21 1.95L.24 2.1Q0 2.16 -.24 2.1Z" ' + f + '/>' + (sk ? '' : '<ellipse cx="0" cy="2.08" rx=".17" ry=".03" fill="#000" fill-opacity=".5"/>');
   }
   function nzKind() {
@@ -1697,7 +1713,7 @@
         var k, good;
         if (seen[g.id]) bad.push(p.id + ': yinelenen kimlik ' + g.id); seen[g.id] = 1;
         if (g.st) for (k in g.st) if (!STATS.some(function (t) { return t.k === k; }) || !ok(g.st[k])) { bad.push(g.id + ': geçersiz özellik ' + k); delete g.st[k]; }
-        if (g.nz && g.nz !== 'std' && g.nz !== 'wide') { bad.push(g.id + ': bilinmeyen lüle türü ' + g.nz); delete g.nz; }
+        if (g.nz && g.nz !== 'std' && g.nz !== 'wide' && g.nz !== 'dash') { bad.push(g.id + ': bilinmeyen lüle türü ' + g.nz); delete g.nz; }
         if (g.sh) {
           good = Array.isArray(g.sh) && g.sh.length >= 3 && g.sh[0][0] === 'M' && g.sh.every(function (c) {
             return Array.isArray(c) && (c[0] === 'M' || c[0] === 'L' ? c.length === 3 : c[0] === 'Q' ? c.length === 5 : false) && c.slice(1).every(ok);
@@ -2772,7 +2788,7 @@
     var on = false, raf = 0, last = 0, W = 0, H = 0, S = 0, dpr = 1;
     var bAct = false, bLim = 1e9, bOn = false, bC = [], bY = 0, bStartY = 0, BSEC = 3, devOn = false, devJump = false, dv = { x: 0, y: 0, z: 1 }, dvSave = null, graceT = 0, devPts = {}, elDvz = null;
     var enFrom = 0, enTo = 0, enGainT = 0, elGain = null;
-    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [];
+    var spinAcc = 0, spinIdle = 0, spinChain = 0, spinChainT = 0, spinFx = [], dashCd = 0, dashFx = [], DASH_CD = 2.2;
     var pre = 0, cdT = 3, lastCd = 0, RID = 0, jr, jx, jy, br, bx, by, jbx, jby, jA = 0, jUsed = 0, lean = 0, leanV = 0, trail = [], rcs = 0, en = 1, tb = 1, tOn = false, tReq = false, jetTapT = 0, jetDownT = 0, odK = 0, odC = 0, idleT = 0, burn = 0, lock = false, lastE = '', heat = 0, ign = 0, wasOn = 0, hv = 0, rrot = 0, flapL = 0, flapR = 0, bbx = 0, bby = 0, bA = 0, bUsed = 0, pulse = 0, stars = [], qList = [], qCells = {}, qNext = 10, P, cam, th, jv, joyId, jetId, keys, parts, born, jetT, emit, lastV;
     var F = '#f4f2ee', D = '#0a0b0f';
     var frameErr = 0;
@@ -3025,7 +3041,7 @@
       P = { x: 0, y: 0, vx: 0, vy: 0, h: -Math.PI / 2, w: 0 }; cam = { x: 0, y: 0 };
       th = 0; jv = { x: 0, y: 0 }; joyId = null; jetId = null; keys = {}; parts = []; cpK = 0; cpAcc = 0; cpSnd = 0;
       pre = 0; cdT = 3; lastCd = 0; born = performance.now(); jetT = 0; emit = 0; lastV = ''; lean = 0; leanV = 0; jA = 0; jUsed = 0; trail = []; rcs = 0; en = 1; tb = 1; tOn = false; odK = 0; odC = 0; idleT = 0; burn = 0; lock = false; lastE = ''; heat = 0; ign = 0; wasOn = 0; hv = 0; rrot = 0; flapL = 0; flapR = 0;
-      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
+      bUsed = 0; pulse = 0; bA = 0; bbx = bx; bby = by; enGainT = 0; spinAcc = 0; spinIdle = 0; spinChain = 0; spinChainT = 0; spinFx = []; dashCd = 0; dashFx = []; qList = []; qCells = {}; qNext = 7 + Math.random() * 5;
       dead = 0; deadT = 0; hd = 0; lz = null; lzSp.length = 0; shake = 0; flash = 0; pops = []; lastL = ''; lastV = '';
       if (race) {
       runStars = 0; stFx = []; scFx = []; stChain = 0; stChainT = 0; elStrN.textContent = '0';
@@ -3612,6 +3628,36 @@
       var r0 = sp / (S * .6), d0 = Math.max(.05, 1 - Math.pow(Math.min(r0, 1), 4)), n1 = 1 - Math.pow(Math.min(r0 / hz, 1), 4);
       return Math.max(.2, Math.min(1.4, n1 / d0));
     }
+    /* SIÇRAMA MOTORU: çift dokunuşla burnun baktığı yönde ışınlanma. Hız ve yön korunur.
+       Varış noktası engelin içine ya da tünelin dışına denk gelirse mesafe kısalır; en kısa mesafeye bile yer yoksa (çok büyük engel) atlayış yapılmaz. */
+    function dashFree(x, y) {
+      var i, o, m = S * .056, Rs = S * .026 * .78, ox;
+      if (race) { var tc = T(y), cwq = cw * Lw(y); if (Math.abs(x - tc) > cwq - Rs - S * .012) return false; }   // tünelin dışına çıkılamaz
+      for (i = 0; i < obs.length; i++) {
+        o = obs[i];
+        if (o.t === 'beam') { if ((o.warn || o.on) && Math.abs(o.y - y) < S * .07) return false; continue; }
+        if (o.t !== 'rock' && o.t !== 'wall' && o.t !== 'spin' && o.t !== 'hole') continue;
+        if (o.t !== 'wall' && Math.abs(o.y - y) > S * 1.2) continue;
+        if (cpDist(o, x, y) < m) return false;
+      }
+      return true;
+    }
+    function dashTry() {
+      if (dead || devOn || dashCd > 0 || (race && pre)) return;
+      var hx = Math.cos(P.h), hy = Math.sin(P.h), Dmax = S * .5, Dmin = S * .2, d, nx = 0, ny = 0, ok = false, j, f;
+      for (d = Dmax; d >= Dmin - 1e-6; d -= S * .02) { nx = P.x + hx * d; ny = P.y + hy * d; if (dashFree(nx, ny)) { ok = true; break; } }
+      if (!ok) { dashCd = .5; sfxTurboFail(); vib([25, 35, 25]); pop('ENGEL ÇOK BÜYÜK', P.x, P.y - S * .1, false); return; }
+      dashFx.push({ x0: P.x, y0: P.y, x1: nx, y1: ny, h: P.h, t0: performance.now() });
+      for (j = 0; j < 22; j++) {                                  // ışınlanma izi: yol boyunca kıvılcımlar
+        f = Math.random(); var pa = Math.random() * 6.2832, ps = S * (.04 + Math.random() * .12);
+        parts.push({ x: P.x + (nx - P.x) * f, y: P.y + (ny - P.y) * f, vx: Math.cos(pa) * ps, vy: Math.sin(pa) * ps, l: 1, d: .3 + Math.random() * .3, r: S * .002, c: 8 });
+      }
+      if (parts.length > 220) parts.splice(0, parts.length - 220);
+      P.x = nx; P.y = ny; trail.length = 0; trail.push({ x: P.x, y: P.y });   // hız (P.vx, P.vy) ve yönelim aynen korunur
+      graceT = Math.max(graceT, .06); dashCd = DASH_CD;
+      flash = Math.max(flash, .4); shake = Math.max(shake, .22);
+      pop('DASH', P.x, P.y - S * .1, true); sfxTurbo(); vib([10, 16, 10]);
+    }
     function step(dt) {
       if (race && dead) { stepDead(dt); return; }
       if (race && pre) {
@@ -3673,6 +3719,8 @@
         }
       }
       if (tOn && tb <= 0) { tOn = false; sfxTurboOut(); }
+      if (tReq && engK() === 'dash') dashTry();
+      if (dashCd > 0) dashCd = Math.max(0, dashCd - dt);
       tReq = false;
       var want = (jetting && ((!lock && en > 0) || (tOn && tb > 0))) ? 1 : 0;
       th += (want - th) * (1 - Math.exp(-dt / (want ? 0.08 : 0.18)));
@@ -4261,6 +4309,10 @@
       if (engK() === 'wide') {
         cx.lineTo(.44, 1.05); cx.bezierCurveTo(.44, 1.5, .92, 1.4, .94, 1.85); cx.lineTo(.9, 2.1); cx.quadraticCurveTo(.89, 2.17, .82, 2.17);
         cx.lineTo(-.82, 2.17); cx.quadraticCurveTo(-.89, 2.17, -.9, 2.1); cx.lineTo(-.94, 1.85); cx.bezierCurveTo(-.92, 1.4, -.44, 1.5, -.44, 1.05);
+      } else if (engK() === 'sicra') {                             // Sıçrama Motoru: derin, köşeli girinti
+        cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .3, 2.05); cx.lineTo(.27, 2.05); cx.lineTo(.27, 1.82); cx.lineTo(-.27, 1.82); cx.lineTo(-.27, 2.05); cx.lineTo(-.3, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
+      } else if (engK() === 'dash') {                              // Sıçrama Motoru: derin, köşeli girinti
+        cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .3, 2.05); cx.lineTo(.27, 2.05); cx.lineTo(.27, 1.82); cx.lineTo(-.27, 1.82); cx.lineTo(-.27, 2.05); cx.lineTo(-.3, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
       } else {
         cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.21, 2.05); cx.lineTo(.21, 1.95); cx.quadraticCurveTo(0, 1.9, -.21, 1.95);
         cx.lineTo(-.21, 2.05); cx.lineTo(-.26, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
@@ -4361,6 +4413,12 @@
         cx.fillStyle = 'rgba(0,0,0,.14)'; cx.fillRect(-.02, 1.55, .04, .62);
         cx.fillStyle = base; vent(1); cx.fill(); vent(-1); cx.fill();
         if (hh > .02) { cx.fillStyle = gl; rr(.15, 2.07, .39, .06, .03); cx.fill(); rr(-.54, 2.07, .39, .06, .03); cx.fill(); }
+      } else if (kind === 'dash') {
+        cx.beginPath(); cx.moveTo(-.23, 1.86); cx.quadraticCurveTo(-.23, 1.83, -.2, 1.83); cx.lineTo(.2, 1.83); cx.quadraticCurveTo(.23, 1.83, .23, 1.86); cx.lineTo(.25, 2.05); cx.lineTo(-.25, 2.05); cx.closePath();
+        if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
+        cx.fill(); cx.fillStyle = 'rgba(0,0,0,.3)'; cx.fillRect(-.095, 1.86, .035, .19); cx.fillRect(.06, 1.86, .035, .19);
+        cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(-.21, 2.02, .42, .03);
+        if (hh > .02) { cx.fillStyle = gl; cx.fillRect(-.19, 2.025, .38, .02); }
       } else {
         cx.beginPath(); cx.moveTo(-.21, 1.95); cx.quadraticCurveTo(0, 1.9, .21, 1.95); cx.lineTo(.24, 2.1); cx.quadraticCurveTo(0, 2.16, -.24, 2.1); cx.closePath();
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
@@ -5197,6 +5255,21 @@
       }
       cx.globalAlpha = 1; if (dead === 1 && lz && lz.cv) lzDraw(ax, ay); else if (!dead || (dead === 2 && boomT < 0)) ship(ax, ay, ts);
       if (dead === 2 || (burnT >= 0 && !dead)) drawBurn(ax, ay);
+      if (dashFx.length) {                                                        // dash: yol boyunca ışık çizgisi, çıkış ve varış halkaları
+        cx.save(); cx.globalCompositeOperation = 'lighter'; cx.lineCap = 'round';
+        for (i = dashFx.length - 1; i >= 0; i--) {
+          var dk = (performance.now() - dashFx[i].t0) / 420; if (dk >= 1) { dashFx.splice(i, 1); continue; }
+          var dfx = dashFx[i], dx0 = W / 2 + dfx.x0 - cam.x, dy0 = CY + dfx.y0 - cam.y, dx1 = W / 2 + dfx.x1 - cam.x, dy1 = CY + dfx.y1 - cam.y, de = 1 - Math.pow(1 - dk, 3), dsr = S * .026;
+          cx.strokeStyle = 'rgb(160,220,255)'; cx.globalAlpha = .7 * (1 - dk); cx.lineWidth = dsr * (1.1 - dk);
+          cx.beginPath(); cx.moveTo(dx0, dy0); cx.lineTo(dx1, dy1); cx.stroke();
+          cx.strokeStyle = 'rgb(255,255,255)'; cx.globalAlpha = .55 * (1 - dk); cx.lineWidth = dsr * .3;
+          cx.beginPath(); cx.moveTo(dx0, dy0); cx.lineTo(dx1, dy1); cx.stroke();
+          cx.strokeStyle = 'rgb(150,215,255)'; cx.lineWidth = 1.6 * (1 - dk) + .4;
+          cx.globalAlpha = .6 * (1 - dk); cx.beginPath(); cx.arc(dx0, dy0, dsr * (2.9 - 2.1 * de), 0, 6.2832); cx.stroke();     // çıkış: içe çöken halka
+          cx.globalAlpha = .7 * (1 - dk); cx.beginPath(); cx.arc(dx1, dy1, dsr * (.8 + 3 * de), 0, 6.2832); cx.stroke();                // varış: yayılan halka
+        }
+        cx.restore();
+      }
       if (spinFx.length) {                                                        // tam tur halkaları
         cx.save(); cx.globalCompositeOperation = 'lighter'; cx.lineCap = 'round';
         for (i = spinFx.length - 1; i >= 0; i--) {
@@ -5242,6 +5315,10 @@
         if (engK() === 'wide' && tb > .005) {                                            // turbo deposu: dış mavi halka
           cx.lineWidth = 3; cx.strokeStyle = '#7fd4ff'; cx.globalAlpha = (tOn ? .95 : .7) * ba;
           cx.beginPath(); cx.arc(bsx, bsy, br + 15, -Math.PI / 2, -Math.PI / 2 + 6.2832 * tb); cx.stroke();
+        }
+        if (engK() === 'dash') {                                                         // dash şarjı: dış mavi halka, dolunca hazır
+          var dch = 1 - dashCd / DASH_CD; cx.lineWidth = 3; cx.strokeStyle = dch >= 1 ? '#a8e4ff' : '#5fb4e8'; cx.globalAlpha = (dch >= 1 ? .95 : .55) * ba;
+          cx.beginPath(); cx.arc(bsx, bsy, br + 15, -Math.PI / 2, -Math.PI / 2 + 6.2832 * Math.max(.002, dch)); cx.stroke();
         }
         var fs = br * .62;                                                              // düz, hareketsiz alev ikonu (enerjiden etkilenmez)
         cx.strokeStyle = pr ? '#000' : F; cx.lineJoin = 'round'; cx.lineCap = 'round';
