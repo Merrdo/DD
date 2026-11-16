@@ -1069,11 +1069,6 @@
     FX.forEach(function (f) { if (f.eng === 'jet' && (f.id === 'kor' || f.id === 'ion')) { var c = {}, k; for (k in f) c[k] = f[k]; c.id = 'sc-' + f.id; c.eng = 'sicra'; add.push(c); } });
     add.forEach(function (c) { FX.push(c); });
   })();
-  (function () {                                                // Sıçrama Motoru: tek lüleli, standart jetin iki alevi (Kor, İyon Fırtınası) bu motora da takılır
-    var add = [];
-    FX.forEach(function (f) { if (f.eng === 'jet' && (f.id === 'kor' || f.id === 'ion')) { var c = {}, k; for (k in f) c[k] = f[k]; c.id = 'sc-' + f.id; c.eng = 'sicra'; add.push(c); } });
-    add.forEach(function (c) { FX.push(c); });
-  })();
 
   /* ===== Kalıcı veri ===== */
   var D, S = { tab:'c', sel:'klasik', open:'', shown:'', eng:'jet', fsel:'kor', fshown:'', pw:1, kp:'', ke:'jet', kshown:'', kdone:false, kw:false, ks:false, wk:'' };
@@ -1206,7 +1201,7 @@
      Gövde rengi kostümden (p.c), girinti rengi lüle renginden (p.n) gelir; Hayalet kostümünde yalnızca çizgi çizilir. */
   var HULL = {
     std:  'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .26 2.05L.21 2.05L.21 1.95Q0 1.9 -.21 1.95L-.21 2.05L-.26 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
-    dash: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.7Q.44 2.05 .3 2.05L.27 2.05L.27 1.82L-.27 1.82L-.27 2.05L-.3 2.05Q-.44 2.05 -.44 1.7L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
+    dash: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.1C.46 1.6 .58 2.1 .74 2.66L.2 2Q0 1.82 -.2 2L-.74 2.66C-.58 2.1 -.46 1.6 -.44 1.1L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z',
     wide: 'M0 -2.45C.2 -2.2 .42 -1.4 .44 -.6L.44 1.05C.44 1.5 .92 1.4 .94 1.85L.9 2.1Q.89 2.17 .82 2.17L-.82 2.17Q-.89 2.17 -.9 2.1L-.94 1.85C-.92 1.4 -.44 1.5 -.44 1.05L-.44 -.6C-.42 -1.4 -.2 -2.2 0 -2.45Z'
   };
   function hullD(kind) { return HULL[kind] || HULL.std; }
@@ -1214,8 +1209,8 @@
     var f = sk ? 'fill="none" stroke="' + sk + '" stroke-width=".06" stroke-linejoin="round"' : 'fill="' + c + '"';
     if (kind === 'wide') return '<path d="M.11 2.17L.11 2.04Q.11 1.99 .16 1.99L.53 1.99Q.58 1.99 .58 2.04L.58 2.17Z" ' + f + '/><path d="M-.11 2.17L-.11 2.04Q-.11 1.99 -.16 1.99L-.53 1.99Q-.58 1.99 -.58 2.04L-.58 2.17Z" ' + f + '/>' +
       (sk ? '' : '<path d="M0 1.55L0 2.17" stroke="#000" stroke-opacity=".16" stroke-width=".04" fill="none"/><path d="M.44 1.2C.46 1.45 .8 1.5 .86 1.8M-.44 1.2C-.46 1.45 -.8 1.5 -.86 1.8" stroke="#000" stroke-opacity=".12" stroke-width=".035" fill="none"/>');
-    if (kind === 'dash') return '<path d="M-.23 1.86Q-.23 1.83 -.2 1.83L.2 1.83Q.23 1.83 .23 1.86L.25 2.05L-.25 2.05Z" ' + f + '/>' +
-      (sk ? '' : '<path d="M-.08 1.86L-.08 2.05M.08 1.86L.08 2.05" stroke="#000" stroke-opacity=".3" stroke-width=".035" fill="none"/><rect x="-.21" y="2.02" width=".42" height=".03" fill="#000" fill-opacity=".5"/>');
+    if (kind === 'dash') return '<path d="M-.2 2Q0 1.82 .2 2L.12 2.09Q0 1.97 -.12 2.09Z" ' + f + '/>' +
+      (sk ? '' : '<path d="M-.44 1.1L0 1.3L.44 1.1" stroke="#000" stroke-opacity=".14" stroke-width=".03" stroke-linejoin="round" fill="none"/><path d="M.72 2.62L.21 2.01Q0 1.86 -.21 2.01L-.72 2.62" stroke="#7fd4ff" stroke-opacity=".25" stroke-width=".1" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M.72 2.62L.21 2.01Q0 1.86 -.21 2.01L-.72 2.62" stroke="#9fe0ff" stroke-width=".034" stroke-linecap="round" stroke-linejoin="round" fill="none"/>');
     return '<path d="M-.21 1.95Q0 1.9 .21 1.95L.24 2.1Q0 2.16 -.24 2.1Z" ' + f + '/>' + (sk ? '' : '<ellipse cx="0" cy="2.08" rx=".17" ry=".03" fill="#000" fill-opacity=".5"/>');
   }
   function nzKind() {
@@ -4309,15 +4304,13 @@
       if (engK() === 'wide') {
         cx.lineTo(.44, 1.05); cx.bezierCurveTo(.44, 1.5, .92, 1.4, .94, 1.85); cx.lineTo(.9, 2.1); cx.quadraticCurveTo(.89, 2.17, .82, 2.17);
         cx.lineTo(-.82, 2.17); cx.quadraticCurveTo(-.89, 2.17, -.9, 2.1); cx.lineTo(-.94, 1.85); cx.bezierCurveTo(-.92, 1.4, -.44, 1.5, -.44, 1.05);
-      } else if (engK() === 'sicra') {                             // Sıçrama Motoru: derin, köşeli girinti
-        cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .3, 2.05); cx.lineTo(.27, 2.05); cx.lineTo(.27, 1.82); cx.lineTo(-.27, 1.82); cx.lineTo(-.27, 2.05); cx.lineTo(-.3, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
       } else if (engK() === 'dash') {                              // Sıçrama Motoru: derin, köşeli girinti
-        cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .3, 2.05); cx.lineTo(.27, 2.05); cx.lineTo(.27, 1.82); cx.lineTo(-.27, 1.82); cx.lineTo(-.27, 2.05); cx.lineTo(-.3, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
+        cx.lineTo(.44, 1.1); cx.bezierCurveTo(.46, 1.6, .58, 2.1, .74, 2.66); cx.lineTo(.2, 2); cx.quadraticCurveTo(0, 1.82, -.2, 2); cx.lineTo(-.74, 2.66); cx.bezierCurveTo(-.58, 2.1, -.46, 1.6, -.44, 1.1);
       } else {
         cx.lineTo(.44, 1.7); cx.quadraticCurveTo(.44, 2.05, .26, 2.05); cx.lineTo(.21, 2.05); cx.lineTo(.21, 1.95); cx.quadraticCurveTo(0, 1.9, -.21, 1.95);
         cx.lineTo(-.21, 2.05); cx.lineTo(-.26, 2.05); cx.quadraticCurveTo(-.44, 2.05, -.44, 1.7);
       }
-      cx.lineTo(-.44, engK() === 'wide' ? 1.05 : 1.7); cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
+      cx.lineTo(-.44, engK() === 'wide' ? 1.05 : engK() === 'dash' ? 1.1 : 1.7); cx.lineTo(-.44, -.6); cx.bezierCurveTo(-.42, -1.4, -.2, -2.2, 0, -2.45); cx.closePath();
     }
     function wingP(s) {
       var cm = (window.DDShop && DDShop.wing && DDShop.wing()) || [['M', .4, -1.3], ['L', .7, -.45], ['L', 1.25, 1.72], ['Q', 1.3, 1.95, 1.18, 1.95], ['L', .4, 1.95]], i, c;
@@ -4414,11 +4407,16 @@
         cx.fillStyle = base; vent(1); cx.fill(); vent(-1); cx.fill();
         if (hh > .02) { cx.fillStyle = gl; rr(.15, 2.07, .39, .06, .03); cx.fill(); rr(-.54, 2.07, .39, .06, .03); cx.fill(); }
       } else if (kind === 'dash') {
-        cx.beginPath(); cx.moveTo(-.23, 1.86); cx.quadraticCurveTo(-.23, 1.83, -.2, 1.83); cx.lineTo(.2, 1.83); cx.quadraticCurveTo(.23, 1.83, .23, 1.86); cx.lineTo(.25, 2.05); cx.lineTo(-.25, 2.05); cx.closePath();
+        cx.beginPath(); cx.moveTo(-.2, 2); cx.quadraticCurveTo(0, 1.82, .2, 2); cx.lineTo(.12, 2.09); cx.quadraticCurveTo(0, 1.97, -.12, 2.09); cx.closePath();
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
-        cx.fill(); cx.fillStyle = 'rgba(0,0,0,.3)'; cx.fillRect(-.095, 1.86, .035, .19); cx.fillRect(.06, 1.86, .035, .19);
-        cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(-.21, 2.02, .42, .03);
-        if (hh > .02) { cx.fillStyle = gl; cx.fillRect(-.19, 2.025, .38, .02); }
+        cx.fill();
+        cx.lineJoin = 'round'; cx.lineCap = 'round'; cx.strokeStyle = 'rgba(0,0,0,.14)'; cx.lineWidth = .03;
+        cx.beginPath(); cx.moveTo(-.44, 1.1); cx.lineTo(0, 1.3); cx.lineTo(.44, 1.1); cx.stroke();                 // kuyruk paneli
+        var dr = 1 - dashCd / DASH_CD, da = dr >= 1 ? .75 + .25 * Math.sin(performance.now() / 160) : .12 + .3 * dr;     // mavi enerji çizgileri: hazırken parlar, bekleme sırasında söner
+        cx.beginPath(); cx.moveTo(.72, 2.62); cx.lineTo(.21, 2.01); cx.quadraticCurveTo(0, 1.86, -.21, 2.01); cx.lineTo(-.72, 2.62);
+        cx.strokeStyle = 'rgba(127,212,255,' + (.28 * da).toFixed(3) + ')'; cx.lineWidth = .11; cx.stroke();
+        cx.strokeStyle = 'rgba(170,230,255,' + da.toFixed(3) + ')'; cx.lineWidth = .034; cx.stroke();
+        if (hh > .02) { cx.fillStyle = gl; cx.beginPath(); cx.moveTo(-.1, 2.05); cx.quadraticCurveTo(0, 1.97, .1, 2.05); cx.lineTo(.08, 2.08); cx.quadraticCurveTo(0, 2.02, -.08, 2.08); cx.fill(); }
       } else {
         cx.beginPath(); cx.moveTo(-.21, 1.95); cx.quadraticCurveTo(0, 1.9, .21, 1.95); cx.lineTo(.24, 2.1); cx.quadraticCurveTo(0, 2.16, -.24, 2.1); cx.closePath();
         if (gh) { cx.lineWidth = .06; cx.strokeStyle = '#f4f2ee'; cx.lineJoin = 'round'; cx.stroke(); return; }
