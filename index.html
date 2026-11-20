@@ -882,12 +882,12 @@
   #shop button:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
   @media (prefers-reduced-motion:reduce) { #shop *, #shop *::after { transition-duration:.01s !important; animation-duration:.01s !important; animation-iteration-count:1 !important; } }
   /* ---------- ALAN (ele geçirme) — hiçbir yerde yarı saydam çizim yok, yalnızca düz renkler ---------- */
-  .gprev.alico { display: flex; align-items: center; justify-content: center; width: 70%; max-height: 66%; }
-  .gprev.alico svg { width: 100%; height: 100%; display: block; }
+  .gprev.alico { display: block; position: relative; min-width: 0; min-height: 0; }
+  .gprev.alico svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   #alan { position: absolute; inset: 0; z-index: 13; background: #000; opacity: 0; pointer-events: none; transition: opacity .55s ease; touch-action: none; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
   #alan.on { opacity: 1; pointer-events: auto; }
   #alcv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-  #altop { position: absolute; left: 0; right: 0; top: 0; height: 74px; display: flex; align-items: center; justify-content: space-between; padding: 0 5% 0; gap: 14px; pointer-events: none; }
+  #altop { position: absolute; left: 0; right: 0; top: 0; height: 122px; display: flex; align-items: center; justify-content: space-between; padding: 62px 5% 0; gap: 14px; pointer-events: none; }
   #alback { width: 36px; height: 36px; flex: none; border: 1px solid #3d3c3a; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cfcdc9; background: #000; pointer-events: auto; transition: background .2s ease, border-color .2s ease; }
   #alback i { display: block; width: 8px; height: 8px; margin-left: 3px; border-left: 1.4px solid currentColor; border-bottom: 1.4px solid currentColor; transform: rotate(45deg); }
   #alback:active { background: #1c1c1b; }
@@ -895,19 +895,20 @@
   #albar b { display: block; height: 100%; min-width: 0; width: 0; border-radius: 2px; transition: width .9s cubic-bezier(.22,.61,.36,1); }
   #altime { width: 36px; flex: none; text-align: right; font-size: 12px; font-weight: 300; letter-spacing: .08em; color: #8a8885; font-variant-numeric: tabular-nums; }
   #alan:not(.play) #albar, #alan:not(.play) #altime { opacity: 0; }
-  #alhint { position: absolute; left: 0; right: 0; bottom: 84px; text-align: center; font-size: 11px; letter-spacing: .28em; text-indent: .28em; text-transform: uppercase; color: #8a8885; opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s ease; pointer-events: none; }
+  #alhint { position: absolute; left: 0; right: 0; bottom: 100px; text-align: center; font-size: 11px; letter-spacing: .28em; text-indent: .28em; text-transform: uppercase; color: #8a8885; opacity: 0; transform: translateY(6px); transition: opacity .6s ease, transform .6s ease; pointer-events: none; }
   #alan.play.hint #alhint { opacity: 1; transform: none; }
-  #alratio { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); height: 40px; padding: 0 22px; border: 1px solid #3d3c3a; border-radius: 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #000; color: #8a8885; font-size: 10px; letter-spacing: .26em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity .5s ease, background .2s ease, transform .25s cubic-bezier(.3,1.5,.5,1); }
+  #alratio { position: absolute; left: 50%; bottom: 46px; transform: translateX(-50%); height: 40px; padding: 0 22px; border: 1px solid #3d3c3a; border-radius: 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; background: #000; color: #8a8885; font-size: 10px; letter-spacing: .26em; text-transform: uppercase; opacity: 0; pointer-events: none; transition: opacity .5s ease, background .2s ease, transform .25s cubic-bezier(.3,1.5,.5,1); }
   #alratio b { font-weight: 300; font-size: 14px; letter-spacing: .06em; color: #f4f2ee; min-width: 34px; text-align: left; font-variant-numeric: tabular-nums; }
   #alan.play #alratio { opacity: 1; pointer-events: auto; }
   #alratio:active { background: #1c1c1b; transform: translateX(-50%) scale(.95); }
-  #almenu { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 17% 0 10%; opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  #almenu { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: calc(17% + 24px) 0 calc(10% + 20px); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .5s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
   #almenu.on { opacity: 1; pointer-events: none; transform: none; }
   #altitle { font-size: clamp(56px, 15vmin, 100px); font-weight: 100; letter-spacing: .1em; text-indent: .1em; line-height: 1; text-align: center; color: #f4f2ee; }
   #altitle.sm { font-size: clamp(34px, 9vmin, 54px); letter-spacing: .06em; text-indent: .06em; }
   #alsub { margin-top: 14px; font-size: 11px; letter-spacing: .36em; text-indent: .36em; text-transform: uppercase; color: #8a8885; text-align: center; min-height: 14px; }
   #allist { margin-top: auto; display: flex; flex-direction: column; align-items: center; }
   .ali { padding: 13px 28px; font-size: 13px; letter-spacing: .22em; text-indent: .22em; text-transform: uppercase; color: #8a8885; text-align: center; cursor: pointer; transition: color .2s ease; pointer-events: auto; animation: alin .7s cubic-bezier(.2,.7,.2,1) both; }
+  #almenu:not(.on) .ali { pointer-events: none; }
   .ali.primary { color: #f4f2ee; font-size: 15px; }
   .ali small { display: block; margin-top: 7px; font-size: 10px; letter-spacing: .28em; color: #8a8885; }
   .ali:active { color: #f4f2ee; }
@@ -6129,7 +6130,7 @@
       }
     }
     function newGame() {
-      var mt = 74, mb = 120, ms = 18;
+      var mt = 126, mb = 136, ms = 18;
       WH = clamp(100 * (H - mt - mb) / (W - 2 * ms), 80, 200);
       sizeSet();
       gen((Math.random() * 1e9) | 0);
@@ -6143,7 +6144,7 @@
 
     /* ---------------- boyut ---------------- */
     function sizeSet() {
-      var mt = 74, mb = 120, ms = 18;
+      var mt = 126, mb = 136, ms = 18;
       sc = Math.min((W - 2 * ms) / WW, (H - mt - mb) / WH);
       ox = (W - WW * sc) / 2; oy = mt + ((H - mt - mb) - WH * sc) / 2;
     }
@@ -6443,7 +6444,7 @@
     /* ---------------- menü ---------------- */
     function showMenu(kind, sub) {
       menuKind = kind;
-      if (!kind) { elMenu.classList.remove('on'); return; }
+      if (!kind) { elMenu.classList.remove('on'); elList.innerHTML = ''; return; }
       var h = '';
       elTitle.className = '';
       if (kind === 'main') { elTitle.textContent = 'ALAN'; elSub.textContent = 'toprak ele geçir'; h = '<div class="ali primary" data-a="play">Başla</div><div class="ali" data-a="diff">Zorluk<small>' + DIFF[diff].name + '</small></div><div class="ali" data-a="exit">Geri</div>'; }
